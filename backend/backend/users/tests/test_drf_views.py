@@ -1,10 +1,13 @@
 import pytest
 from django.test import RequestFactory
+from rest_framework.test import RequestsClient, APIClient
+from rest_framework.authtoken.models import Token
 
 from backend.users.api.views import ProfileViewSet, ProfilePhotoUploadView
 from backend.users.models import User, Profile
 from backend.users.api.serializers import ProfileSerializer
 from backend.users.tests.factories import ProfileFactory
+from backend.users.tests.factories import UserFactory, ProfileFactory
 import shutil
 
 from pathlib import Path
@@ -121,7 +124,7 @@ class TestProfileViewSet:
         assert response.status_code == 200
 
 
-# @pytest.mark.only
+@pytest.mark.skip
 class TestProfileUploadView:
 
     def test_file_upload_for_profile(self, profile, rf, tmp_path, tmp_pic_path):
@@ -145,3 +148,32 @@ class TestProfileUploadView:
 
         assert response.status_code == 200
         assert updated_profile.photo
+
+
+class TestAPIViewPerformanceIntegrationTest:
+    """
+    This tests the performance of the whole stack, for when
+    we are retrieving lists of more than 30 profiles.
+    """
+
+    def test_listing_300_profiles(self, profile):
+            # arrange
+        for x in range(300):
+            user = UserFactory()
+            profile = ProfileFactory(user=user)
+
+        token = Token(
+                    key="short-and-readable",
+                    user=profile.user
+                )
+        token.save()
+
+        # act
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        res = client.get("http://testserver/api/profiles/")
+
+        assert res.status_code == 200
+
+        # assert
+        assert len(res.data) == 301
