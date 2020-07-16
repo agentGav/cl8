@@ -7,7 +7,9 @@ from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    # serve the vue template instead of the default home
+    path("", TemplateView.as_view(template_name="pages/vue.html"), name="home"),
+
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
@@ -26,7 +28,11 @@ urlpatterns += [
     # DRF auth token
     path("auth-token/", obtain_auth_token),
     path('', include('drfpasswordless.urls')),
+] + [
+    path('', TemplateView.as_view(template_name="pages/vue.html")),
+    path('<path:resource>', TemplateView.as_view(template_name="pages/vue.html"))
 ]
+
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
