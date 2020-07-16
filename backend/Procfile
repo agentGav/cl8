@@ -1,5 +1,5 @@
 release: python manage.py collectstatic --no-input && python manage.py migrate
 
 # web: gunicorn config.wsgi:application
-web: python manage.py runserver
+web: python manage.py runserver 0.0.0.0:$PORT --insecure
 
