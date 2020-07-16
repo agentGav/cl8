@@ -92,8 +92,24 @@ aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws
 # and so on
 # http://whitenoise.evans.io/en/stable/django.html?highlight=favicon#WHITENOISE_MANIFEST_STRICT
 WHITENOISE_MANIFEST_STRICT = False
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+class ErrorSquashingStorage(CompressedManifestStaticFilesStorage):
+    """
+    A class to handle missing files more gracefully than having the entire server crash.
+    While it's better to find the underlying source of the missing file causing the 500,
+    this at least makes deployment possible.
+    # https://github.com/evansd/whitenoise/issues/96
+    """
+
+    def url(self, name, **kwargs):
+        try:
+            return super(ErrorSquashingStorage, self).url(name, **kwargs)
+        except ValueError:
+            return name
+
+
+STATICFILES_STORAGE = ErrorSquashingStorage
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "backend.utils.storages.MediaRootS3Boto3Storage"
