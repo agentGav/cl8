@@ -42,7 +42,12 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
 DATABASES = {
+    # you almost definitely should be using postgres for development too
+    # to avoid surprises for development, but you CAN use sqlite
+    # replace the "postgres:///backend" with "sqlite:///backend_db",
+    # or pass it in as an environment variable
     "default": env.db("DATABASE_URL", default="postgres:///backend")
+
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
