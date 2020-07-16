@@ -145,7 +145,14 @@ const actions = {
     const emailPayload = {
       email: payload
     }
-    const emailsubmitted = await instance.post('/auth/email/', emailPayload)
+
+    const csrfToken = document.querySelector('.csrf-token').textContent
+    console.log('csrfToken', csrfToken)
+
+    const emailsubmitted = await instance.post(
+      '/auth/email/',
+      emailPayload,
+      {headers: {"X-CSRFTOKEN": csrfToken }})
 
     if (emailsubmitted) {
       return true

@@ -7,9 +7,14 @@
   <title>Constellation</title>
 </head>
 
+{# used by django #}
+<span style="display:none;" class="csrf-token" data-csrf-token="{{ csrf_token }}">{{ csrf_token }}</span>
+
+
 <body class="w-100 bg-near-white sans-serif">
   <div id="app"></div>
   <!-- built files will be auto injected -->
 </body>
 
 </html>
+
