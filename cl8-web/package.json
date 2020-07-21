@@ -5,7 +5,7 @@
   "author": "Chris Adams <chris@productscience.co.uk>",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --open",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:django": "vue-cli-service build && rsync -vazuk ./dist/ ../backend/backend/static/ && cp ./dist/index.html ../backend/backend/templates/pages/vue.html",
     "test:unit": "vue-cli-service test:unit",
