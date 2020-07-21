@@ -81,7 +81,7 @@ const getters = {
     return state.signInData
   },
   token: function(state) {
-    return localStorage.token
+    return state.token
   }
 }
 
@@ -90,7 +90,10 @@ const mutations = {
     state.profile = null
     state.user = null
     state.token = null
-    localStorage.token = null
+    delete localStorage.token;
+    debug('localStorage', localStorage);
+    debug('state', state);
+
   },
   stopLoading: function(state) {
     state.loading = false
@@ -166,7 +169,9 @@ const actions = {
       const response = await instance.post('/auth/token/', payload)
       const token = response.data.token
 
+      debug('prev token', context.getters.token)
       context.commit('SET_AUTH_TOKEN', token)
+      debug('updated token', context.getters.token)
       await context.dispatch('createUserSession')
 
       if (context.getters.requestUrl) {
@@ -185,7 +190,9 @@ const actions = {
     router.push('signin')
   },
   createUserSession: async function(context, payload) {
-    const token = context.getters.token
+
+    const token = context.getters.token || localStorage.token
+    debug('creating user session with token:', token)
 
     const profileResponse = await instance.get('api/profiles/me', {
       headers: { Authorization: `Token ${token}` }
