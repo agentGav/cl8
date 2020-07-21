@@ -256,7 +256,7 @@ const actions = {
     }
   },
   fetchProfile: async function(context, payload) {
-    debug('fetching profile for:', payload)
+    debug('fetching profile for id:', payload.id)
     const profile = await instance.get(`/api/profiles/${payload.id}`, {
       headers: { Authorization: `Token ${localStorage.token}` }
     })

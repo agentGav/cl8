@@ -55,7 +55,8 @@ export default {
     },
     myProfile: function() {
       debug('setting profile back to user')
-      this.$store.dispatch('fetchProfile', this.$store.getters.currentUser.id)
+      debug('currentUser', this.$store.getters.currentUser)
+      this.$store.dispatch('fetchProfile', this.$store.getters.currentUser)
     }
   }
 }
