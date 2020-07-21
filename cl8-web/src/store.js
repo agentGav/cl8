@@ -27,8 +27,8 @@ const state = {
   signInData: {
     message: null,
     email: null
-  },
-  token: null
+  }, 
+  token: localStorage.token || null
 }
 
 const getters = {
