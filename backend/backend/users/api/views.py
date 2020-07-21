@@ -23,6 +23,10 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
 User = get_user_model()
 
+from django.views.decorators.csrf import csrf_exempt
+
+def vue_view(request):
+    return TemplateView.as_view(template_name="pages/vue.html")
 
 
 class ProfileViewSet(

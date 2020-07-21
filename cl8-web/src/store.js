@@ -6,6 +6,11 @@ const debug = require('debug')('cl8.store')
 
 const instance = axios.create({
   timeout: 60000,
+  // `xsrfHeaderName` is the name of the http header
+  // that carries the xsrf token value
+  xsrfCookieName: 'csrftoken', // default
+  xsrfHeaderName: 'X-CSRFTOKEN', // default
+
 })
 
 const state = {
@@ -145,9 +150,6 @@ const actions = {
       email: payload
     }
 
-    const csrfToken = document.querySelector('.csrf-token').textContent
-    console.log('csrfToken', csrfToken)
-
     const emailsubmitted = await instance.post(
       '/auth/email/',
       emailPayload,
@@ -222,6 +224,7 @@ const actions = {
       const response = await instance.get('/api/profiles', {
         headers: { Authorization: `Token ${localStorage.token}` }
       })
+      debug('profiles resp', response)
       const profileArray = response.data.filter(profile => profile.visible)
       context.commit('setVisibleProfileList', profileArray)
     } catch (error) {
