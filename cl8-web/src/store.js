@@ -5,8 +5,7 @@ import axios from 'axios'
 const debug = require('debug')('cl8.store')
 
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/',
-  timeout: 60000
+  timeout: 60000,
 })
 
 const state = {
