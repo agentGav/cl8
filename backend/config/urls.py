@@ -6,6 +6,7 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
 
+
 urlpatterns = [
     # serve the vue template instead of the default home
     path("", TemplateView.as_view(template_name="pages/vue.html"), name="home"),
@@ -14,7 +15,7 @@ urlpatterns = [
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
     # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
+    path("admin/", admin.site.urls),
     # User management
     path("users/", include("backend.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
@@ -28,10 +29,11 @@ urlpatterns += [
     # DRF auth token
     path("auth-token/", obtain_auth_token),
     path('', include('drfpasswordless.urls')),
-] + [
-    path('', TemplateView.as_view(template_name="pages/vue.html")),
-    path('<path:resource>', TemplateView.as_view(template_name="pages/vue.html"))
 ]
+# + [
+#     path('', TemplateView.as_view(template_name="pages/vue.html")),
+#     path('<path:resource>', TemplateView.as_view(template_name="pages/vue.html"))
+# ]
 
 
 if settings.DEBUG:
