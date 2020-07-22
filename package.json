@@ -1,0 +1,51 @@
+{
+  "name": "cl8-web",
+  "version": "0.1.0",
+  "description": "The front end for constellate",
+  "author": "Chris Adams <chris@productscience.co.uk>",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint",
+    "release": "vue-cli-service build && npm run notify"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "core-js": "^3.6.5",
+    "lodash": "^4.17.15",
+    "marked": "^1.1.0",
+    "regenerator-runtime": "^0.13.5",
+    "sanitize-html": "^1.26.0",
+    "tachyons": "4.12.0",
+    "vee-validate": "^2.2.15",
+    "vue": "^2.6.11",
+    "vue-analytics": "^5.22.1",
+    "vue-fuse": "^2.2.1",
+    "vue-gravatar": "^1.3.1",
+    "vue-multiselect": "^2.1.6",
+    "vue-router": "^3.3.2",
+    "vuex": "^3.4.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.10.2",
+    "@vue/cli-plugin-eslint": "^4.4.1",
+    "@vue/cli-plugin-unit-jest": "^4.4.1",
+    "@vue/cli-service": "^4.4.1",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "^1.0.3",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.2.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
