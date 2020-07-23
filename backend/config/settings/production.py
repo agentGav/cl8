@@ -89,13 +89,13 @@ aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws
 # STATIC
 # ------------------------
 
-# This stops whitenoise causing a 500 when there are missing files, like favicons 
+# This stops whitenoise causing a 500 when there are missing files, like favicons
 # and so on
 # http://whitenoise.evans.io/en/stable/django.html?highlight=favicon#WHITENOISE_MANIFEST_STRICT
 WHITENOISE_MANIFEST_STRICT = False
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # MEDIA
 # ------------------------------------------------------------------------------
