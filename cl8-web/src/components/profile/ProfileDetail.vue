@@ -168,14 +168,8 @@ export default {
       // otherwise just return false
       return false
     },
-    showPhoto(size) {
+    showPhoto() {
       return this.profile.photo
-      // try {
-      //   return this.profile.photo[0].thumbnails[size].url
-      // } catch (e) {
-      //   debug(`No thumbnails: `, this.profile.fields, e)
-      //   return this.profile.photo
-      // }
     }
   }
 }

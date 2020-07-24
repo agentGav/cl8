@@ -203,14 +203,7 @@ export default {
       return false
     },
     showPhoto(size) {
-      debug(size)
       return this.profile.photo
-      // try {
-      //   return this.profile.photo[0].thumbnails[size].url
-      // } catch (e) {
-      //   debug(`error`, this.profile.fields, e)
-      //   return this.profile.photo[0].url
-      // }
     },
     setUserProfile() {
       debug('setting own profile for ', this.user)
