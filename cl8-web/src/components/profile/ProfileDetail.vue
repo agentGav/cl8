@@ -39,12 +39,6 @@
           <div v-else class="f6 link dim br2 ph3 pv2 mb2 dib white bg-red w-100 tc mt2">Invisible</div>
         </div>
 
-        <div v-if="canEdit()">
-          <div
-            v-if="profile.pitchable"
-            class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green w-100 mt2 tc"
-          >Pitchable</div>
-        </div>
       </div>
 
       <div class="fl w-100 w-60-m w-60-l mt0 pt0">
