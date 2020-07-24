@@ -12,7 +12,8 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["constellate.greening.digital"])
+# ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["constellate.greening.digital"])
+ALLOWED_HOSTS = ["*"]
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -87,7 +88,15 @@ AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 # STATIC
 # ------------------------
+
+# This stops whitenoise causing a 500 when there are missing files, like favicons
+# and so on
+# http://whitenoise.evans.io/en/stable/django.html?highlight=favicon#WHITENOISE_MANIFEST_STRICT
+WHITENOISE_MANIFEST_STRICT = False
+
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "backend.utils.storages.MediaRootS3Boto3Storage"

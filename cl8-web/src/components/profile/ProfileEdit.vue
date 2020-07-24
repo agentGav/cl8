@@ -259,7 +259,7 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style media="screen" lang="scss" scoped>
-@import '../../../node_modules/tachyons/css/tachyons.css';
+@import '../../../../node_modules/tachyons/css/tachyons.css';
 p span.list {
   display: inline-block;
 }

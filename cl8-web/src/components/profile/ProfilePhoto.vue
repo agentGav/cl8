@@ -121,7 +121,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../../node_modules/tachyons/css/tachyons.css';
+@import '../../../../node_modules/tachyons/css/tachyons.css';
 @mixin padding() {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

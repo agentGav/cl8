@@ -24,6 +24,11 @@ from django.core.files.images import ImageFile
 User = get_user_model()
 
 
+def vue_view(request):
+    """
+    Server the template compiled by Vuejs
+    """
+    return TemplateView.as_view(template_name="pages/vue.html")
 
 class ProfileViewSet(
     RetrieveModelMixin,

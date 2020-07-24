@@ -56,7 +56,7 @@ export default {
 
 
 <style media="screen" lang="scss">
-@import '../../node_modules/tachyons/css/tachyons.css';
+@import '../../../node_modules/tachyons/css/tachyons.css';
 .side-column, .profile-holder {
   height: calc(100vh - 4.5rem - 1px);
   overflow: auto;

@@ -16,7 +16,9 @@ const debug = require('debug')('cl8.route')
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  // adding this here, until we figure out a
+  // sensible way to do the no hash urls, and still have django handle 404 codes.
+  // mode: 'history',
   routes: [
     {
       path: '/',

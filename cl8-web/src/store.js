@@ -5,8 +5,12 @@ import axios from 'axios'
 const debug = require('debug')('cl8.store')
 
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/',
-  timeout: 60000
+  timeout: 60000,
+  // `xsrfHeaderName` is the name of the http header
+  // that carries the xsrf token value
+  xsrfCookieName: 'csrftoken', // default
+  xsrfHeaderName: 'X-CSRFTOKEN', // default
+
 })
 
 const state = {
@@ -23,8 +27,8 @@ const state = {
   signInData: {
     message: null,
     email: null
-  },
-  token: null
+  }, 
+  token: localStorage.token || null
 }
 
 const getters = {
@@ -77,7 +81,7 @@ const getters = {
     return state.signInData
   },
   token: function(state) {
-    return localStorage.token
+    return state.token
   }
 }
 
@@ -86,7 +90,10 @@ const mutations = {
     state.profile = null
     state.user = null
     state.token = null
-    localStorage.token = null
+    delete localStorage.token;
+    debug('localStorage', localStorage);
+    debug('state', state);
+
   },
   stopLoading: function(state) {
     state.loading = false
@@ -145,7 +152,10 @@ const actions = {
     const emailPayload = {
       email: payload
     }
-    const emailsubmitted = await instance.post('/auth/email/', emailPayload)
+
+    const emailsubmitted = await instance.post(
+      '/auth/email/',
+      emailPayload)
 
     if (emailsubmitted) {
       return true
@@ -158,7 +168,9 @@ const actions = {
       const response = await instance.post('/auth/token/', payload)
       const token = response.data.token
 
+      debug('prev token', context.getters.token)
       context.commit('SET_AUTH_TOKEN', token)
+      debug('updated token', context.getters.token)
       await context.dispatch('createUserSession')
 
       if (context.getters.requestUrl) {
@@ -177,7 +189,9 @@ const actions = {
     router.push('signin')
   },
   createUserSession: async function(context, payload) {
-    const token = context.getters.token
+
+    const token = context.getters.token || localStorage.token
+    debug('creating user session with token:', token)
 
     const profileResponse = await instance.get('api/profiles/me', {
       headers: { Authorization: `Token ${token}` }
@@ -216,6 +230,7 @@ const actions = {
       const response = await instance.get('/api/profiles', {
         headers: { Authorization: `Token ${localStorage.token}` }
       })
+      debug('profiles resp', response)
       const profileArray = response.data.filter(profile => profile.visible)
       context.commit('setVisibleProfileList', profileArray)
     } catch (error) {
@@ -240,7 +255,7 @@ const actions = {
     }
   },
   fetchProfile: async function(context, payload) {
-    debug('fetching profile for:', payload)
+    debug('fetching profile for id:', payload.id)
     const profile = await instance.get(`/api/profiles/${payload.id}`, {
       headers: { Authorization: `Token ${localStorage.token}` }
     })
