@@ -148,32 +148,3 @@ class TestProfileUploadView:
 
         assert response.status_code == 200
         assert updated_profile.photo
-
-
-class TestAPIViewPerformanceIntegrationTest:
-    """
-    This tests the performance of the whole stack, for when
-    we are retrieving lists of more than 30 profiles.
-    """
-
-    def test_listing_300_profiles(self, profile):
-            # arrange
-        for x in range(300):
-            user = UserFactory()
-            profile = ProfileFactory(user=user)
-
-        token = Token(
-                    key="short-and-readable",
-                    user=profile.user
-                )
-        token.save()
-
-        # act
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-        res = client.get("http://testserver/api/profiles/")
-
-        assert res.status_code == 200
-
-        # assert
-        assert len(res.data) == 301
