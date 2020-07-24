@@ -10,7 +10,7 @@
                 <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
                   <img
                     v-if="hasPhoto()"
-                    :src="showPhoto('large')"
+                    :src="showPhoto()"
                     class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
                   />
 
@@ -36,24 +36,6 @@
                     <label for="visible-checkbox" class="dib w-70">Visible</label>
                   </div>
 
-                  <div
-                    class="f6 dim br2 dib w-80 white"
-                    v-bind:class="{ 'bg-green': profile.pitchable, 'bg-red': !profile.pitchable }"
-                  >
-                    <input
-                      type="checkbox"
-                      class="dib w-20 mv2 ml2"
-                      id="checkbox"
-                      v-model="profile.pitchable"
-                    />
-                    <label for="checkbox" class="dib w-70">Pitchable</label>
-                  </div>
-
-                  <p class="f7 ma2 ml3 w-80">
-                    <a
-                      href="http://www.dgen.net/0/dgen-constellation-member-overview/"
-                    >What does "pitchable" mean?</a>
-                  </p>
                 </div>
               </div>
 
@@ -215,29 +197,13 @@ export default {
       }
     },
     hasPhoto() {
-      if (typeof this.profile === 'undefined') {
-        return false
-      }
-      if (typeof this.profile.fields === 'undefined') {
-        return false
-      }
-      if (typeof this.profile.photo === 'undefined') {
-        return false
-      }
-      if (this.profile.photo.length > 0) {
+      if (this.profile.photo) {
         return true
       }
-      // otherwise jjust return false
       return false
     },
     showPhoto(size) {
-      debug(size)
-      try {
-        return this.profile.photo[0].thumbnails[size].url
-      } catch (e) {
-        debug(`error`, this.profile.fields, e)
-        return this.profile.photo[0].url
-      }
+      return this.profile.photo
     },
     setUserProfile() {
       debug('setting own profile for ', this.user)
