@@ -10,7 +10,7 @@
                 <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
                   <img
                     v-if="hasPhoto()"
-                    :src="showPhoto('large')"
+                    :src="showPhoto()"
                     class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
                   />
 
@@ -197,29 +197,20 @@ export default {
       }
     },
     hasPhoto() {
-      if (typeof this.profile === 'undefined') {
-        return false
-      }
-      if (typeof this.profile.fields === 'undefined') {
-        return false
-      }
-      if (typeof this.profile.photo === 'undefined') {
-        return false
-      }
-      if (this.profile.photo.length > 0) {
+      if (this.profile.photo) {
         return true
       }
-      // otherwise jjust return false
       return false
     },
     showPhoto(size) {
       debug(size)
-      try {
-        return this.profile.photo[0].thumbnails[size].url
-      } catch (e) {
-        debug(`error`, this.profile.fields, e)
-        return this.profile.photo[0].url
-      }
+      return this.profile.photo
+      // try {
+      //   return this.profile.photo[0].thumbnails[size].url
+      // } catch (e) {
+      //   debug(`error`, this.profile.fields, e)
+      //   return this.profile.photo[0].url
+      // }
     },
     setUserProfile() {
       debug('setting own profile for ', this.user)

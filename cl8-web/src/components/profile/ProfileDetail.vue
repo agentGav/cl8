@@ -20,7 +20,7 @@
       <div class="fl w-70 w-20-m w-20-l mr3">
         <img
           v-if="hasPhoto()"
-          :src="showPhoto('large')"
+          :src="showPhoto()"
           class="supplied-photo b--light-gray ba w-100"
         />
 
@@ -169,12 +169,13 @@ export default {
       return false
     },
     showPhoto(size) {
-      try {
-        return this.profile.photo[0].thumbnails[size].url
-      } catch (e) {
-        debug(`No thumbnails: `, this.profile.fields, e)
-        return this.profile.photo
-      }
+      return this.profile.photo
+      // try {
+      //   return this.profile.photo[0].thumbnails[size].url
+      // } catch (e) {
+      //   debug(`No thumbnails: `, this.profile.fields, e)
+      //   return this.profile.photo
+      // }
     }
   }
 }
