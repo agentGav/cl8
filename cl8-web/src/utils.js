@@ -3,6 +3,15 @@ import lodash from 'lodash'
 
 const debug = debugLib('cl8.utils')
 
+function hasPhoto (profile) {
+  debug({photoPhoto: profile.photo})
+  if (profile.photo) {
+    return true
+  }
+  // otherwise just return false
+  return false
+}
+
 function linkify (url, prefix) {
   // check if link already starts with 'http:', return if so
   let pattern = RegExp(/https?:/)
@@ -33,7 +42,7 @@ function tagList(profileList) {
   // Javscript's equality rules mean we need to stringify the objects
   // to ensure that tags are deduped.
   // TODO: this seems like a terrible way to check equality - surely there's a better way?
-  debug('profileList', profileList)
+  debug('profileList length', profileList.length)
   let tags = new Set()
 
   const profileTags = profileList.map((profile) => {
@@ -45,13 +54,14 @@ function tagList(profileList) {
 
   profileTags.forEach((tagSet) => {
     tagSet.forEach((tag) => {
-      debug(`adding tag ${tag.name}`)
       tags.add(JSON.stringify(tag))
     })
   })
+  debug(`tagset length: ${Array.from(tags).length}`)
   if (tags) {
-    debug('tags', tags)
-    return Array.from(tags).map((tagString) => { return JSON.parse(tagString)})
+    const tagArray = Array.from(tags).map((tagString) => { return JSON.parse(tagString)})
+    debug({tagArray})
+    return tagArray
   } else {
     return []
   }
@@ -60,5 +70,6 @@ function tagList(profileList) {
 export {
   linkify,
   fetchCurrentUser,
-  tagList
+  tagList,
+  hasPhoto
 }

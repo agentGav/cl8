@@ -333,8 +333,8 @@ const actions = {
     )
 
     if (response) {
-      context.commit('SET_PROFILE', payload.profile)
-      context.dispatch('fetchVisibleProfileList')
+      context.commit('SET_PROFILE', response.data)
+      context.dispatch('updateProfileList', response.data)
       router.push({ name: 'home' })
     } else {
       return 'Something went wrong with uploading the photo.'
@@ -354,7 +354,7 @@ const actions = {
 
   },
   newProfileTag: async function(context, payload) {
-    debug('new tag', payload)
+    debug('newProfileTag', payload)
     const newTag = payload
     let tempVal =
       newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
@@ -365,7 +365,6 @@ const actions = {
     }
     const profile = context.getters.profile
     profile.tags.push(tag)
-    // const tags = context.getters.fullTagList
     context.commit('SET_PROFILE', profile)
     context.dispatch('updateProfileList', profile)
   },
