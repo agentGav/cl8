@@ -168,8 +168,6 @@ export default {
 
   data() {
     return {
-      tagList: [],
-      unsyncedTags: [],
       localPhoto: null
     }
   },
@@ -194,10 +192,6 @@ export default {
     await this.$store.dispatch('fetchVisibleProfileList')
   },
   methods: {
-    onSubmit: function(item) {
-      debug('updating profile', this.profile)
-      this.$store.dispatch('updateProfile', this.profile)
-    },
     updatePhoto(ev) {
       debug('image added')
       // assign the photo
