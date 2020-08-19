@@ -103,7 +103,7 @@ describe('Login.Vue', () => {
     })
   })
 
-  describe.only('requesting token with valid email', () => {
+  describe('requesting token with valid email', () => {
 
       beforeEach(() => {
         // set up state as if email was sent
