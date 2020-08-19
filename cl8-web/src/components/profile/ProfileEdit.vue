@@ -67,7 +67,6 @@ v-else
                   </li>
 
                   <li class="list email mt2">
-                    <label class="f5" for>Email</label>
                     <input
                       class="w-100 mt1 pa1 bg-light-gray light-silver"
                       :value="profile.email"
@@ -82,7 +81,7 @@ v-else
                   <li class="list website mt2">
                     <label class="f5" for>
                       Website
-                      <span class="f6 lh-copy i gray">(Don't forget the http:// bit!)</span>
+
                     </label>
                     <input class="w-100 mt1 pa1" v-model="profile.website" />
                   </li>

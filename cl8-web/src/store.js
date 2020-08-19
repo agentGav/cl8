@@ -1,7 +1,7 @@
 /* eslint-disable */
 import router from './routes'
 import axios from 'axios'
-import { tagList } from './utils'
+import { tagList, linkify } from './utils'
 import { reject } from 'lodash'
 import Vue from 'vue'
 
@@ -291,6 +291,15 @@ const actions = {
     payload.tags = payload.tags.map(function(obj) {
       return obj.name
     })
+
+
+    // add the http(s) if missing
+    if (payload.website) {
+      payload.website = linkify(payload.website)
+    }
+
+
+
     const token = context.getters.token
     const profileId = payload.id
 
@@ -334,7 +343,7 @@ const actions = {
       return 'Something went wrong with uploading the photo.'
     }
   },
-  
+
   newProfileTag: async function(context, payload) {
     debug('action:newProfileTag', payload)
     const newTag = payload
