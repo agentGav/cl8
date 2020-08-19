@@ -67,6 +67,10 @@ v-else
                   </li>
 
                   <li class="list email mt2">
+                    <label class="f5" for>
+                      Email
+                      <span class="f6 lh-copy i gray">(We use this to confirm your identity when we login. You'll be able to change it soon.)</span>
+                      </label>
                     <input
                       class="w-100 mt1 pa1 bg-light-gray light-silver"
                       :value="profile.email"
@@ -75,7 +79,7 @@ v-else
                   </li>
                   <li class="list phone mt2">
                     <label class="f5 mb2" for>Phone</label>
-                    <span class="f6 lh-copy i gray">(include the country code +44 xxxx xxxxx) </span>
+                    <span class="f6 lh-copy i gray"> (include the country code i.e. +44 78945 123 456) </span>
                     <input class="w-100 mt1 pa1" v-model="profile.phone" />
                   </li>
                   <li class="list website mt2">
