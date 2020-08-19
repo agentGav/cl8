@@ -120,7 +120,7 @@
 
                   <li class="list mt2">
                     <label class="f5" for>
-                      Summary
+                      About
                       <small>
                         (Using
                         <a href="https://daringfireball.net/projects/markdown/">markdown</a> for formatting is supported)
@@ -129,7 +129,7 @@
                     <textarea
                       class="w-100 mt1 pa1 ba b--light-gray"
                       v-model="profile.bio"
-                      placeholder="Add a short summary here - 2 paragraphs is plenty"
+                      placeholder="Summary of interests and expertise relevant to Icebreaker One"
                       name
                       id
                       cols="30"
