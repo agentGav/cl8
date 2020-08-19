@@ -5,15 +5,13 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
-
+from django.contrib.flatpages.views import flatpage
 
 urlpatterns = [
     # serve the vue template instead of the default home
     path("", TemplateView.as_view(template_name="pages/vue.html"), name="home"),
 
-    path(
-        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
-    ),
+
     # Django Admin, use {% url 'admin:index' %}
     path("admin/", admin.site.urls),
     # User management
