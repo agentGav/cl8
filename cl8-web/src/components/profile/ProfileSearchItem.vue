@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style>
-li {
+li.peep {
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;

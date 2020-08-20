@@ -238,15 +238,6 @@ p span.list {
   display: inline-block;
 }
 
-// .new-pic-upload input.file {
-//   /* // invisible but it's there! */
-//   opacity: 1;
-//   /* width: 100%; */
-//   height: 100px;
-//   position: absolute;
-//   cursor: pointer;
-// }
-
 @mixin rounded($r: 5px) {
   -webkit-border-radius: $r;
   -moz-border-radius: $r;
