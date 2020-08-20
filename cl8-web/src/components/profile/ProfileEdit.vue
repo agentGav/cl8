@@ -71,11 +71,9 @@ v-else
                       Email
                       <span class="f6 lh-copy i gray">(We use this to confirm your identity when we login. You'll be able to change it soon.)</span>
                       </label>
-                    <input
-                      class="w-100 mt1 pa1 bg-light-gray light-silver"
-                      :value="profile.email"
-                      readonly
-                    />
+                    <div  class="w-100 mt1 bg-near-white pa2">
+                      {{ profile.email }}
+                    </div>
                   </li>
                   <li class="list phone mt2">
                     <label class="f5 mb2" for>Phone</label>
@@ -273,6 +271,10 @@ textarea {
 /deep/ textarea {
   font-size: 1rem;
 }
+li.email div {
+  cursor:not-allowed
+}
+
 .edithover {
   position: relative;
   display: inline-block;
