@@ -147,8 +147,9 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
             # need their own handler
             "tags",
             "photo",
+            "thumbnail_photo",
         ]
-        read_only_fields = ["photo", "id"]
+        read_only_fields = ["photo", "id", "thumbnail_photo",]
 
 
 class ProfilePicSerializer(serializers.ModelSerializer):

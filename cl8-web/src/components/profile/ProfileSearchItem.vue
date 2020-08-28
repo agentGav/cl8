@@ -62,7 +62,12 @@ export default {
       return false
     },
     showPhoto(size) {
-      return this.item.photo
+      if (size == 'thumbnail') {
+        return this.item.thumbnail_photo
+      } else {
+        return this.item.photo
+      }
+
       // try {
       //   return this.item.photo[0].thumbnails[size].url
       // } catch (e) {

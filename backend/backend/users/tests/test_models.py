@@ -1,5 +1,6 @@
 import pytest
 from backend.users.models import User, Profile
+from pathlib import Path
 
 pytestmark = pytest.mark.django_db
 
@@ -17,4 +18,14 @@ class TestProfile:
         profile.user.is_staff = True
         profile.save()
 
-        assert profile.admin == True
+        assert profile.admin is True
+
+    def test_profile_photo_thumbs(self, fake_photo_profile: Profile):
+
+        pic = fake_photo_profile.thumbnail_photo
+        pa = Path()
+        pic_path = pa.joinpath(pic.storage.base_location, pic.name)
+
+        assert Path.exists(pic_path)
+
+

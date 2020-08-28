@@ -31,6 +31,7 @@ psycopg2-binary = "==2.8.5"
 django-stubs = "==1.5.0"
 django-extensions = "==2.2.9"
 django-mjml = "*"
+sorl-thumbnail = "*"
 
 [dev-packages]
 ipdb = "==0.13.3"

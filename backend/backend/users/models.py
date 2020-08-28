@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from taggit.managers import TaggableManager
-
+from sorl.thumbnail import get_thumbnail
 
 class User(AbstractUser):
 
@@ -48,8 +48,18 @@ class Profile(models.Model):
     def admin(self):
         return self.user.is_staff
 
+    @property
+    def thumbnail_photo(self):
+        if not self.photo:
+            return None
+
+        return get_thumbnail(self.photo, '100x100', crop='center', quality=99).url
+
+
     def __str__(self):
         return self.user.name
 
     def get_absolute_url(self):
         return reverse("profile_detail", kwargs={"pk": self.pk})
+
+

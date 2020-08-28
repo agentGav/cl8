@@ -83,6 +83,7 @@ THIRD_PARTY_APPS = [
     "taggit",
     "corsheaders",
     "mjml",
+    'sorl.thumbnail',
 ]
 
 LOCAL_APPS = [
@@ -312,3 +313,8 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 MJML_CHECK_CMD_ON_STARTUP = True
 MJML_EXEC_CMD = ['../node_modules/.bin/mjml', '--config.validationLevel', 'skip']
+
+
+# Photos
+
+THUMBNAIL_DEBUG=True
