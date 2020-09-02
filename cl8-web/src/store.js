@@ -275,12 +275,30 @@ const actions = {
   },
   fetchProfile: async function(context, payload) {
     debug('action:fetchProfile')
-    updateProfilePhoto
     debug('fetching profile for id:', payload.id)
     const profile = await instance.get(`/api/profiles/${payload.id}`, {
       headers: { Authorization: `Token ${localStorage.token}` }
     })
     context.commit('SET_PROFILE', profile.data)
+  },
+  updateProfilePhoto: async function(context, payload) {
+    debug('action:resendInvite')
+    const profileId = payload.id
+    const response = await instance.post(
+      `/profile/${profileId}/resend-invite`,
+      profileId,
+      {
+        headers: {
+          Authorization: `Token ${token}`,
+        }
+      }
+    )
+
+    if (response) {
+      context.dispatch('notifyEmailSent', payload)
+    } else {
+      return 'Something went wrong with uploading the photo.'
+    }
   },
   updateProfile: async function(context, payload) {
     debug('sending update to API', payload)

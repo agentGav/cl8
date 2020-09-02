@@ -7,6 +7,20 @@
     </div>
 
     <div v-else>
+        <transition name="fade">
+          <div v-if="showFlashMessage" class="cf flex items-center pa3 bg-light-blue mb2">
+            <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
+              <title>info icon</title>
+              <path
+                d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
+              />
+            </svg>
+          <span class="lh-title ml2" role="status">{{ info }}</span>
+        </div>
+        </transition>
+
+      
+      
       <div v-if="canEdit()" class="fn fr-l">
         <router-link
           :to="{ name: 'editProfile' }"
@@ -15,9 +29,20 @@
           class="f6 link dim br2 ph3 pv2 mb3 dib white bg-gray"
         >Edit profile</router-link>
       </div>
-      <button class="closeProfile ma3 ma4-ns" @click="$store.commit('toggleProfileShowing')"></button>
 
-      <div class="fl w-70 w-20-m w-20-l mr3">
+      <div class="fn fr-l">
+        <button
+          tabindex="0"
+          class="resend-invite f6 link dim br2 ph3 pv2 mb3 dib white bg-gray b--none ml2 mr2"
+          @click="resendInvite">
+            Re-send Invite
+        </button>
+    </div>
+
+
+
+      <div class="fl w-70 w-20-m w-20-l mr3">         
+        
         <img
           v-if="hasPhoto()"
           :src="showPhoto()"
@@ -87,6 +112,7 @@
           <div v-html="bioOutput"></div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -111,7 +137,9 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      showFlashMessage: false,
+      flashMessage: ""
     }
   },
   computed: {
@@ -173,6 +201,10 @@ export default {
     },
     showPhoto() {
       return this.profile.photo
+    },
+    async resendInvite() {
+      this.status = "An email invite has been sent"
+      await this.$store.dispatch('resendInvite', this.profile)
     }
   }
 }
@@ -256,5 +288,18 @@ img.gravatar {
   @media screen and (min-width: 960px) {
     display: none;
   }
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s ease-out;
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

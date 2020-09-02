@@ -152,12 +152,12 @@
             </div>
 
             <ul class="list mt0 pt0 f4 pa0 border-box bg-washed-green pa3">
-            <li class="list sendinvite pt3">
+            <li class="list send-invite pt3">
                 <input type="checkbox"
-                id="checkbox"
+                id="send-invite"
                 class="mr2"
                 v-model="profile.sendInvite" />
-                <label for="checkbox" class="f5">Send the user an invite mail for this constellation</label>
+                <label for="send-invite" class="f5">Send the user an invite mail for this constellation</label>
             </li>
             </ul>
           </form>
