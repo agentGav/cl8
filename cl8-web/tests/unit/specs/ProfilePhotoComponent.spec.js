@@ -1,8 +1,8 @@
 
-import { mount} from '@vue/test-utils'
+import { mount, createLocalVue} from '@vue/test-utils'
 
 import ProfilePhoto from '@/components/profile/ProfilePhoto'
-
+import Gravatar from 'vue-gravatar'
 import debugLib from 'debug'
 
 const debug = debugLib('cl8.ProfilePhoto.spec')
@@ -14,6 +14,9 @@ let sampleProfile = {
 
 describe('ProfilePhoto', () => {
   it('tries to render a gravatar if no photo provided', () => {
+    const localVue = createLocalVue()
+
+    localVue.component('v-gravatar', Gravatar);
     const wrapper = mount(ProfilePhoto, {
       mocks: {
         $store: {
@@ -24,9 +27,10 @@ describe('ProfilePhoto', () => {
           commit: jest.fn(),
         }
       },
-
+      stubs: ['router-link'],
+      localVue
     })
-    expect(wrapper.findAll('v-gravatar').length).toBe(1)
+    expect(wrapper.findAll('.gravatar').length).toBe(1)
   })
   it('shows a photo if the profile has it', () => {
     const profileWithPic = {
@@ -43,7 +47,8 @@ describe('ProfilePhoto', () => {
           },
           commit: jest.fn(),
         }
-      }
+      },
+      stubs: ['router-link', 'v-gravatar']
     })
     expect(wrapper.findAll('img.supplied-photo').length).toBe(1)
   })
@@ -58,7 +63,8 @@ describe('ProfilePhoto', () => {
           },
           commit: jest.fn(),
         },
-      }
+      },
+      stubs: ['router-link', 'v-gravatar']
     })
 
     // simulate an upload with set data

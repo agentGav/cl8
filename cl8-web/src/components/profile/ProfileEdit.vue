@@ -9,7 +9,7 @@
               <div class="fl w-100 w-25-ns mb3">
                 <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
                   <img
-                    v-if="hasPhoto()"
+                    v-if="hasPhoto(profile)"
                     :src="showPhoto()"
                     class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
                   />
@@ -162,6 +162,7 @@ import NavHeaderEdit from '../shared/NavHeaderEdit.vue'
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
 import { includes } from 'lodash'
 import debugLib from 'debug'
+import { hasPhoto } from '@/utils'
 
 const debug = debugLib('cl8.ProfileEdit')
 
@@ -209,12 +210,7 @@ export default {
         this.$store.dispatch('updateProfilePhoto', payload)
       }
     },
-    hasPhoto() {
-      if (this.profile.photo) {
-        return true
-      }
-      return false
-    },
+    hasPhoto,
     showPhoto(size) {
       return this.profile.photo
     },

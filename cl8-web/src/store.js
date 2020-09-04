@@ -1,7 +1,5 @@
 /* eslint-disable */
 import router from './routes'
-import { reject } from 'lodash'
-import Vue from 'vue'
 import { tagList, linkify, instance } from './utils'
 
 const debug = require('debug')('cl8.store')
@@ -375,9 +373,10 @@ const actions = {
     context.commit('SET_PROFILE_TAGS', tags)
   },
 }
+
 export default {
   state,
   getters,
   mutations,
-  actions
+  actions,
 }

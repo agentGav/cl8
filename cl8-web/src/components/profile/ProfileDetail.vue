@@ -127,10 +127,9 @@ import debugLib from 'debug'
 import marked from 'marked'
 import sanitizeHTML from 'sanitize-html'
 const debug = debugLib('cl8.ProfileDetail')
-
 Vue.component('v-gravatar', Gravatar)
 
-import { linkify, hasPhoto } from '../../utils'
+import { linkify, hasPhoto } from '@/utils'
 
 export default {
   name: 'ProfileDetail',

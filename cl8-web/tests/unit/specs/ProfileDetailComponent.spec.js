@@ -49,6 +49,7 @@ describe('ProfileDetail', () => {
       mocks: {
         $store: mockStore
       },
+      stubs: ['router-link']
     })
     expect(wrapper.findAll('img.supplied-photo').length).toBe(1)
     expect(wrapper.findAll('.gravatar').length).toBe(0)
@@ -63,6 +64,7 @@ describe('ProfileDetail', () => {
       mocks: {
         $store: mockStore
       },
+      stubs: ['router-link']
     })
     expect(wrapper.findAll('img.supplied-photo').length).toBe(0)
     expect(wrapper.findAll('.gravatar').length).toBe(1)
@@ -73,6 +75,7 @@ describe('ProfileDetail', () => {
         mocks: {
           $store: mockStore
         },
+        stubs: ['router-link']
       })
       expect(wrapper.findAll('.resend-invite').length).toBe(1)
     })
@@ -85,6 +88,7 @@ describe('ProfileDetail', () => {
         mocks: {
           $store: mockStore
         },
+        stubs: ['router-link']
       })
       expect(wrapper.findAll('.resend-invite').length).toBe(0)
     })
@@ -93,6 +97,7 @@ describe('ProfileDetail', () => {
         mocks: {
           $store: mockStore
         },
+        stubs: ['router-link']
       })
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()
@@ -103,6 +108,7 @@ describe('ProfileDetail', () => {
         mocks: {
           $store: mockStore
         },
+        stubs: ['router-link']
       })
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()
@@ -113,6 +119,7 @@ describe('ProfileDetail', () => {
         mocks: {
           $store: mockStore
         },
+        stubs: ['router-link']
       })
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()

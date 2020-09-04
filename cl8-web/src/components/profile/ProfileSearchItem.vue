@@ -6,7 +6,7 @@
   >
     <div class="dib w-20 mw4">
       <img
-        v-if="hasPhoto()"
+        v-if="hasPhoto(item)"
         :src="showPhoto('thumbnail')"
         class="supplied-photo w-100"
       />
@@ -30,6 +30,7 @@
 
 <script>
 import Vue from 'vue'
+import { hasPhoto } from '@/utils'
 import Gravatar from 'vue-gravatar'
 import debugLib from 'debug'
 const debug = debugLib('cl8.ProfileSearchItem')
@@ -41,10 +42,8 @@ export default {
       type: Object,
       default: function() {
         return {
-          fields: {
-            name: 'default',
-            photo: []
-          }
+          name: 'default',
+          photo: null
         }
       }
     }
@@ -58,21 +57,9 @@ export default {
       debug(this.item)
       this.$store.dispatch('fetchProfile', this.item)
     },
-    hasPhoto() {
-
-      if (this.item.photo) {
-        return true
-      }
-      return false
-    },
+    hasPhoto,
     showPhoto(size) {
       return this.item.photo
-      // try {
-      //   return this.item.photo[0].thumbnails[size].url
-      // } catch (e) {
-      //   debug(`No thumbnails`, this.item.fields, e)
-      //   return this.item.photo[0].url
-      // }
     }
   }
 }
