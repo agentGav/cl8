@@ -44,7 +44,7 @@
       <div class="fl w-70 w-20-m w-20-l mr3">         
         
         <img
-          v-if="hasPhoto()"
+          v-if="hasPhoto(profile)"
           :src="showPhoto()"
           class="supplied-photo b--light-gray ba w-100"
         />
@@ -128,7 +128,7 @@ const debug = debugLib('cl8.ProfileDetail')
 
 Vue.component('v-gravatar', Gravatar)
 
-import { linkify } from '../../utils'
+import { linkify, hasPhoto } from '../../utils'
 
 export default {
   name: 'ProfileDetail',
@@ -192,19 +192,14 @@ export default {
     isVisible: function() {
       return this.profile.visible
     },
-    hasPhoto() {
-      if (this.profile.photo) {
-        return true
-      }
-      // otherwise just return false
-      return false
-    },
+    hasPhoto,
     showPhoto() {
       return this.profile.photo
     },
     async resendInvite() {
+      debug('resendInvite', this.profile)
       this.status = "An email invite has been sent"
-      await this.$store.dispatch('resendInvite', this.profile)
+      // await this.$store.dispatch('resendInvite', this.profile)
     }
   }
 }

@@ -4,8 +4,13 @@ import lodash from 'lodash'
 const debug = debugLib('cl8.utils')
 
 function hasPhoto (profile) {
+
+  if (!profile) {
+    return false
+  }
+
   debug({photoPhoto: profile.photo})
-  if (profile.photo) {
+  if (profile.photo != null && profile.photo.length > 0) {
     return true
   }
   // otherwise just return false
