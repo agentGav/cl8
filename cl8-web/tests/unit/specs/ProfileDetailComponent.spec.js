@@ -67,4 +67,56 @@ describe('ProfileDetail', () => {
     expect(wrapper.findAll('img.supplied-photo').length).toBe(0)
     expect(wrapper.findAll('.gravatar').length).toBe(1)
   })
+  describe("resending invites:", () => {
+    it("shows a resend invite button if the user is an admin", async () => {
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+      })
+      expect(wrapper.findAll('.resend-invite').length).toBe(1)
+    })
+    it("does not show a resend button to regular users", async () => {
+
+      let regUserData = JSON.parse(JSON.stringify(sampleData))
+      regUserData.admin = false
+      mockStore.getters.currentUser = regUserData
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+      })
+      expect(wrapper.findAll('.resend-invite').length).toBe(0)
+    })
+    it("updates status message on click", async () => {
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+      })
+      wrapper.get("button.resend-invite").trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.flashMessage).toMatch("An email invite has been sent")
+    })
+    it("updates shows a status message on click", async() => {
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+      })
+      wrapper.get("button.resend-invite").trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get(".status-message")).toBeTruthy()
+    })
+    it("updates dispatches a sendInvite action on click", async() => {
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+      })
+      wrapper.get("button.resend-invite").trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(mockStore.dispatch).toHaveBeenCalledWith('resendInvite', mockStore.getters.profile)
+    })
+  })
 })

@@ -8,14 +8,14 @@
 
     <div v-else>
         <transition name="fade">
-          <div v-if="showFlashMessage" class="cf flex items-center pa3 bg-light-blue mb2">
+          <div v-if="showFlashMessage" class="status-message cf flex items-center pa3 bg-light-blue mb2">
             <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
               <title>info icon</title>
               <path
                 d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
               />
             </svg>
-          <span class="lh-title ml2" role="status">{{ info }}</span>
+          <span class="lh-title ml2" role="status">{{ flashMessage }}</span>
         </div>
         </transition>
 
@@ -30,7 +30,9 @@
         >Edit profile</router-link>
       </div>
 
-      <div class="fn fr-l">
+      <div
+        v-if="isAdmin"
+        class="fn fr-l">
         <button
           tabindex="0"
           class="resend-invite f6 link dim br2 ph3 pv2 mb3 dib white bg-gray b--none ml2 mr2"
@@ -172,6 +174,9 @@ export default {
     },
     bioOutput() {
       return this.profile.bio ? marked(sanitizeHTML(this.profile.bio)) : null
+    },
+    isAdmin() {
+      return !!this.user.admin
     }
   },
   methods: {
@@ -198,8 +203,9 @@ export default {
     },
     async resendInvite() {
       debug('resendInvite', this.profile)
-      this.status = "An email invite has been sent"
-      // await this.$store.dispatch('resendInvite', this.profile)
+      this.flashMessage = "An email invite has been sent"
+      this.showFlashMessage = true
+      await this.$store.dispatch('resendInvite', this.profile)
     }
   }
 }
