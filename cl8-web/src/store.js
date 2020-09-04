@@ -1,20 +1,11 @@
 /* eslint-disable */
 import router from './routes'
-import axios from 'axios'
-import { tagList, linkify } from './utils'
 import { reject } from 'lodash'
 import Vue from 'vue'
+import { tagList, linkify, instance } from './utils'
 
 const debug = require('debug')('cl8.store')
 
-const instance = axios.create({
-  timeout: 60000,
-  // `xsrfHeaderName` is the name of the http header
-  // that carries the xsrf token value
-  xsrfCookieName: 'csrftoken', // default
-  xsrfHeaderName: 'X-CSRFTOKEN', // default
-
-})
 
 const state = {
   user: null,

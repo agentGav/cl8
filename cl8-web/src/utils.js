@@ -1,6 +1,6 @@
 import debugLib from 'debug'
 import lodash from 'lodash'
-
+import axios from 'axios'
 const debug = debugLib('cl8.utils')
 
 function hasPhoto (profile) {
@@ -73,9 +73,21 @@ function tagList(profileList) {
   return tags
 }
 
+const instance = axios.create({
+  timeout: 60000,
+  // `xsrfHeaderName` is the name of the http header
+  // that carries the xsrf token value
+  xsrfCookieName: 'csrftoken', // default
+  xsrfHeaderName: 'X-CSRFTOKEN', // default
+
+})
+
+
 export {
   linkify,
   fetchCurrentUser,
   tagList,
   hasPhoto
+  hasPhoto,
+  instance
 }
