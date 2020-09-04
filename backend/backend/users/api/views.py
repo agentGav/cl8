@@ -41,6 +41,17 @@ class ProfileViewSet(
     queryset = Profile.objects.all()
     lookup_field = "id"
 
+    @action(detail=True, methods=["POST"])
+    def resend_invite(self, request, id=None):
+
+        assert id
+        profile = Profile.objects.get(pk=id)
+        profile.send_invite_mail()
+
+        return Response(status=status.HTTP_200_OK, data={
+            "message": f"An email invite has been re-sent {profile.email}"
+        })
+
     @action(detail=False, methods=["GET"])
     def me(self, request):
 
@@ -85,8 +96,6 @@ class ProfileViewSet(
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
         return Response(serialized_profile.data)
-
-
 
 class ProfilePhotoUploadView(APIView):
     """

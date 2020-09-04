@@ -154,6 +154,19 @@ class TestProfileViewSet:
         response = view.update(request, profile)
         assert response.status_code == 200
 
+    def test_resend_invite_sends_an_email(
+        self, profile: Profile, rf: RequestFactory, mailoutbox
+    ):
+        view = ProfileViewSet()
+        request = rf.post(f"/profiles/{profile.id}/resend_invite/")
+        request.user = profile.user
+        response = view.resend_invite(request, id=profile.id)
+
+        assert response.status_code == 200
+        assert "invite has been re-sent" in response.data["message"]
+        assert profile.email in response.data["message"]
+        assert len(mailoutbox) == 1
+
 
 @pytest.mark.skip
 class TestProfileUploadView:

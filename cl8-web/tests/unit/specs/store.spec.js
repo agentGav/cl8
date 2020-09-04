@@ -1,6 +1,11 @@
 import { createLocalVue, enableAutoDestroy } from '@vue/test-utils'
-import Store from '../../../src/store'
+
+import Store from '@/store'
+
 import Vuex from 'vuex'
+
+import { cloneDeep } from 'lodash'
+import { instance } from '@/utils'
 
 enableAutoDestroy(afterEach)
 
@@ -32,8 +37,8 @@ describe('Store/Getters/tagList', () => {
       ]
     }]
 
-  store = new Vuex.Store(Store)
-  store.commit('SET_VISIBLE_PROFILE_LIST', profileList)
+    store = new Vuex.Store(Store)
+    store.commit('SET_VISIBLE_PROFILE_LIST', profileList)
   })
 
   it("returns a list of unique tags from a list of profiles", async () => {
@@ -160,13 +165,35 @@ describe("Store/Mutations/SET_PROFILE_TAGS", () => {
       "id": 1,
       "name":"sample_user",
       "tags": [
+  describe("Store/Actions/resendInvite", () => {
+    let store, localVue, profileList
+
+    beforeEach(() => {
+
+      localVue = createLocalVue()
+      localVue.use(Vuex)
+
+      profileList = [
         {
-          "id": 2,
-          "slug": "web",
-          "name": "web"
-        },
-      ],
-    }
+          "id": "1"
+        }
+      ]
+      let newStore = cloneDeep(Store);
+      newStore.state.profileList = profileList
+      store = new Vuex.Store(newStore)
+    })
+
+
+    it("sends a request to the API to resend a profile's invite email", async () => {
+
+      instance.post = jest.fn(x => {
+        return Promise.resolve({status: "OK"})
+      })
+
+      const res = await store.dispatch('resendInvite', profileList[0])
+      // did we make a call to the API with our?
+      expect(instance.post.mock.calls.length).toBe(1)
+    })
 
     store.commit('SET_PROFILE', sampleProfile)
     expect(store.getters.profile.tags).toHaveLength(1)
