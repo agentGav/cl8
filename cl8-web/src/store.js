@@ -272,11 +272,12 @@ const actions = {
     })
     context.commit('SET_PROFILE', profile.data)
   },
-  updateProfilePhoto: async function(context, payload) {
+  resendInvite: async function(context, payload) {
     debug('action:resendInvite')
+    const token = context.getters.token
     const profileId = payload.id
     const response = await instance.post(
-      `/profile/${profileId}/resend-invite`,
+      `/api/profiles/${profileId}/resend_invite/`,
       profileId,
       {
         headers: {
@@ -286,9 +287,13 @@ const actions = {
     )
 
     if (response) {
-      context.dispatch('notifyEmailSent', payload)
+      debug('action:resendInvite OK')
+      return response
     } else {
-      return 'Something went wrong with uploading the photo.'
+      debug('action:resendInvite failed!')
+      return {
+        message: 'Something went wrong with re-sending the invite.'
+      }
     }
   },
   updateProfile: async function(context, payload) {
