@@ -1,4 +1,4 @@
-import Vue from 'vue'
+
 import { mount } from '@vue/test-utils'
 
 import ProfileDetail from '@/components/profile/ProfileDetail'
@@ -69,7 +69,18 @@ describe('ProfileDetail', () => {
     expect(wrapper.findAll('img.supplied-photo').length).toBe(0)
     expect(wrapper.findAll('.gravatar').length).toBe(1)
   })
+
   describe("resending invites:", () => {
+    beforeEach(() => {
+      mockStore.dispatch = jest.fn(function(x) {
+        return new Promise((resolve, reject) => {
+        resolve({data: { message: "Success message"}})
+        reject({data: { message: "Fail message"}})
+        })
+      })
+    })
+
+    
     it("shows a resend invite button if the user is an admin", async () => {
       wrapper = mount(ProfileDetail, {
         mocks: {
@@ -92,29 +103,7 @@ describe('ProfileDetail', () => {
       })
       expect(wrapper.findAll('.resend-invite').length).toBe(0)
     })
-    it("updates status message on click", async () => {
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
-      wrapper.get("button.resend-invite").trigger('click')
-      await wrapper.vm.$nextTick()
-      expect(wrapper.vm.flashMessage).toMatch("An email invite has been sent")
-    })
-    it("updates shows a status message on click", async() => {
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
-      wrapper.get("button.resend-invite").trigger('click')
-      await wrapper.vm.$nextTick()
-      expect(wrapper.get(".status-message")).toBeTruthy()
-    })
-    it("updates dispatches a sendInvite action on click", async() => {
+    it("dispatches a sendInvite action on click", async() => {
       wrapper = mount(ProfileDetail, {
         mocks: {
           $store: mockStore
@@ -124,6 +113,63 @@ describe('ProfileDetail', () => {
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()
       expect(mockStore.dispatch).toHaveBeenCalledWith('resendInvite', mockStore.getters.profile)
+    })
+    
+    it("updates status message on click", async () => {
+      wrapper = mount(ProfileDetail, {
+        mocks: {
+          $store: mockStore
+        },
+        stubs: ['router-link']
+      })
+      wrapper.get("button.resend-invite").trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.flashMessage).toMatch("Success message")
+    })
+    describe("showing and hiding the updated message box", () => {
+
+      // Because we have animations in play, we need to do TWO calls to
+      // `await wrapper.vm.$nextTick()`
+      // after an interaction that would trigger an animated transition.
+      // if we don't do this, the next tick end up rendering a stubbed out
+      // animation, and the tests will fail
+
+      it("shows a status message on click", async() => {
+        wrapper = mount(ProfileDetail, {
+          mocks: {
+            $store: mockStore
+          },
+          stubs: ['router-link']
+        })
+        wrapper.get("button.resend-invite").trigger('click')
+        // see above for why we have two calls next to each other
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+        expect(wrapper.get(".status-message")).toBeTruthy()
+      })
+
+      it("can be dismissed with a click", async() => {
+
+        wrapper = mount(ProfileDetail, {
+          mocks: {
+            $store: mockStore
+          },
+
+          stubs: ['router-link']
+        })
+
+        wrapper.get("button.resend-invite").trigger('click')
+
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+        wrapper.get(".status-message .close").trigger('click')
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.vm.flashMessage).toMatch("")
+        expect(wrapper.vm.showFlashMessage).toBe(false)
+      })
     })
   })
 })

@@ -23,6 +23,10 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
 User = get_user_model()
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def vue_view(request):
     """
@@ -46,7 +50,21 @@ class ProfileViewSet(
 
         assert id
         profile = Profile.objects.get(pk=id)
-        profile.send_invite_mail()
+        try:
+            profile.send_invite_mail()
+
+            return Response(status=status.HTTP_200_OK, data={
+                "message": f"An email invite has been re-sent {profile.email}"
+            })
+        except Exception as exc:
+            logger.error(exc)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={
+                "message": (
+                    "Sorry, we had a problem re-sending the invite email. "
+                    "Please try again later."
+                )
+            })
+
 
         return Response(status=status.HTTP_200_OK, data={
             "message": f"An email invite has been re-sent {profile.email}"

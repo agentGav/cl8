@@ -283,16 +283,7 @@ const actions = {
         }
       }
     )
-
-    if (response) {
-      debug('action:resendInvite OK')
-      return response
-    } else {
-      debug('action:resendInvite failed!')
-      return {
-        message: 'Something went wrong with re-sending the invite.'
-      }
-    }
+    return response
   },
   updateProfile: async function(context, payload) {
     debug('sending update to API', payload)

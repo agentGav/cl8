@@ -8,14 +8,27 @@
 
     <div v-else>
         <transition name="fade">
-          <div v-if="showFlashMessage" class="status-message cf flex items-center pa3 bg-light-blue mb2">
+          <div v-if="showFlashMessage"
+            class="status-message cf flex items-center pa3 mb2"
+            v-bind:class="messageClassObject"
+          >
             <svg class="w1" data-icon="info" viewBox="0 0 32 32" style="fill:currentcolor">
               <title>info icon</title>
               <path
                 d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
               />
             </svg>
-          <span class="lh-title ml2" role="status">{{ flashMessage }}</span>
+          <span
+            class="lh-title ml2" role="status"
+            style="flex-grow:1;">
+              {{ flashMessage }}
+            </span>
+          <button
+            aria-hidden="true" role="button"
+            class="b--none ml2 mr2 bg-black-90 white br2 grow pointer close"
+            @click="hideFlashMessage">
+            x
+            </button>
         </div>
         </transition>
 
@@ -43,7 +56,7 @@
 
 
 
-      <div class="fl w-70 w-20-m w-20-l mr3">         
+      <div class="fl w-70 w-20-m w-20-l mr3">
         
         <img
           v-if="hasPhoto(profile)"
@@ -176,6 +189,12 @@ export default {
     },
     isAdmin() {
       return !!this.user.admin
+    },
+    messageClassObject: function () {
+      return {
+        'bg-light-blue': this.flashMessageClass == 'info',
+        'bg-light-red': this.flashMessageClass == 'error'
+      }
     }
   },
   methods: {
@@ -186,6 +205,11 @@ export default {
     toggleTag: function(ev) {
       let tag = ev.target.textContent.trim()
       this.$store.dispatch('updateActiveTags', tag)
+    },
+    hideFlashMessage: function() {
+      debug("hiding message")
+      this.showFlashMessage = false
+      this.flashMessage = ""
     },
     isActive: function(term) {
       if (typeof this.activeTags !== 'undefined') {
@@ -202,9 +226,19 @@ export default {
     },
     async resendInvite() {
       debug('resendInvite', this.profile)
-      this.flashMessage = "An email invite has been sent"
-      this.showFlashMessage = true
-      await this.$store.dispatch('resendInvite', this.profile)
+
+        const response = await this.$store.dispatch('resendInvite', this.profile).catch(err => {
+          debug({errMessage: err.response.data.message})
+          this.flashMessage = err.response.data.message
+          this.flashMessageClass = "error"
+          this.showFlashMessage = true
+        })
+        if (response) {
+          debug({response})
+          this.flashMessage = response.data.message
+          this.flashMessageClass = "info"
+          this.showFlashMessage = true
+        }
     }
   }
 }
