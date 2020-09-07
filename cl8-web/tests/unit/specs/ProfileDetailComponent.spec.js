@@ -32,6 +32,16 @@ describe('ProfileDetail', () => {
 
   let wrapper, mockStore
 
+  function mountWrapper(component, mockStore) {
+    return mount(component, {
+      mocks: {
+        $store: mockStore
+      },
+      stubs: ['router-link']
+    })
+  }
+
+  
   beforeEach(() => {
     mockStore = {
       getters: {
@@ -45,12 +55,7 @@ describe('ProfileDetail', () => {
 
 
   it('shows a user provided photo if present', () => {
-    wrapper = mount(ProfileDetail, {
-      mocks: {
-        $store: mockStore
-      },
-      stubs: ['router-link']
-    })
+    wrapper = mountWrapper(ProfileDetail, mockStore)
     expect(wrapper.findAll('img.supplied-photo').length).toBe(1)
     expect(wrapper.findAll('.gravatar').length).toBe(0)
   })
@@ -60,17 +65,13 @@ describe('ProfileDetail', () => {
     copyData.photo = null
     mockStore.getters.profile = copyData
     mockStore.getters.currentUser = copyData
-    wrapper = mount(ProfileDetail, {
-      mocks: {
-        $store: mockStore
-      },
-      stubs: ['router-link']
-    })
+    wrapper = mountWrapper(ProfileDetail, mockStore)
     expect(wrapper.findAll('img.supplied-photo').length).toBe(0)
     expect(wrapper.findAll('.gravatar').length).toBe(1)
   })
 
   describe("resending invites:", () => {
+
     beforeEach(() => {
       mockStore.dispatch = jest.fn(function(x) {
         return new Promise((resolve, reject) => {
@@ -80,52 +81,34 @@ describe('ProfileDetail', () => {
       })
     })
 
-    
+
     it("shows a resend invite button if the user is an admin", async () => {
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
+      wrapper = mountWrapper(ProfileDetail, mockStore)
       expect(wrapper.findAll('.resend-invite').length).toBe(1)
     })
-    it("does not show a resend button to regular users", async () => {
 
+    it("does not show a resend button to regular users", async () => {
       let regUserData = JSON.parse(JSON.stringify(sampleData))
       regUserData.admin = false
       mockStore.getters.currentUser = regUserData
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
+      wrapper = mountWrapper(ProfileDetail, mockStore)
       expect(wrapper.findAll('.resend-invite').length).toBe(0)
     })
+
     it("dispatches a sendInvite action on click", async() => {
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
+      wrapper = mountWrapper(ProfileDetail, mockStore)
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()
       expect(mockStore.dispatch).toHaveBeenCalledWith('resendInvite', mockStore.getters.profile)
     })
     
     it("updates status message on click", async () => {
-      wrapper = mount(ProfileDetail, {
-        mocks: {
-          $store: mockStore
-        },
-        stubs: ['router-link']
-      })
+      wrapper = mountWrapper(ProfileDetail, mockStore)
       wrapper.get("button.resend-invite").trigger('click')
       await wrapper.vm.$nextTick()
       expect(wrapper.vm.flashMessage).toMatch("Success message")
     })
+
     describe("showing and hiding the updated message box", () => {
 
       // Because we have animations in play, we need to do TWO calls to
@@ -135,12 +118,7 @@ describe('ProfileDetail', () => {
       // animation, and the tests will fail
 
       it("shows a status message on click", async() => {
-        wrapper = mount(ProfileDetail, {
-          mocks: {
-            $store: mockStore
-          },
-          stubs: ['router-link']
-        })
+        wrapper = mountWrapper(ProfileDetail, mockStore)
         wrapper.get("button.resend-invite").trigger('click')
         // see above for why we have two calls next to each other
         await wrapper.vm.$nextTick()
@@ -149,15 +127,7 @@ describe('ProfileDetail', () => {
       })
 
       it("can be dismissed with a click", async() => {
-
-        wrapper = mount(ProfileDetail, {
-          mocks: {
-            $store: mockStore
-          },
-
-          stubs: ['router-link']
-        })
-
+        wrapper = mountWrapper(ProfileDetail, mockStore)
         wrapper.get("button.resend-invite").trigger('click')
 
         await wrapper.vm.$nextTick()
