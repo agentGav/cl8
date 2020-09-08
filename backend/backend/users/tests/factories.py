@@ -1,21 +1,22 @@
-from typing import Any, Sequence
 import io
-from django.contrib.auth import get_user_model
-from ..models import Profile
+from typing import Any, Sequence
+
 import factory
+import requests
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
 from factory import (
     DjangoModelFactory,
     Faker,
-    post_generation,
-    SubFactory,
     RelatedFactory,
-    SelfAttribute,
+    SubFactory,
+    post_generation,
 )
 from factory.django import ImageField as ImageFieldFactory
-import requests
-from django.db.models.signals import post_save
-
 from taggit.models import Tag
+
+from ..models import Profile
+
 
 def generated_profile_photo():
     image_bytes = requests.get("https://www.thispersondoesnotexist.com/image").content
@@ -59,22 +60,22 @@ class ProfileUserFactory(UserFactory):
 @factory.django.mute_signals(post_save)
 class FakePhotoProfileUserFactory(UserFactory):
     profile = RelatedFactory(
-        "backend.users.tests.factories.FakePhotoProfileFactory", factory_related_name="user"
+        "backend.users.tests.factories.FakePhotoProfileFactory",
+        factory_related_name="user",
     )
 
+
 def url_factory():
-    domain_generator = factory.Faker('domain_name')
+    domain_generator = factory.Faker("domain_name")
     return f"https://{domain_generator.generate()}"
 
 
 class TagFactory(DjangoModelFactory):
 
-    name = Faker('word')
+    name = Faker("word")
 
     class Meta:
         model = Tag
-
-
 
 
 def list_of_tags():
@@ -84,8 +85,6 @@ def list_of_tags():
 @factory.django.mute_signals(post_save)
 class ProfileFactory(DjangoModelFactory):
 
-
-
     # make a profile tied to a user
     user = SubFactory(UserFactory)
     phone = Faker("phone_number")
@@ -93,7 +92,7 @@ class ProfileFactory(DjangoModelFactory):
     twitter = Faker("user_name")
     facebook = Faker("user_name")
     linkedin = Faker("user_name")
-    organisation =  Faker('company')
+    organisation = Faker("company")
     bio = Faker("paragraph")
     # tags = SubFactory(TagFactory)
 
@@ -101,6 +100,7 @@ class ProfileFactory(DjangoModelFactory):
 
     class Meta:
         model = Profile
+
 
 @factory.django.mute_signals(post_save)
 class FakePhotoProfileFactory(ProfileFactory):
