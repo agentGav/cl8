@@ -1,5 +1,4 @@
 import debugLib from 'debug'
-import lodash from 'lodash'
 import axios from 'axios'
 const debug = debugLib('cl8.utils')
 
@@ -87,7 +86,6 @@ export {
   linkify,
   fetchCurrentUser,
   tagList,
-  hasPhoto
   hasPhoto,
   instance
 }
