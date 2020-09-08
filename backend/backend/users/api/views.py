@@ -54,7 +54,7 @@ class ProfileViewSet(
             profile.send_invite_mail()
 
             return Response(status=status.HTTP_200_OK, data={
-                "message": f"An email invite has been re-sent {profile.email}"
+                "message": f"An email invite has been re-sent to {profile.email}"
             })
         except Exception as exc:
             logger.error(exc)
@@ -66,9 +66,6 @@ class ProfileViewSet(
             })
 
 
-        return Response(status=status.HTTP_200_OK, data={
-            "message": f"An email invite has been re-sent {profile.email}"
-        })
 
     @action(detail=False, methods=["GET"])
     def me(self, request):
