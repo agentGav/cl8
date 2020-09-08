@@ -202,7 +202,7 @@ describe.skip("Store/Actions/newProfileTag", () => {
     it("sends a request to the API to resend a profile's invite email", async () => {
 
       instance.post = jest.fn(x => {
-        return Promise.resolve({status: "OK"})
+        return Promise.resolve({message: "OK"})
       })
 
       const res = await store.dispatch('resendInvite', profileList[0])
