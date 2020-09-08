@@ -53,6 +53,9 @@ class Profile(models.Model):
         return self.user.is_staff
 
     @property
+    def groups(self):
+        return self.tags.filter(name__startswith="group:")
+
     def __str__(self):
         return self.user.name
 

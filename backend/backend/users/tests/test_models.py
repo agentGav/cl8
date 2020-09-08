@@ -1,7 +1,9 @@
 import pytest
 from backend.users.models import User, Profile
 import webbrowser
+
 pytestmark = pytest.mark.django_db
+
 
 def view_rendered_html_in_browser(string_template):
     """
@@ -35,16 +37,26 @@ class TestProfile:
         profile.send_invite_mail()
         assert len(mailoutbox) == 1
 
-    @pytest.mark.only
     def test_generate_invite_for_profile(self, profile: Profile, mailoutbox):
 
         rendered_templates = profile.generate_invite_mail()
 
         # uncomment this to view the rendered mjml/html template
-        view_rendered_html_in_browser(rendered_templates['html'])
+        # view_rendered_html_in_browser(rendered_templates['html'])
 
         # uncomment this to view the rendered text template
-        view_rendered_html_in_browser(rendered_templates['text'])
+        # view_rendered_html_in_browser(rendered_templates['text'])
 
-        assert 'html' in rendered_templates
-        assert 'text' in rendered_templates
+        assert "html" in rendered_templates
+        assert "text" in rendered_templates
+
+    @pytest.mark.only
+    def test_namespaced_tags(self, profile: Profile):
+        """
+        Namespaced tags allow for some hierarchy profile tags, so we
+        can support listing people by group, location and so on.
+        """
+        profile.tags.add("first tag", "group:Open Energy")
+        profile.save()
+
+        assert "Open Energy" in [tag.name for tag in profile.groups][0]
