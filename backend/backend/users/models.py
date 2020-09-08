@@ -24,20 +24,21 @@ class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone = models.CharField(_("phone"), max_length=254, blank=True, null=True)
     website = models.URLField(_("website"), max_length=200, blank=True, null=True)
-    organisation = models.CharField(_("organisation"), max_length=254, blank=True, null=True)
+    organisation = models.CharField(
+        _("organisation"), max_length=254, blank=True, null=True
+    )
     twitter = models.CharField(_("twitter"), max_length=254, blank=True, null=True)
     facebook = models.CharField(_("facebook"), max_length=254, blank=True, null=True)
     linkedin = models.CharField(_("linkedin"), max_length=254, blank=True, null=True)
     bio = models.TextField(_("bio"), blank=True, null=True)
     visible = models.BooleanField(_("visible"), default=False)
     photo = models.ImageField(_("photo"), blank=True, null=True, max_length=200)
-
     tags = TaggableManager(blank=True)
 
     class Meta:
         verbose_name = _("Profile")
         verbose_name_plural = _("Profiles")
-        ordering = ['user__name']
+        ordering = ["user__name"]
 
     @property
     def name(self):
@@ -51,6 +52,7 @@ class Profile(models.Model):
     def admin(self):
         return self.user.is_staff
 
+    @property
     def __str__(self):
         return self.user.name
 
@@ -63,10 +65,10 @@ class Profile(models.Model):
 
         send_mail(
             "Welcome to the Icebreaker One Constellation",
-            rendered_templates['text'],
+            rendered_templates["text"],
             support_email_address,
             [self.user.email],
-            html_message=rendered_templates['html'],
+            html_message=rendered_templates["html"],
         )
 
     def generate_invite_mail(self):
@@ -81,7 +83,4 @@ class Profile(models.Model):
             {"profile": self, "support_email_address": support_email_address},
         )
 
-        return {
-            'text': rendered_invite_txt,
-            'html': rendered_invite_html
-        }
+        return {"text": rendered_invite_txt, "html": rendered_invite_html}
