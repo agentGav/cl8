@@ -124,7 +124,7 @@
         </ul>
 
         <!-- TODO, make this into a tag list component -->
-        <h3>Clusters</h3>
+        <h3>Is a member of the following clusters</h3>
         <ul class="db list tags clusters ml0 pl0">
           <li
             v-for="cluster in profile.clusters"
