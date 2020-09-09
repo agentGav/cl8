@@ -1,5 +1,5 @@
 import pytest
-from backend.users.models import User, Profile
+from backend.users.models import User, Profile  # noqa
 from pathlib import Path
 import webbrowser
 
@@ -42,14 +42,13 @@ class TestProfile:
 
         assert Path.exists(pic_path)
 
-        assert profile.admin == True
+        assert fake_photo_profile.admin is True
 
     def test_send_invite_for_profile(self, profile: Profile, mailoutbox):
         profile.send_invite_mail()
         assert len(mailoutbox) == 1
 
     def test_generate_invite_for_profile(self, profile: Profile, mailoutbox):
-
         rendered_templates = profile.generate_invite_mail()
 
         # uncomment this to view the rendered mjml/html template
