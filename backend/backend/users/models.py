@@ -9,6 +9,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase
+from taggit.forms import TagField
+from taggit_labels.widgets import LabelWidget
 
 
 class User(AbstractUser):
