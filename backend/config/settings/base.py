@@ -318,4 +318,4 @@ MJML_EXEC_CMD = ['../node_modules/.bin/mjml', '--config.validationLevel', 'skip'
 
 # Photos
 
-THUMBNAIL_DEBUG=True
+THUMBNAIL_DEBUG = False
