@@ -37,6 +37,7 @@ class ConstellateTagListSerializerField(TagListSerializerField):
 class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     tags = ConstellateTagListSerializerField(required=False)
+    clusters = ConstellateTagListSerializerField(required=False)
 
     name = serializers.CharField(allow_blank=True, required=False)
     email = serializers.EmailField(allow_blank=True, required=False)
@@ -147,6 +148,7 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
             # need their own handler
             "tags",
+            "clusters",
             "photo",
         ]
         read_only_fields = ["photo", "id"]
