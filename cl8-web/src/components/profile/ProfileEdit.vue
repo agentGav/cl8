@@ -139,6 +139,14 @@ v-else
               </div>
 
               <div class="cf pt2 bg-white mb4 mb5">
+                <label class="typo__label">Clusters</label>
+                <p class="f6 mb3">
+                  <span class="f6 lh-copy i gray">(list the clusters you want to be part of)</span>
+                </p>
+                <profile-clusters-component></profile-clusters-component>
+              </div>
+
+              <div class="cf pt2 bg-white mb4 mb5">
                 <label class="typo__label">Skills and Interests</label>
                 <p class="f6 mb3">
                   <span class="f6 lh-copy i gray">(type below to add new tags)</span>

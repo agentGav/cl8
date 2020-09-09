@@ -72,6 +72,35 @@ function tagList(profileList) {
   return tags
 }
 
+function clusterList(profileList) {
+  debug('clusters length', profileList.length)
+  let clusters = []
+
+  const profileClusters = profileList.map((profile) => {
+    if (profile.clusters) {
+      return profile.clusters
+    }
+    else return []
+  })
+
+
+  profileClusters.forEach((clusterSet) => {
+    clusterSet.forEach((cluster) => {
+
+      if (clusters.length > 0) {
+        const clusterNames = clusters.map(x => { return x.name })
+        if (!clusterNames.includes(cluster.name)) {
+          clusters.push(cluster)
+        }
+      } else {
+        clusters.push(cluster)
+      }
+    })
+  })
+
+  return clusters
+}
+
 const instance = axios.create({
   timeout: 60000,
   // `xsrfHeaderName` is the name of the http header
@@ -86,6 +115,7 @@ export {
   linkify,
   fetchCurrentUser,
   tagList,
+  clusterList,
   hasPhoto,
   instance
 }

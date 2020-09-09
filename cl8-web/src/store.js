@@ -1,6 +1,7 @@
 /* eslint-disable */
 import router from './routes'
 import { tagList, linkify, instance } from './utils'
+import { tagList, linkify, instance, clusterList } from './utils'
 
 const debug = require('debug')('cl8.store')
 
@@ -67,7 +68,14 @@ const getters = {
       return tagList(state.profileList)
     }
   },
-  profileShowing: function(state) {
+  fullClusterList: function (state) {
+    if (state.profile)
+      return clusterList(state.profileList.concat([state.profile]))
+    else {
+      return clusterList(state.profileList)
+    }
+  },
+  profileShowing: function (state) {
     return state.profileShowing
   },
   requestUrl: function(state) {
