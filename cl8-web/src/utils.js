@@ -41,7 +41,7 @@ async function fetchCurrentUser(store) {
 
   return store.getters.currentUser
 }
-function dedupetagList(tagList) {
+function dedupedTagList(tagList) {
   let tags = []
   tagList.forEach((tag) => {
     if (tags.length > 0) {
@@ -69,9 +69,7 @@ function tagList(profileList) {
       })
     }
   })
-  const tags = dedupetagList(tagsWithDupes)
-
-  return tags
+  return dedupedTagList(tagsWithDupes)
 }
 
 function clusterList(profileList) {
@@ -119,5 +117,6 @@ export {
   tagList,
   clusterList,
   hasPhoto,
+  dedupedTagList,
   instance
 }

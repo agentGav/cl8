@@ -17,7 +17,6 @@ describe('Store/Getters/tagList', () => {
 
     localVue = createLocalVue()
     localVue.use(Vuex)
-
     profileList = [{
       "tags": [
         {
@@ -36,9 +35,17 @@ describe('Store/Getters/tagList', () => {
         }
       ]
     }]
+    let newStore = cloneDeep(Store);
+    newStore.state.profileList = profileList
+    newStore.state.fullTagList = [
+      {
+        "id": 2,
+        "slug": "web",
+        "name": "web"
+      }
+    ]
+    store = new Vuex.Store(newStore)
 
-    store = new Vuex.Store(Store)
-    store.commit('SET_VISIBLE_PROFILE_LIST', profileList)
   })
 
   it("returns a list of unique tags from a list of profiles", async () => {
@@ -72,7 +79,7 @@ describe.skip('Store/Actions/fetchVisibleUserList', () => {
       localVue.use(Vuex)
       const store = new Vuex.Store(Store)
       // act
-      await store.dispatch('fetchprofileList')
+      await store.dispatch('fetchProfileList')
       // assert
       expect(store.state.profileList).toHaveLength(2)
     })
@@ -93,7 +100,7 @@ describe.skip("Store/Actions/newProfileTag", () => {
     }
     const store = new Vuex.Store(Store)
     store.commit('SET_PROFILE', sampleProfile)
-    store.commit('setProfileList', [sampleProfile])
+    store.commit('SET_PROFILE_LIST', [sampleProfile])
     expect(store.state.fullTagList).toHaveLength(0)
     expect(store.state.fullTagList).toHaveLength(0)
     await store.dispatch('newProfileTag', 'new tag')
@@ -132,7 +139,7 @@ describe.skip("Store/Actions/newProfileTag", () => {
     }]
     const store = new Vuex.Store(Store)
     store.commit('SET_PROFILE', profileList[0])
-    store.commit('setProfileList', profileList)
+    store.commit('SET_PROFILE_LIST', profileList)
     store.dispatch('newProfileTag', 'new tag')
     expect(store.state.fullTagList).toHaveLength(2)
     expect(store.state.profile.tags).toHaveLength(2)

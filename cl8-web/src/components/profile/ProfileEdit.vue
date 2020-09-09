@@ -212,7 +212,7 @@ export default {
   async created() {
     debug('fetching latest profiles and tags')
     try {
-      await this.$store.dispatch('fetchVisibleProfileList')
+      await this.$store.dispatch('fetchProfileList')
       await this.$store.dispatch('fetchTags')
       await this.$store.dispatch('fetchClusters')
     } catch (e) {

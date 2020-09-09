@@ -1,6 +1,6 @@
 /* eslint-disable */
 import router from './routes'
-import { dedupetagList, tagList, linkify, instance, clusterList } from './utils'
+import { dedupedTagList, tagList, linkify, instance, clusterList } from './utils'
 
 const debug = require('debug')('cl8.store')
 
@@ -59,16 +59,12 @@ const getters = {
     debug('getting profileList')
     return state.profileList
   },
-  // fullTagList: function (state) {
-  //   debug('getting fullTagList')
-  //   return state.fullTagList
-
-  // },
   fullTagList: function (state) {
-    // we add the profile again, in case there
-    // are new tags added to them
-    if (state.profile.tags) {
-      return state.fullTagList.concat(state.profile.tags)
+    // check for unsaved tags on the profile, and include
+    // them if they are there
+    if (state.profile) {
+      const combined = state.fullTagList.concat(state.profile.tags)
+      return dedupedTagList(combined)
     }
     else {
       return state.fullTagList
