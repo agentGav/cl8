@@ -323,7 +323,10 @@ const actions = {
     // doing this round trip returns a JSON object we
     // can save back to the realtime database more easily,
     // and strips out properties we wouldn't want to save into it
-    payload.tags = payload.tags.map(function(obj) {
+    payload.tags = payload.tags.map(function (obj) {
+      return obj.name
+    })
+    payload.clusters = payload.clusters.map(function (obj) {
       return obj.name
     })
 
