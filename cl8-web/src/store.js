@@ -249,7 +249,7 @@ const actions = {
       })
 
       const profileArray = response.data
-      context.commit('setProfileList', profileArray)
+      context.commit('SET_PROFILE_LIST', profileArray)
     } catch (error) {
       debug('Error fetching profileList', error)
     }
@@ -288,7 +288,7 @@ const actions = {
       headers: { Authorization: `Token ${token}` }
     })
     if (response.data) {
-      context.dispatch('fetchprofileList')
+      context.dispatch('fetchProfileList')
       context.commit('SET_PROFILE', response.data)
       router.push({ name: 'home' })
     } else {
