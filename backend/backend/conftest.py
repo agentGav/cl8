@@ -30,7 +30,7 @@ def profile_with_tags(user) -> Profile:
 
 @pytest.fixture
 def fake_photo_profile(user) -> Profile:
-    return FakePhotoProfileFactory(user)
+    return FakePhotoProfileFactory(user=user)
 
 
 

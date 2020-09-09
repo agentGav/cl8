@@ -151,8 +151,9 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
             "tags",
             "clusters",
             "photo",
+            "thumbnail_photo",
         ]
-        read_only_fields = ["photo", "id"]
+        read_only_fields = ["photo", "id", "thumbnail_photo",]
 
 
 class TagSerializer(TaggitSerializer, serializers.ModelSerializer):

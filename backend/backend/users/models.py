@@ -1,16 +1,14 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models import CharField
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
-from django.core.mail import send_mail
-from django.conf import settings
-from django.template.loader import render_to_string
+from sorl.thumbnail import get_thumbnail
 from taggit.managers import TaggableManager
-from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase
-from taggit.forms import TagField
-from taggit_labels.widgets import LabelWidget
+from taggit.models import TagBase, TaggedItemBase
 
 
 class User(AbstractUser):
@@ -70,6 +68,13 @@ class Profile(models.Model):
     @property
     def admin(self):
         return self.user.is_staff
+
+    @property
+    def thumbnail_photo(self):
+        if not self.photo:
+            return None
+
+        return get_thumbnail(self.photo, "100x100", crop="center", quality=99).url
 
     def __str__(self):
         return self.user.name

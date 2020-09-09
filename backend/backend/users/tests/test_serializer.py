@@ -11,7 +11,11 @@ pytestmark = pytest.mark.django_db
 
 class TestProfileSerializer:
 
-    # def test_detail_with_photo(self, profile):
+    @pytest.mark.only
+    def test_profile_with_photo(self, fake_photo_profile: Profile):
+
+        ps = ProfileSerializer(fake_photo_profile)
+        assert 'thumbnail_photo' in ps.data.keys()
 
 
     # @pytest.mark.only

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5c4d8deeaaf6a9b1aed8966d46cd7bdd5ea0c038ffe8357f208712404e1d0d49"
+            "sha256": "7ab4a562eedad00fe2bf406768f00cc5f7cdb19161d3b23be17c7d386e3945e6"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -523,6 +523,14 @@
                 "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
             "version": "==1.15.0"
+        },
+        "sorl-thumbnail": {
+            "hashes": [
+                "sha256:66771521f3c0ed771e1ce8e1aaf1639ebff18f7f5a40cfd3083da8f0fe6c7c99",
+                "sha256:7162639057dff222a651bacbdb6bd6f558fc32946531d541fc71e10c0167ebdf"
+            ],
+            "index": "pypi",
+            "version": "==12.6.3"
         },
         "sqlparse": {
             "hashes": [
@@ -1046,6 +1054,14 @@
             ],
             "index": "pypi",
             "version": "==3.9.0"
+        },
+        "pytest-notifier": {
+            "hashes": [
+                "sha256:64eefeb6b505c63fe68c80d80f40530eeaf568598a1a0429148732ee77a4e956",
+                "sha256:da686c37bce7a7792854aa2049b4c06c5923833fbe1a22b2fa5f50114dbbcd20"
+            ],
+            "index": "pypi",
+            "version": "==1.0.4"
         },
         "pytest-sugar": {
             "hashes": [

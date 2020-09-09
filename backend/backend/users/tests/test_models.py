@@ -1,5 +1,5 @@
 import pytest
-from backend.users.models import User, Profile
+from backend.users.models import User, Profile  # noqa
 import webbrowser
 
 pytestmark = pytest.mark.django_db
@@ -31,26 +31,29 @@ class TestProfile:
         profile.user.is_staff = True
         profile.save()
 
-        assert profile.admin == True
+        assert profile.admin is True
+
+    def test_profile_photo_thumbs(self, fake_photo_profile: Profile, settings):
+
+        pic_url = fake_photo_profile.thumbnail_photo
+
+        # is this pointing to the correct directory where our media is stored?
+        assert settings.MEDIA_URL in pic_url
 
     def test_send_invite_for_profile(self, profile: Profile, mailoutbox):
         profile.send_invite_mail()
         assert len(mailoutbox) == 1
 
     def test_generate_invite_for_profile(self, profile: Profile, mailoutbox):
-
         rendered_templates = profile.generate_invite_mail()
-
         # uncomment this to view the rendered mjml/html template
         # view_rendered_html_in_browser(rendered_templates['html'])
-
         # uncomment this to view the rendered text template
         # view_rendered_html_in_browser(rendered_templates['text'])
 
         assert "html" in rendered_templates
         assert "text" in rendered_templates
 
-    @pytest.mark.only
     def test_clusters_as_tags(self, profile: Profile):
         """
         We represent clusters as tags,
