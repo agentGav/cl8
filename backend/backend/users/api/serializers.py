@@ -5,11 +5,12 @@ from taggit_serializer.serializers import (
     TaggitSerializer,
     TagList,
 )
+from taggit.models import Tag
 
 from rest_framework.utils import model_meta
 
 User = get_user_model()
-from ..models import Profile
+from ..models import Profile, Cluster
 from django.utils.text import slugify
 
 
@@ -153,6 +154,27 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
         ]
         read_only_fields = ["photo", "id"]
 
+
+class TagSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = [
+            "id",
+            "name",
+            "slug",
+        ]
+        read_only_fields = ["id", "name", "slug"]
+
+
+class ClusterSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Cluster
+        fields = [
+            "id",
+            "name",
+            "slug",
+        ]
+        read_only_fields = ["id", "name", "slug"]
 
 class ProfilePicSerializer(serializers.ModelSerializer):
 

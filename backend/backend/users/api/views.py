@@ -12,8 +12,14 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .serializers import ProfileSerializer, ProfilePicSerializer
-from ..models import Profile
+from .serializers import (
+    ProfileSerializer,
+    ProfilePicSerializer,
+    TagSerializer,
+    ClusterSerializer,
+)
+from ..models import Profile, Cluster
+from taggit.models import Tag
 
 from django.utils.text import slugify
 from django.urls import resolve
@@ -135,4 +141,21 @@ class ProfilePhotoUploadView(APIView):
 
 
 
+
+class ClusterViewSet(
+    # RetrieveModelMixin,
+    ListModelMixin,
+    GenericViewSet,
+):
+    serializer_class = ClusterSerializer
+    queryset = Cluster.objects.all()
+
+
+class TagViewSet(
+    # RetrieveModelMixin,
+    ListModelMixin,
+    GenericViewSet,
+):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
 
