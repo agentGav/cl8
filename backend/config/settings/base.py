@@ -81,6 +81,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "drfpasswordless",
     "taggit",
+    "taggit_labels",
     "corsheaders",
     "mjml",
 ]
