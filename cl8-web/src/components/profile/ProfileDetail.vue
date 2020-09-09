@@ -123,6 +123,17 @@
           >{{ tag.name.toLowerCase().trim() }}</li>
         </ul>
 
+        <!-- TODO, make this into a tag list component -->
+        <h3>Clusters</h3>
+        <ul class="db list tags clusters ml0 pl0">
+          <li
+            v-for="cluster in profile.clusters"
+            v-bind:key="cluster.name"
+            class="list bg-near-white br2 f7 pa2 mr1 mb1 ph3 b--light-silver bg-animate hover-bg-blue hover-white"
+            :class="{ 'bg-dark-blue white': isActive(cluster.name.toLowerCase()) }"
+          >{{ cluster.name.toLowerCase().trim() }}</li>
+        </ul>
+
         <div v-if="this.profile.bio" class="w-100 bio lh-copy measure-wide">
           <div v-html="bioOutput"></div>
         </div>

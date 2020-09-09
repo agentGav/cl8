@@ -1,6 +1,5 @@
 /* eslint-disable */
 import router from './routes'
-import { tagList, linkify, instance } from './utils'
 import { tagList, linkify, instance, clusterList } from './utils'
 
 const debug = require('debug')('cl8.store')
@@ -15,7 +14,8 @@ const state = {
   profilePhoto: null,
   profileShowing: false,
   profileList: [],
-  // fullTagList: '',
+  fullTagList: [],
+  fullClusterList: [],
   requestUrl: null,
   signInData: {
     message: null,
@@ -59,7 +59,12 @@ const getters = {
     debug('getting profileList')
     return state.profileList
   },
-  fullTagList: function(state) {
+  // fullTagList: function (state) {
+  //   debug('getting fullTagList')
+  //   return state.fullTagList
+
+  // },
+  fullTagList: function (state) {
     // we add the profile again, in case there
     // are new tags added to them
     if (state.profile)
@@ -68,12 +73,10 @@ const getters = {
       return tagList(state.profileList)
     }
   },
+
   fullClusterList: function (state) {
-    if (state.profile)
-      return clusterList(state.profileList.concat([state.profile]))
-    else {
-      return clusterList(state.profileList)
-    }
+    debug('getting fullClusterList')
+    return state.fullClusterList
   },
   profileShowing: function (state) {
     return state.profileShowing
@@ -125,11 +128,23 @@ const mutations = {
     state.profileShowing = true
     state.profile = payload
   },
-  SET_PROFILE_TAGS: function(state, payload) {
+  SET_PROFILE_TAGS: function (state, payload) {
     debug('SET_PROFILE_TAGS', payload)
     state.profile.tags = payload
   },
-  setProfilePhoto: function(state, payload) {
+  SET_PROFILE_CLUSTERS: function (state, payload) {
+    debug('SET_PROFILE_CLUSTERS', payload)
+    state.profile.clusters = payload
+  },
+  SET_TAG_LIST: function (state, payload) {
+    debug('SET_TAGS', payload)
+    state.fullTagList = payload
+  },
+  SET_CLUSTER_LIST: function (state, payload) {
+    debug('SET_CLUSTERS', payload)
+    state.fullClusterList = payload
+  },
+  setProfilePhoto: function (state, payload) {
     debug('setProfilePhoto', payload)
     state.profile.photo = [payload]
   },
@@ -224,11 +239,12 @@ const actions = {
     }
     context.commit('setTags', tags)
   },
-  fetchProfileList: async function(context) {
+  fetchProfileList: async function (context) {
     debug('action:fetchProfileList')
+    const token = context.getters.token || localStorage.token
     try {
       const response = await instance.get('/api/profiles', {
-        headers: { Authorization: `Token ${localStorage.token}` }
+        headers: { Authorization: `Token ${token}` }
       })
 
       const profileArray = response.data
@@ -237,19 +253,27 @@ const actions = {
       debug('Error fetching profileList', error)
     }
   },
-  fetchprofileList: async function(context) {
-    debug('action:fetchprofileList')
+  fetchTags: async function (context) {
+    debug('action:fetchTags')
+    const token = context.getters.token || localStorage.token
     try {
-      const response = await instance.get('/api/profiles', {
+      const response = await instance.get('/api/tags', {
+        headers: { Authorization: `Token ${token}` }
+      })
+      context.commit('SET_TAG_LIST', response.data)
+    } catch (error) {
+      debug('Error fetching tagList', error)
+    }
+  },
+  fetchClusters: async function (context) {
+    debug('action:fetchClusters')
+    try {
+      const response = await instance.get('/api/clusters', {
         headers: { Authorization: `Token ${localStorage.token}` }
       })
-      debug('profiles resp', response)
-      const profileArray = response.data.filter(profile => profile.visible)
-      context.commit('SET_VISIBLE_PROFILE_LIST', profileArray)
-
-
+      context.commit('SET_CLUSTER_LIST', response.data)
     } catch (error) {
-      debug('Error fetching profileList', error)
+      debug('Error fetching tagList', error)
     }
   },
   addUser: async function(context, payload) {

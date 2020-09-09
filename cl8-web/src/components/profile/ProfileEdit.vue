@@ -151,8 +151,7 @@ v-else
                 <p class="f6 mb3">
                   <span class="f6 lh-copy i gray">(type below to add new tags)</span>
                 </p>
-                <profile-tags-component
-                ></profile-tags-component>
+                <profile-tags-component></profile-tags-component>
               </div>
             </div>
 
@@ -168,6 +167,7 @@ v-else
 /* eslint-disable */
 import NavHeaderEdit from '../shared/NavHeaderEdit.vue'
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
+import ProfileClustersComponent from '@/components/profile/ProfileClusters.vue'
 import { includes } from 'lodash'
 import debugLib from 'debug'
 import { hasPhoto } from '@/utils'
@@ -178,7 +178,8 @@ export default {
   name: 'ProfileEdit',
   components: {
     NavHeaderEdit,
-    ProfileTagsComponent
+    ProfileTagsComponent,
+    ProfileClustersComponent
   },
 
   data() {
@@ -195,16 +196,28 @@ export default {
     profile() {
       return this.$store.getters.profile
     },
-    profileTags: function() {
+    profileTags: function () {
       return this.profile.tags
     },
-    fullTagList: function() {
+    fullTagList: function () {
       return this.$store.getters.tagList
+    },
+    profileClusters: function () {
+      return this.profile.tags
+    },
+    fullClusterList: function () {
+      return this.$store.getters.fullClusterList
     }
   },
   async created() {
     debug('fetching latest profiles and tags')
-    await this.$store.dispatch('fetchVisibleProfileList')
+    try {
+      await this.$store.dispatch('fetchVisibleProfileList')
+      await this.$store.dispatch('fetchTags')
+      await this.$store.dispatch('fetchClusters')
+    } catch (e) {
+      debug("couldn't load tags or clusters for the profile: ", e)
+    }
   },
   methods: {
     updatePhoto(ev) {

@@ -51,21 +51,21 @@ export default {
     },
     toggle: function (cluster) {
       debug('toggle', cluster)
+      debug('this.profileClusters', this.profileClusters)
+      let profileClusters = this.profileClusters.slice()
 
-      let profileClusters = this.profileCLusters.slice()
-
-      if (this.inProfileClusters(tag.name)) {
+      if (this.inProfileClusters(cluster.name)) {
         remove(profileClusters, function (x) {
-          return x.name === tag.name
+          return x.name === cluster.name
         })
       } else {
         profileClusters.push(cluster)
       }
       debug(
         'profileCLusters',
-        this.profileCLusters.map((x) => x.name)
+        this.profileClusters.map((x) => x.name)
       )
-      this.$store.commit('SET_PROFILE_TAGS', profileClusters)
+      this.$store.commit('SET_PROFILE_CLUSTERS', profileClusters)
     },
     checkInList: function (option) {
       debug('checkInList', option)
