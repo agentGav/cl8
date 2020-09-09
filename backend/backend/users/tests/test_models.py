@@ -34,15 +34,13 @@ class TestProfile:
 
         assert profile.admin is True
 
-    def test_profile_photo_thumbs(self, fake_photo_profile: Profile):
+    @pytest.mark.only
+    def test_profile_photo_thumbs(self, fake_photo_profile: Profile, settings):
 
-        pic = fake_photo_profile.thumbnail_photo
-        pa = Path()
-        pic_path = pa.joinpath(pic.storage.base_location, pic.name)
+        pic_url = fake_photo_profile.thumbnail_photo
 
-        assert Path.exists(pic_path)
-
-        assert fake_photo_profile.admin is True
+        # is this pointing to the correct directory where our media is stored?
+        assert settings.MEDIA_URL in pic_url
 
     def test_send_invite_for_profile(self, profile: Profile, mailoutbox):
         profile.send_invite_mail()
