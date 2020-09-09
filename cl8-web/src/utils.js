@@ -41,33 +41,35 @@ async function fetchCurrentUser(store) {
 
   return store.getters.currentUser
 }
+function dedupetagList(tagList) {
+  let tags = []
+  tagList.forEach((tag) => {
+    if (tags.length > 0) {
+      const tagNames = tags.map(x => {
+        return x.name
+      })
+      if (!tagNames.includes(tag.name)) {
+        tags.push(tag)
+      }
+    } else {
+      tags.push(tag)
+    }
+  })
+  return tags
+}
 
 function tagList(profileList) {
   debug('profileList length', profileList.length)
-  let tags = []
+  let tagsWithDupes = []
 
-  const profileTags = profileList.map((profile) => {
+  profileList.forEach((profile) => {
     if (profile.tags) {
-      return profile.tags
+      profile.tags.forEach(function (tag) {
+        tagsWithDupes.push(tag)
+      })
     }
-      else return []
   })
-
-
-  profileTags.forEach((tagSet) => {
-    tagSet.forEach((tag) => {
-
-      let tagNames
-      if (tags.length > 0) {
-        const tagNames = tags.map(x => { return  x.name})
-        if (!tagNames.includes(tag.name)) {
-          tags.push(tag)
-        }
-      } else {
-        tags.push(tag)
-      }
-    })
-  })
+  const tags = dedupetagList(tagsWithDupes)
 
   return tags
 }
