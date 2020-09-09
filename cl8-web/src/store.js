@@ -1,6 +1,6 @@
 /* eslint-disable */
 import router from './routes'
-import { tagList, linkify, instance, clusterList } from './utils'
+import { dedupetagList, tagList, linkify, instance, clusterList } from './utils'
 
 const debug = require('debug')('cl8.store')
 
@@ -153,7 +153,11 @@ const mutations = {
     debug('SET_VISIBLE_PROFILE_LIST', payload)
     state.profileList = payload
   },
-  toggleProfileShowing: function(state) {
+  SET_PROFILE_LIST: function (state, payload) {
+    debug('SET_PROFILE_LIST', payload)
+    state.profileList = payload
+  },
+  toggleProfileShowing: function (state) {
     debug('profileShowing', state.profileShowing)
     state.profileShowing = !state.profileShowing
   },
