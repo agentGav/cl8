@@ -67,10 +67,11 @@ const getters = {
   fullTagList: function (state) {
     // we add the profile again, in case there
     // are new tags added to them
-    if (state.profile)
-      return tagList(state.profileList.concat([state.profile]))
+    if (state.profile.tags) {
+      return state.fullTagList.concat(state.profile.tags)
+    }
     else {
-      return tagList(state.profileList)
+      return state.fullTagList
     }
   },
 
