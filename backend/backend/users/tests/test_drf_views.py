@@ -14,6 +14,7 @@ from pathlib import Path
 
 pytestmark = pytest.mark.django_db
 
+
 class TestProfileViewSet:
     def test_get_queryset(self, profile: Profile, rf: RequestFactory):
         view = ProfileViewSet()
@@ -68,7 +69,7 @@ class TestProfileViewSet:
                 assert k in tag.keys()
 
 
-    def test_create_profile(self, profile: Profile, rf: RequestFactory):
+    def test_create_profile(self, profile: Profile, rf: RequestFactory, mailoutbox):
         view = ProfileViewSet()
         request = rf.get("/fake-url/")
         request.user = profile.user
@@ -94,7 +95,37 @@ class TestProfileViewSet:
 
         response = view.create(request)
         assert response.status_code == 201
+        assert len(mailoutbox) == 0
 
+
+    def test_create_profile_and_notify(self, profile: Profile, rf: RequestFactory, mailoutbox):
+        view = ProfileViewSet()
+        request = rf.get("/fake-url/")
+        request.user = profile.user
+
+        profile_data = ProfileFactory()
+        profile_dict = {
+            'phone': '9329275526',
+            'website': 'http://livingston.biz',
+            'twitter': 'paul58',
+            'facebook': 'fday',
+            'linkedin': 'wpalmer',
+
+            'name': 'Long Name with lots of letters',
+            'email': 'email@somesite.com',
+            'tags': ["tech, 'something else'', "],
+
+            'bio': 'Themselves TV western under. Tv can beautiful we throughout politics treat both. Fear speech left get answer over century.',
+
+            'visible': False,
+            'sendInvite': True,
+        }
+
+        request.data = profile_dict
+        response = view.create(request)
+
+        assert response.status_code == 201
+        assert len(mailoutbox) == 1
 
     def test_update_profile(self, profile: Profile, rf: RequestFactory):
         view = ProfileViewSet()
@@ -122,6 +153,19 @@ class TestProfileViewSet:
 
         response = view.update(request, profile)
         assert response.status_code == 200
+
+    def test_resend_invite_sends_an_email(
+        self, profile: Profile, rf: RequestFactory, mailoutbox
+    ):
+        view = ProfileViewSet()
+        request = rf.post(f"/profiles/{profile.id}/resend_invite/")
+        request.user = profile.user
+        response = view.resend_invite(request, id=profile.id)
+
+        assert response.status_code == 200
+        assert "invite has been re-sent" in response.data["message"]
+        assert profile.email in response.data["message"]
+        assert len(mailoutbox) == 1
 
 
 @pytest.mark.skip

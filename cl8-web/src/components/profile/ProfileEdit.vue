@@ -9,7 +9,7 @@
               <div class="fl w-100 w-25-ns mb3">
                 <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
                   <img
-                    v-if="hasPhoto()"
+                    v-if="hasPhoto(profile)"
                     :src="showPhoto()"
                     class="supplied-photo b--light-silver ba w-100 v-top fn-ns"
                   />
@@ -87,6 +87,13 @@ v-else
                     </label>
                     <input class="w-100 mt1 pa1" v-model="profile.website" />
                   </li>
+                  <li class="list organisation mt2">
+                    <label class="f5" for>
+                      Organisation
+
+                    </label>
+                    <input class="w-100 mt1 pa1" v-model="profile.organisation" />
+                  </li>
                 </ul>
 
                 <ul class="list mt0 pt0 pa0">
@@ -132,12 +139,19 @@ v-else
               </div>
 
               <div class="cf pt2 bg-white mb4 mb5">
+                <label class="typo__label">Clusters</label>
+                <p class="f6 mb3">
+                  <span class="f6 lh-copy i gray">(list the clusters you want to be part of)</span>
+                </p>
+                <profile-clusters-component></profile-clusters-component>
+              </div>
+
+              <div class="cf pt2 bg-white mb4 mb5">
                 <label class="typo__label">Skills and Interests</label>
                 <p class="f6 mb3">
                   <span class="f6 lh-copy i gray">(type below to add new tags)</span>
                 </p>
-                <profile-tags-component
-                ></profile-tags-component>
+                <profile-tags-component></profile-tags-component>
               </div>
             </div>
 
@@ -153,8 +167,10 @@ v-else
 /* eslint-disable */
 import NavHeaderEdit from '../shared/NavHeaderEdit.vue'
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
+import ProfileClustersComponent from '@/components/profile/ProfileClusters.vue'
 import { includes } from 'lodash'
 import debugLib from 'debug'
+import { hasPhoto } from '@/utils'
 
 const debug = debugLib('cl8.ProfileEdit')
 
@@ -162,7 +178,8 @@ export default {
   name: 'ProfileEdit',
   components: {
     NavHeaderEdit,
-    ProfileTagsComponent
+    ProfileTagsComponent,
+    ProfileClustersComponent
   },
 
   data() {
@@ -179,16 +196,28 @@ export default {
     profile() {
       return this.$store.getters.profile
     },
-    profileTags: function() {
+    profileTags: function () {
       return this.profile.tags
     },
-    fullTagList: function() {
+    fullTagList: function () {
       return this.$store.getters.tagList
+    },
+    profileClusters: function () {
+      return this.profile.tags
+    },
+    fullClusterList: function () {
+      return this.$store.getters.fullClusterList
     }
   },
   async created() {
     debug('fetching latest profiles and tags')
-    await this.$store.dispatch('fetchVisibleProfileList')
+    try {
+      await this.$store.dispatch('fetchProfileList')
+      await this.$store.dispatch('fetchTags')
+      await this.$store.dispatch('fetchClusters')
+    } catch (e) {
+      debug("couldn't load tags or clusters for the profile: ", e)
+    }
   },
   methods: {
     updatePhoto(ev) {
@@ -202,12 +231,7 @@ export default {
         this.$store.dispatch('updateProfilePhoto', payload)
       }
     },
-    hasPhoto() {
-      if (this.profile.photo) {
-        return true
-      }
-      return false
-    },
+    hasPhoto,
     showPhoto(size) {
       return this.profile.photo
     },

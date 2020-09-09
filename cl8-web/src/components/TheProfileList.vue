@@ -75,7 +75,7 @@ export default {
 
     // make a new promise to fetch this stuff, then after they have loaded show the stuff
     try {
-      await this.$store.dispatch('fetchprofileList')
+      await this.$store.dispatch('fetchProfileList')
       debug('loaded the profiles in the component')
       this.searchResults = this.profileList
       this.$store.commit('stopLoading')

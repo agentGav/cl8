@@ -4,9 +4,12 @@ from django.db.models import CharField
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
 from taggit.managers import TaggableManager
 from sorl.thumbnail import get_thumbnail
+
 
 class User(AbstractUser):
 
@@ -18,10 +21,27 @@ class User(AbstractUser):
         return reverse("users:detail", kwargs={"username": self.username})
 
 
+class Cluster(TagBase):
+    class Meta:
+        verbose_name = _("Cluster")
+        verbose_name_plural = _("Clusters")
+
+
+class TaggedCluster(TaggedItemBase):
+    content_object = models.ForeignKey("Profile", on_delete=models.CASCADE)
+
+    tag = models.ForeignKey(
+        Cluster, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items",
+    )
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone = models.CharField(_("phone"), max_length=254, blank=True, null=True)
     website = models.URLField(_("website"), max_length=200, blank=True, null=True)
+    organisation = models.CharField(
+        _("organisation"), max_length=254, blank=True, null=True
+    )
     twitter = models.CharField(_("twitter"), max_length=254, blank=True, null=True)
     facebook = models.CharField(_("facebook"), max_length=254, blank=True, null=True)
     linkedin = models.CharField(_("linkedin"), max_length=254, blank=True, null=True)
@@ -30,11 +50,12 @@ class Profile(models.Model):
     photo = models.ImageField(_("photo"), blank=True, null=True, max_length=200)
 
     tags = TaggableManager(blank=True)
+    clusters = TaggableManager("Clusters", blank=True, through=TaggedCluster)
 
     class Meta:
         verbose_name = _("Profile")
         verbose_name_plural = _("Profiles")
-        ordering = ['user__name']
+        ordering = ["user__name"]
 
     @property
     def name(self):
@@ -53,8 +74,7 @@ class Profile(models.Model):
         if not self.photo:
             return None
 
-        return get_thumbnail(self.photo, '100x100', crop='center', quality=99).url
-
+        return get_thumbnail(self.photo, "100x100", crop="center", quality=99).url
 
     def __str__(self):
         return self.user.name
@@ -62,4 +82,28 @@ class Profile(models.Model):
     def get_absolute_url(self):
         return reverse("profile_detail", kwargs={"pk": self.pk})
 
+    def send_invite_mail(self):
+        support_email_address = settings.SUPPORT_EMAIL
+        rendered_templates = self.generate_invite_mail()
 
+        send_mail(
+            "Welcome to the Icebreaker One Constellation",
+            rendered_templates["text"],
+            support_email_address,
+            [self.user.email],
+            html_message=rendered_templates["html"],
+        )
+
+    def generate_invite_mail(self):
+        support_email_address = settings.SUPPORT_EMAIL
+
+        rendered_invite_txt = render_to_string(
+            "invite_new_profile.txt",
+            {"profile": self, "support_email_address": support_email_address},
+        )
+        rendered_invite_html = render_to_string(
+            "invite_new_profile.mjml.html",
+            {"profile": self, "support_email_address": support_email_address},
+        )
+
+        return {"text": rendered_invite_txt, "html": rendered_invite_html}

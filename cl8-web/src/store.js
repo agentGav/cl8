@@ -1,20 +1,9 @@
 /* eslint-disable */
 import router from './routes'
-import axios from 'axios'
-import { tagList, linkify } from './utils'
-import { reject } from 'lodash'
-import Vue from 'vue'
+import { dedupedTagList, tagList, linkify, instance, clusterList } from './utils'
 
 const debug = require('debug')('cl8.store')
 
-const instance = axios.create({
-  timeout: 60000,
-  // `xsrfHeaderName` is the name of the http header
-  // that carries the xsrf token value
-  xsrfCookieName: 'csrftoken', // default
-  xsrfHeaderName: 'X-CSRFTOKEN', // default
-
-})
 
 const state = {
   user: null,
@@ -25,7 +14,8 @@ const state = {
   profilePhoto: null,
   profileShowing: false,
   profileList: [],
-  // fullTagList: '',
+  fullTagList: [],
+  fullClusterList: [],
   requestUrl: null,
   signInData: {
     message: null,
@@ -69,16 +59,23 @@ const getters = {
     debug('getting profileList')
     return state.profileList
   },
-  fullTagList: function(state) {
-    // we add the profile again, in case there
-    // are new tags added to them
-    if (state.profile)
-      return tagList(state.profileList.concat([state.profile]))
+  fullTagList: function (state) {
+    // check for unsaved tags on the profile, and include
+    // them if they are there
+    if (state.profile) {
+      const combined = state.fullTagList.concat(state.profile.tags)
+      return dedupedTagList(combined)
+    }
     else {
-      return tagList(state.profileList)
+      return state.fullTagList
     }
   },
-  profileShowing: function(state) {
+
+  fullClusterList: function (state) {
+    debug('getting fullClusterList')
+    return state.fullClusterList
+  },
+  profileShowing: function (state) {
     return state.profileShowing
   },
   requestUrl: function(state) {
@@ -128,11 +125,23 @@ const mutations = {
     state.profileShowing = true
     state.profile = payload
   },
-  SET_PROFILE_TAGS: function(state, payload) {
+  SET_PROFILE_TAGS: function (state, payload) {
     debug('SET_PROFILE_TAGS', payload)
     state.profile.tags = payload
   },
-  setProfilePhoto: function(state, payload) {
+  SET_PROFILE_CLUSTERS: function (state, payload) {
+    debug('SET_PROFILE_CLUSTERS', payload)
+    state.profile.clusters = payload
+  },
+  SET_TAG_LIST: function (state, payload) {
+    debug('SET_TAGS', payload)
+    state.fullTagList = payload
+  },
+  SET_CLUSTER_LIST: function (state, payload) {
+    debug('SET_CLUSTERS', payload)
+    state.fullClusterList = payload
+  },
+  setProfilePhoto: function (state, payload) {
     debug('setProfilePhoto', payload)
     state.profile.photo = [payload]
   },
@@ -140,7 +149,11 @@ const mutations = {
     debug('SET_VISIBLE_PROFILE_LIST', payload)
     state.profileList = payload
   },
-  toggleProfileShowing: function(state) {
+  SET_PROFILE_LIST: function (state, payload) {
+    debug('SET_PROFILE_LIST', payload)
+    state.profileList = payload
+  },
+  toggleProfileShowing: function (state) {
     debug('profileShowing', state.profileShowing)
     state.profileShowing = !state.profileShowing
   },
@@ -227,32 +240,41 @@ const actions = {
     }
     context.commit('setTags', tags)
   },
-  fetchProfileList: async function(context) {
+  fetchProfileList: async function (context) {
     debug('action:fetchProfileList')
+    const token = context.getters.token || localStorage.token
     try {
       const response = await instance.get('/api/profiles', {
-        headers: { Authorization: `Token ${localStorage.token}` }
+        headers: { Authorization: `Token ${token}` }
       })
 
       const profileArray = response.data
-      context.commit('setProfileList', profileArray)
+      context.commit('SET_PROFILE_LIST', profileArray)
     } catch (error) {
       debug('Error fetching profileList', error)
     }
   },
-  fetchprofileList: async function(context) {
-    debug('action:fetchprofileList')
+  fetchTags: async function (context) {
+    debug('action:fetchTags')
+    const token = context.getters.token || localStorage.token
     try {
-      const response = await instance.get('/api/profiles', {
+      const response = await instance.get('/api/tags', {
+        headers: { Authorization: `Token ${token}` }
+      })
+      context.commit('SET_TAG_LIST', response.data)
+    } catch (error) {
+      debug('Error fetching tagList', error)
+    }
+  },
+  fetchClusters: async function (context) {
+    debug('action:fetchClusters')
+    try {
+      const response = await instance.get('/api/clusters', {
         headers: { Authorization: `Token ${localStorage.token}` }
       })
-      debug('profiles resp', response)
-      const profileArray = response.data.filter(profile => profile.visible)
-      context.commit('SET_VISIBLE_PROFILE_LIST', profileArray)
-
-
+      context.commit('SET_CLUSTER_LIST', response.data)
     } catch (error) {
-      debug('Error fetching profileList', error)
+      debug('Error fetching tagList', error)
     }
   },
   addUser: async function(context, payload) {
@@ -266,7 +288,7 @@ const actions = {
       headers: { Authorization: `Token ${token}` }
     })
     if (response.data) {
-      context.dispatch('fetchprofileList')
+      context.dispatch('fetchProfileList')
       context.commit('SET_PROFILE', response.data)
       router.push({ name: 'home' })
     } else {
@@ -275,12 +297,26 @@ const actions = {
   },
   fetchProfile: async function(context, payload) {
     debug('action:fetchProfile')
-    updateProfilePhoto
     debug('fetching profile for id:', payload.id)
     const profile = await instance.get(`/api/profiles/${payload.id}`, {
       headers: { Authorization: `Token ${localStorage.token}` }
     })
     context.commit('SET_PROFILE', profile.data)
+  },
+  resendInvite: async function(context, payload) {
+    debug('action:resendInvite')
+    const token = context.getters.token
+    const profileId = payload.id
+    const response = await instance.post(
+      `/api/profiles/${profileId}/resend_invite/`,
+      profileId,
+      {
+        headers: {
+          Authorization: `Token ${token}`,
+        }
+      }
+    )
+    return response
   },
   updateProfile: async function(context, payload) {
     debug('sending update to API', payload)
@@ -288,7 +324,10 @@ const actions = {
     // doing this round trip returns a JSON object we
     // can save back to the realtime database more easily,
     // and strips out properties we wouldn't want to save into it
-    payload.tags = payload.tags.map(function(obj) {
+    payload.tags = payload.tags.map(function (obj) {
+      return obj.name
+    })
+    payload.clusters = payload.clusters.map(function (obj) {
       return obj.name
     })
 
@@ -361,9 +400,10 @@ const actions = {
     context.commit('SET_PROFILE_TAGS', tags)
   },
 }
+
 export default {
   state,
   getters,
   mutations,
-  actions
+  actions,
 }

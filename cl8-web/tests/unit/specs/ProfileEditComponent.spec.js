@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { mount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 
 import ProfileEdit from '@/components/profile/ProfileEdit.vue'
 import debugLib from 'debug'
@@ -26,10 +26,11 @@ describe('ProfileTagsComponent', () => {
       commit: jest.fn()
     }
 
-    wrapper = mount(ProfileEdit, {
+    wrapper = shallowMount(ProfileEdit, {
       mocks: {
         $store: mockStore
-      }
+      },
+      stubs: ['router-link', 'v-gravatar']
     })
   })
   it('renders the component', async () => {

@@ -12,8 +12,14 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .serializers import ProfileSerializer, ProfilePicSerializer
-from ..models import Profile
+from .serializers import (
+    ProfileSerializer,
+    ProfilePicSerializer,
+    TagSerializer,
+    ClusterSerializer,
+)
+from ..models import Profile, Cluster
+from taggit.models import Tag
 
 from django.utils.text import slugify
 from django.urls import resolve
@@ -22,6 +28,10 @@ from django.http import HttpRequest, QueryDict
 from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
 User = get_user_model()
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def vue_view(request):
@@ -41,6 +51,28 @@ class ProfileViewSet(
     queryset = Profile.objects.all()
     lookup_field = "id"
 
+    @action(detail=True, methods=["POST"])
+    def resend_invite(self, request, id=None):
+
+        assert id
+        profile = Profile.objects.get(pk=id)
+        try:
+            profile.send_invite_mail()
+
+            return Response(status=status.HTTP_200_OK, data={
+                "message": f"An email invite has been re-sent to {profile.email}"
+            })
+        except Exception as exc:
+            logger.error(exc)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={
+                "message": (
+                    "Sorry, we had a problem re-sending the invite email. "
+                    "Please try again later."
+                )
+            })
+
+
+
     @action(detail=False, methods=["GET"])
     def me(self, request):
 
@@ -49,11 +81,16 @@ class ProfileViewSet(
 
     def create(self, request):
 
+        send_invite = request.data.get("sendInvite")
+
         serialized_profile = ProfileSerializer(data=request.data)
         serialized_profile.is_valid(raise_exception=True)
         new_profile = serialized_profile.create(serialized_profile.data)
 
         full_serialized_profile = ProfileSerializer(new_profile)
+
+        if send_invite:
+            new_profile.send_invite_mail()
 
         headers = self.get_success_headers(full_serialized_profile.data)
         return Response(
@@ -81,8 +118,6 @@ class ProfileViewSet(
             instance._prefetched_objects_cache = {}
         return Response(serialized_profile.data)
 
-
-
 class ProfilePhotoUploadView(APIView):
     """
 
@@ -106,4 +141,21 @@ class ProfilePhotoUploadView(APIView):
 
 
 
+
+class ClusterViewSet(
+    # RetrieveModelMixin,
+    ListModelMixin,
+    GenericViewSet,
+):
+    serializer_class = ClusterSerializer
+    queryset = Cluster.objects.all()
+
+
+class TagViewSet(
+    # RetrieveModelMixin,
+    ListModelMixin,
+    GenericViewSet,
+):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
 

@@ -139,7 +139,7 @@
                 </ul>
               </div>
             </div>
-            <div class="cf pt2 bg-white mb4 mb5">
+            <div class="cf pt2 bg-white mb3">
               <label class="typo__label">Skills and interests</label>
               <p class="f6 mb3">
                 <em>(type below to add new tags)</em>
@@ -150,6 +150,16 @@
                 @newtag="addTag"
               ></profile-tags-component>
             </div>
+
+            <ul class="list mt0 pt0 f4 pa0 border-box bg-washed-green pa3">
+            <li class="list send-invite pt3">
+                <input type="checkbox"
+                id="send-invite"
+                class="mr2"
+                v-model="profile.sendInvite" />
+                <label for="send-invite" class="f5">Send the user an invite mail for this constellation</label>
+            </li>
+            </ul>
           </form>
         </div>
       </div>
@@ -160,6 +170,7 @@
 <script>
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
 import { includes } from 'lodash'
+import { hasPhoto } from '@/utils'
 import debugLib from 'debug'
 
 const debug = debugLib('cl8.AddUser')
@@ -188,8 +199,10 @@ export default {
         linkedin: '',
         bio: '',
         visible: true,
+        sendInvite: false,
         pitchable: false,
         tags: []
+
       }
     }
   },
@@ -255,19 +268,18 @@ export default {
       debug('creating profile')
       this.loading = true
       try {
+        // console.log(this.profile)
         const resp = await this.$store.dispatch('addUser', this.profile)
         // Any response is a warning as `addUser` will redirect to the new
         // profile if all goes well
-        this.warning = resp
+        // this.warning = resp
       } catch (err) {
         debug('Error creating account', err)
         this.error = err.message
       }
       this.loading = false
     },
-    hasPhoto() {
-      return this.profile.photo != null && this.profile.photo.length > 0
-    }
+    hasPhoto
   }
 }
 </script>

@@ -5,11 +5,12 @@ from taggit_serializer.serializers import (
     TaggitSerializer,
     TagList,
 )
+from taggit.models import Tag
 
 from rest_framework.utils import model_meta
 
 User = get_user_model()
-from ..models import Profile
+from ..models import Profile, Cluster
 from django.utils.text import slugify
 
 
@@ -37,6 +38,7 @@ class ConstellateTagListSerializerField(TagListSerializerField):
 class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     tags = ConstellateTagListSerializerField(required=False)
+    clusters = ConstellateTagListSerializerField(required=False)
 
     name = serializers.CharField(allow_blank=True, required=False)
     email = serializers.EmailField(allow_blank=True, required=False)
@@ -132,6 +134,7 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
             # user
             "name",
             "email",
+            "organisation",
 
             # profile
             "phone",
@@ -146,11 +149,33 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
             # need their own handler
             "tags",
+            "clusters",
             "photo",
             "thumbnail_photo",
         ]
         read_only_fields = ["photo", "id", "thumbnail_photo",]
 
+
+class TagSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = [
+            "id",
+            "name",
+            "slug",
+        ]
+        read_only_fields = ["id", "name", "slug"]
+
+
+class ClusterSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Cluster
+        fields = [
+            "id",
+            "name",
+            "slug",
+        ]
+        read_only_fields = ["id", "name", "slug"]
 
 class ProfilePicSerializer(serializers.ModelSerializer):
 

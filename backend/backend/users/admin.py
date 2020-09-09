@@ -1,11 +1,25 @@
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
+from django.forms import ModelForm
+
+from taggit.forms import TagField
+from taggit_labels.widgets import LabelWidget
+
 
 from backend.users.forms import UserChangeForm, UserCreationForm
-from backend.users.models import Profile
+from backend.users.models import Profile, Cluster
 
 User = get_user_model()
+
+
+class ProfileAdminForm(ModelForm):
+    # tags = TagField(required=False, widget=LabelWidget)
+    clusters = TagField(
+        required=False,
+        widget=LabelWidget(model=Cluster),
+        help_text="Clusters the user wants to be included in",
+    )
 
 
 @admin.register(User)
@@ -20,4 +34,9 @@ class UserAdmin(auth_admin.UserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
+    form = ProfileAdminForm
+
+
+@admin.register(Cluster)
+class ClusterAdmin(admin.ModelAdmin):
     pass
