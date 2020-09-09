@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from taggit.managers import TaggableManager
+from taggit.models import TaggedItemBase, TagBase, GenericTaggedItemBase
 
 
 class User(AbstractUser):
@@ -18,6 +19,20 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
+
+
+class Cluster(TagBase):
+    class Meta:
+        verbose_name = _("Cluster")
+        verbose_name_plural = _("Clusters")
+
+
+class TaggedCluster(TaggedItemBase):
+    content_object = models.ForeignKey("Profile", on_delete=models.CASCADE)
+
+    tag = models.ForeignKey(
+        Cluster, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items",
+    )
 
 
 class Profile(models.Model):
@@ -33,7 +48,9 @@ class Profile(models.Model):
     bio = models.TextField(_("bio"), blank=True, null=True)
     visible = models.BooleanField(_("visible"), default=False)
     photo = models.ImageField(_("photo"), blank=True, null=True, max_length=200)
+
     tags = TaggableManager(blank=True)
+    clusters = TaggableManager("Clusters", blank=True, through=TaggedCluster)
 
     class Meta:
         verbose_name = _("Profile")
@@ -51,10 +68,6 @@ class Profile(models.Model):
     @property
     def admin(self):
         return self.user.is_staff
-
-    @property
-    def groups(self):
-        return self.tags.filter(name__startswith="group:")
 
     def __str__(self):
         return self.user.name

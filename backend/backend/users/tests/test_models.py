@@ -51,12 +51,12 @@ class TestProfile:
         assert "text" in rendered_templates
 
     @pytest.mark.only
-    def test_namespaced_tags(self, profile: Profile):
+    def test_clusters_as_tags(self, profile: Profile):
         """
-        Namespaced tags allow for some hierarchy profile tags, so we
-        can support listing people by group, location and so on.
+        We represent clusters as tags,
         """
-        profile.tags.add("first tag", "group:Open Energy")
+
+        profile.clusters.add("Open Energy")
         profile.save()
 
-        assert "Open Energy" in [tag.name for tag in profile.groups][0]
+        assert "Open Energy" in [tag_name for tag_name in profile.clusters.names()]
