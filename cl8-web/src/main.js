@@ -4,37 +4,24 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+// 3rd party
+import VueFuse from 'vue-fuse'
+import debugLib from 'debug'
+
+// our own libraries
+import { fetchCurrentUser } from './utils'
+import validationLocalizedStrings from './formValidation'
 import router from './routes'
 import store from './store'
 import i18n from './i18n'
-
-import VeeValidate from 'vee-validate'
-import VueFuse from 'vue-fuse'
-
 import App from './App'
-import debugLib from 'debug'
-import { fetchCurrentUser } from './utils'
+
 const debug = debugLib('cl8.main.js')
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
 
-const vvConfig = {
-  events: 'blur',
-  class: true
-}
-
-const dict = {
-  custom: {
-    confirmPassword: {
-      required: 'Please enter your password again.',
-      confirmed: 'Passwords do not match'
-    }
-  }
-}
-
 Vue.use(Vuex)
-Vue.use(VeeValidate, vvConfig)
 Vue.use(VueFuse)
 
 const VueStore = new Vuex.Store(store)
@@ -46,7 +33,7 @@ const app = new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-app.$validator.localize('en', dict)
+app.$validator.localize('en', validationLocalizedStrings)
 
 router.beforeEach(async (to, from, next) => {
 
