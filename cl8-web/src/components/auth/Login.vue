@@ -8,7 +8,7 @@
 
     <div v-if="!loading">
       <div class="v-mid sign-in-prompt">
-        <h2 class="pt5 tc fw3 tracked">Constellation</h2>
+        <h2 class="pt5 tc fw3 tracked">{{ $t('message.global.siteName') }}</h2>
         <div class="w-100 tc">
           <div role="status" aria-live="polite" class="vh dib">
             <!--
@@ -36,7 +36,9 @@
           </div>
 
           <form v-on:submit.prevent class="w-100 pa3 dib border-box mw6 ph5">
-              <p class="gray measure tl lh-copy">Please enter the email address that is associated with your Icebreaker One CL8 account. We will send a one time login code, to finish logging you in:</p>
+              <p class="gray measure tl lh-copy">
+                {{ $t('message.login.instructions') }}
+              </p>
             <div class="w-100 mb3">
               <input
                 type="text"
@@ -106,7 +108,12 @@
 
           <footer>
             <p class="f6 tc gray">
-              <em>Having trouble logging in? <a class="f6 tc gray" :href="supportEmail">Get in touch with support</a>.</em>
+              <em>
+                {{ $t('message.login.helpInstructions.question') }}
+                <a class="f6 tc gray" :href="supportEmail">
+                  {{ $t('message.login.helpInstructions.suggestion') }}
+                  </a>.
+                </em>
             </p>
           </footer>
 

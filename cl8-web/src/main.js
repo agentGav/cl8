@@ -3,14 +3,15 @@
 /* eslint-disable */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import App from './App'
 
 import router from './routes'
 import store from './store'
+import i18n from './i18n'
 
 import VeeValidate from 'vee-validate'
 import VueFuse from 'vue-fuse'
 
+import App from './App'
 import debugLib from 'debug'
 import { fetchCurrentUser } from './utils'
 const debug = debugLib('cl8.main.js')
@@ -39,6 +40,7 @@ Vue.use(VueFuse)
 const VueStore = new Vuex.Store(store)
 
 const app = new Vue({
+  i18n,
   router,
   store: VueStore,
   render: h => h(App)
