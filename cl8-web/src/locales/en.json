@@ -9,6 +9,16 @@
         "helpInstructions": {
           "question": "Having trouble logging in?",
           "suggestion": "Get in touch with support"
+        },
+        "form": {
+          "placeholder": "your email address",
+          "requestLoginCodeButton": "Request login code"
+        },
+        "emailSubmitted": {
+          "nextStepGuidance": "Ok, we've just sent an email to your address. It's valid for the next 15 minutes. Enter it below and you're in.",
+          "loginCode": "your login code",
+          "signinButton": "Sign in",
+          "resetButton": "Reset"
         }
       }
     }

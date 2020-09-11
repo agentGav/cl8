@@ -46,8 +46,8 @@
                 v-model="email"
                 class="input-reset br2 pa2 ba b--light-gray mt1 w-100"
                 :class=" {'bg-washed-red b--red': errors ? errors.has('email') : null}"
-                placeholder="your email address"
-                aria-label="your email address"
+                :placeholder="$t('message.login.form.placeholder')"
+                :aria-label="$t('message.login.form.placeholder')"
                 autocomplete="email"
                 @input="checkForValidFormSubmission"
                 :disabled="emailSubmitted"
@@ -60,22 +60,25 @@
 
             <div v-if="emailSubmitted">
               <div class="w-100">
-                <p class="gray measure tl lh-copy next-step-guidance">Ok, we've just sent an email to your address. It's valid for the next 15 minutes. Enter it below and you're in.</p>
+                <p class="gray measure tl lh-copy next-step-guidance">
+                  {{ $t(message.login.nextStepGuidance) }}
+                </p>
                 <input
                   type="password"
                   name="login-code"
                   v-model="token"
                   class="input-reset pa2 ba br2 b--light-gray w-100"
                   :class=" {'bg-washed-red b--red': errors && errors.has('token') }"
-                  placeholder="your login code"
-                  aria-label="your login code"
+                  :placeholder="$t(message.login.nextStepGuidance)"
+                  :aria-label="$t(message.login.nextStepGuidance)"
                 />
 
                 <div>
                   <small
                     v-if="errors && errors.has('token')"
-                    class="red"
-                  >{{ errors.first('token') }}</small>
+                    class="red">
+                    {{ errors.first('token') }}
+                  </small>
                 </div>
               </div>
               <div class="mt2 cf">
@@ -84,13 +87,15 @@
                   :class="{'bg-green pointer grow hover-bg-dark-green': formValid}"
                   :disabled="!formValid"
                   name="sign-in"
-                  @click="signIn"
-                >Sign in</button>
+                  @click="signIn">
+                  {{ $t('message.login.emailSubmitted.signinButton') }}
+                </button>
                 <button
                   class="f6 link br3 bn pv2 mb2 mt2 bg-light-silver b white w-60 ml0 mr1 fl bg-red pointer grow hover-bg-dark-red"
                   name="button"
-                  @click="resetForm"
-                >Reset</button>
+                  @click="resetForm">
+                  {{ $t('message.login.emailSubmitted.resetButton') }}
+                  </button>
               </div>
             </div>
             <div v-else>
@@ -100,8 +105,9 @@
                   :class="{'bg-green pointer grow hover-bg-dark-green': formValid}"
                   :disabled="!formValid"
                   name="button"
-                  @click="submitEmail"
-                >Request login code</button>
+                  @click="submitEmail">
+                  {{ $t('message.login.form.requestLoginCodeButton') }}
+                  </button>
               </div>
             </div>
           </form>
