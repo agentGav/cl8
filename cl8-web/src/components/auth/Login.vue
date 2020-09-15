@@ -61,7 +61,7 @@
             <div v-if="emailSubmitted">
               <div class="w-100">
                 <p class="gray measure tl lh-copy next-step-guidance">
-                  {{ $t(message.login.nextStepGuidance) }}
+                  {{ $t('message.login.emailSubmitted.nextStepGuidance') }}
                 </p>
                 <input
                   type="password"
@@ -69,8 +69,8 @@
                   v-model="token"
                   class="input-reset pa2 ba br2 b--light-gray w-100"
                   :class=" {'bg-washed-red b--red': errors && errors.has('token') }"
-                  :placeholder="$t(message.login.nextStepGuidance)"
-                  :aria-label="$t(message.login.nextStepGuidance)"
+                  :placeholder="$t('message.login.emailSubmitted.loginCode')"
+                  :aria-label="$t('message.login.emailSubmitted.loginCode')"
                 />
 
                 <div>
