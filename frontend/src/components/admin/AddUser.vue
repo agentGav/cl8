@@ -164,11 +164,15 @@
         </div>
       </div>
     </div>
+
+    <the-footer />
   </div>
 </template>
 
 <script>
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
+import TheFooter from '@/components/TheFooter.vue'
+
 import { includes } from 'lodash'
 import { hasPhoto } from '@/utils'
 import debugLib from 'debug'
@@ -178,7 +182,8 @@ const debug = debugLib('cl8.AddUser')
 export default {
   name: 'AddUser',
   components: {
-    ProfileTagsComponent
+    ProfileTagsComponent,
+    TheFooter
   },
   data() {
     return {
