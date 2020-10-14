@@ -25,7 +25,7 @@
         <router-link
           :to="{ name: 'editProfile' }"
           class="f6 link dim br2 ph3 pv2 mb2 dib white bg-gray"
-        >{{ $t('message.shared.Cancel') }}</router-link>
+          >{{ $t('message.shared.cancel') }}</router-link
       </div>
     </form>
 
