@@ -50,7 +50,7 @@ class ProfileViewSet(
     GenericViewSet,
 ):
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.all()
+    queryset = Profile.objects.filter(visible=True)
     lookup_field = "id"
 
     @action(detail=True, methods=["POST"])
