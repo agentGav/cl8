@@ -99,4 +99,3 @@ class TestImporter:
 
         for tag in second_tag_string.split(","):
             assert tag.strip() in tagged_profile.tags.names()
-

@@ -27,4 +27,3 @@ class Command(BaseCommand):
         logger.debug(f"imported: {users}")
         # logger.debug(f"No of profiles to import: {len(importer.rows)}")
         # logger.debug(f"No of profiles to import: {len(importer.rows)}")
-

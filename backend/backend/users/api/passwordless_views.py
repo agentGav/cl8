@@ -172,4 +172,3 @@ class ConstellateObtainAuthTokenFromCallbackToken(
             {"detail": "Couldn't log you in. Try again later."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
