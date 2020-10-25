@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from rest_framework.authtoken.views import obtain_auth_token
 from django.contrib.flatpages.views import flatpage
 from backend.users.admin import constellation_admin as cl8_admin
@@ -24,6 +24,9 @@ urlpatterns = [
     path("about/", flatpage, {"url": "/about/"}, name="about"),
     path("privacy/", flatpage, {"url": "/privacy/"}, name="privacy"),
     # Your stuff: custom urls includes go here
+    path(
+        "favicon.ico", RedirectView.as_view(url="/static/images/favicons/favicon.ico")
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
