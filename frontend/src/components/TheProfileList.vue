@@ -114,7 +114,9 @@ export default {
   methods: {
     checkAgainstSearch() {
       debug('checkAgainstSearch: filtering against matching tags:', this.term)
-      this.searchResults = this.matchingTags()
+      let searchResults = this.matchingTags()
+      this.searchResults = this.matchingClusters(searchResults)
+
       debug('this.searchResults', this.searchResults.length)
 
       // if we have a term to search against too, after ouer tags
@@ -137,6 +139,21 @@ export default {
       const cluster = ev.target.textContent.trim()
       debug('toggleCluster', { cluster })
       this.$store.dispatch('updateActiveClusters', cluster)
+    },
+    matchingClusters(profileList) {
+      const clusters = this.activeClusters
+      if (typeof clusters === 'undefined' || clusters === '') {
+        return profileList
+      }
+      clusters.forEach(function (cluster) {
+        profileList = profileList.filter(function (profile) {
+          const profileClusters = profile.clusters.map(function (clst) {
+            return clst.name.toLowerCase()
+          })
+          return includes(profileClusters, cluster)
+        })
+      })
+      return profileList
     },
     matchingTags() {
       const activeTags = this.activeTags
