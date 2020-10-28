@@ -1,31 +1,60 @@
 <template>
-  <v-card width="400px" class="mt-5 mx-auto">
-    <v-card-title>
-      <h1 class="text-center text-h5">Icebreaker One Constellation</h1>
-    </v-card-title>
-    <v-card-text>
-      <p>
-        {{ $t('message.login.instructions') }}
-      </p>
-      <v-form>
-        <v-text-field label="your email address" />
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn class="ml-2" color="info">Request login code</v-btn>
-    </v-card-actions>
-    <v-card-text>
-      <p class="text-caption">
-        <em>
-          {{ $t('message.login.helpInstructions.question') }}
+  <div>
+    <v-card width="400px" class="mt-5 mx-auto">
+      <!-- checkign for email -->
 
-          <a class="" :href="supportEmail">
-            {{ $t('message.login.helpInstructions.suggestion') }} </a
-          >.
-        </em>
-      </p>
-    </v-card-text>
-  </v-card>
+      <v-card-title>
+        <h1 class="text-center text-h5">Welcome to the constellation</h1>
+      </v-card-title>
+      <v-card-text>
+        <p>
+          {{ $t('message.login.instructions') }}
+        </p>
+        <v-form v-on:submit.prevent>
+          <v-text-field label="your email address" v-model="email" />
+
+          <v-card-actions>
+            <v-btn class="" color="info" @click="submitEmail"
+              >Request login code</v-btn
+            >
+          </v-card-actions>
+        </v-form>
+      </v-card-text>
+
+      <div v-if="emailSubmitted">
+        <v-form v-on:submit.prevent>
+          <v-card-text>
+            <p class="gray measure tl lh-copy next-step-guidance">
+              {{ $t('message.login.emailSubmitted.nextStepGuidance') }}
+            </p>
+
+            <v-text-field v-model="token" label="token" />
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn @click="signIn">
+              {{ $t('message.login.emailSubmitted.signinButton') }}
+            </v-btn>
+            <v-btn name="button" @click="resetForm">
+              {{ $t('message.login.emailSubmitted.resetButton') }}
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </div>
+
+      <v-card-text>
+        <p class="text-caption">
+          <em>
+            {{ $t('message.login.helpInstructions.question') }}
+
+            <a class="" :href="supportEmail">
+              {{ $t('message.login.helpInstructions.suggestion') }} </a
+            >.
+          </em>
+        </p>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -77,6 +106,8 @@ export default {
       this.$store.dispatch('login', user)
     },
     submitEmail: async function () {
+      // TODO set loading state with viewtify
+
       let emailSubmitted
       try {
         emailSubmitted = await this.$store.dispatch('submitEmail', this.email)

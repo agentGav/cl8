@@ -1,7 +1,27 @@
 <template>
-  <div id="app" class="cf center w-100 mw8 system-sans-serif sans-serif">
-    <router-view></router-view>
-  </div>
+  <v-app>
+    <v-navigation-drawer app temporary>
+      <!-- -->
+    </v-navigation-drawer>
+
+    <v-app-bar app flat>
+      <!-- -->
+      <h1 class="text-center text-h5">Icebreaker One</h1>
+    </v-app-bar>
+
+    <!-- Sizes your content based upon application components -->
+    <v-main>
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+        <!-- If using vue-router -->
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+
+    <v-footer app>
+      <!-- -->
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
