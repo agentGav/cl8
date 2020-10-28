@@ -1,5 +1,5 @@
 const path = require('path')
-
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 
 // vue.config.js
 module.exports = {
@@ -18,6 +18,14 @@ module.exports = {
   // because our front end is nested one folder down, and we compile as part of our deployment process, we need to tell webpack to point the '@' one folder in too.
   chainWebpack: config => {
     config.resolve.alias.set('@', path.resolve(__dirname, 'frontend/src'))
+
+    config.plugin('VuetifyLoaderPlugin').tap(args => [{
+      match(originalTag, { kebabTag, camelTag, path, component }) {
+        if (kebabTag.startsWith('core-')) {
+          return [camelTag, `import ${camelTag} from '@/components/core/${camelTag.substring(4)}.vue'`]
+        }
+      }
+    }])
   },
 
   // django and whitenoise does its own hashing and cache busting,
