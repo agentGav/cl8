@@ -1,11 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer app temporary>
+    <v-navigation-drawer app v-model="drawer" absolute bottom temporary>
       <!-- -->
+      <slot></slot>
     </v-navigation-drawer>
 
     <v-app-bar app flat>
       <!-- -->
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <h1 class="text-center text-h5">Icebreaker One</h1>
     </v-app-bar>
 
@@ -20,6 +22,13 @@
 
     <v-footer app>
       <!-- -->
+      <div class="row">
+        <div class="col pa-0 ma-0">
+          <p class="text-center text-caption pa-0 ma-0">
+            <em>{{ $t('message.footer.helpMessage') }}</em>
+          </p>
+        </div>
+      </div>
     </v-footer>
   </v-app>
 </template>
@@ -34,7 +43,9 @@ export default {
   components: {},
   name: 'app',
   data() {
-    return {}
+    return {
+      drawer: false
+    }
   },
   methods: {},
   async mounted() {
