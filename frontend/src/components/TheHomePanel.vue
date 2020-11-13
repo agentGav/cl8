@@ -1,40 +1,39 @@
 <template>
-  <div class="cf bg-white bg-network mainframe">
-
-    <div>
-      <nav-header-logged-in
-        class="navnav fixed relative-l"
-         />
-
-      <div class="profile-holder fr-ns w-two-thirds-ns w-100-m pa" v-if="profileShowing">
+  <div>
+    <v-row>
+      <v-col order="2" v-if="profile">
         <profile-detail />
-      </div>
-
-      <div class="side-column fl w-100 w-third-ns bt-s bt-m w-100-m bg-white br b--light-gray">
-        <the-profile-list />
-
-      </div>
-    </div>
-    <the-footer />
+      </v-col>
+      <v-col cols="4">
+        <div class="">
+          <the-profile-list />
+        </div>
+      </v-col>
+    </v-row>
+    <div></div>
   </div>
-
 </template>
 
 <script>
 /* eslint-disable */
-import NavHeaderLoggedIn from '@/components/shared/NavHeaderLoggedIn.vue'
 import ProfileDetail from '@/components/profile/ProfileDetail.vue'
 import ProfileSearchItem from '@/components/profile/ProfileSearchItem.vue'
 import TheProfileList from '@/components/TheProfileList.vue'
 import TheFooter from '@/components/TheFooter.vue'
 
+import store from '@/store'
 import debugLib from 'debug'
 const debug = debugLib('cl8.TheHomePanel')
+
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+const VueStore = new Vuex.Store(store)
 
 export default {
   name: 'TheHomePanel',
   components: {
-    NavHeaderLoggedIn,
     ProfileDetail,
     TheProfileList,
     TheFooter
@@ -44,31 +43,31 @@ export default {
     return {}
   },
   computed: {
-    profileShowing() {
-      return this.$store.getters.profileShowing
+    profile() {
+      return this.$store.getters.profile
     }
   },
   watch: {},
-  methods: {}
+  methods: {},
+  async beforeRouteEnter(routeTo, routeFrom, next)  {
+        debug("beforeRouteEnter")
+        if (routeTo.params.profileId) {
+          await VueStore.dispatch('fetchProfile', {id: routeTo.params.profileId})
+        }
+        next()
+  },
+  async beforeRouteUpdate(routeTo, routeFrom, next)  {
+        debug("beforeRouteUpdate")
+        if (routeTo.params.profileId) {
+          await this.$store.dispatch('fetchProfile', {id: routeTo.params.profileId})
+        }
+        next()
+  },
 }
 </script>
 
 
 <style media="screen" lang="scss">
-@import '../../../node_modules/tachyons/css/tachyons.css';
-.side-column, .profile-holder {
-  height: calc(100vh - 4.5rem - 1px);
-  overflow: auto;
-  @media (max-width: 960px){
-    margin-top: calc(4.25rem);
-    height: calc(100vh - 4.25rem - 1px);
-  }
-  @media (max-width: 480px){
-    margin-top: calc(6.5rem + 1px);
-    height: calc(100vh - 6.5rem - 1px);
-  }
-}
-
 p span.list {
   display: inline-block;
 }
@@ -89,15 +88,6 @@ p span.list {
   bottom: 0;
   width: 1em;
   font-style: normal;
-}
-
-.bg-network {
-  /* background-image: url(../assets/network-watermark.png); */
-  /* background-repeat: no-repeat; */
-}
-
-.profile-holder {
-  /* box-shadow: 5px 0px 20px #ddd; */
 }
 
 button.remove-tag {

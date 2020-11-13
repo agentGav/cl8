@@ -1,5 +1,6 @@
 <template>
   <div
+    :key="profile.id"
     class="theprofile pa3 pa4-ns center w-100 cf border-box fixed relative-l bg-white"
   >
     <div v-if="loading">
@@ -9,55 +10,66 @@
     </div>
 
     <div v-else>
-      <transition name="fade">
-        <div
-          v-if="showFlashMessage"
-          class="status-message cf flex items-center pa3 mb2"
-          v-bind:class="messageClassObject"
+      <!-- Message box -->
+      <div
+        v-if="showFlashMessage"
+        class="status-message cf flex items-center pa3 mb2"
+        v-bind:class="messageClassObject"
+      >
+        <svg
+          class="w1"
+          data-icon="info"
+          viewBox="0 0 32 32"
+          style="fill: currentcolor"
         >
-          <svg
-            class="w1"
-            data-icon="info"
-            viewBox="0 0 32 32"
-            style="fill: currentcolor"
-          >
-            <title>info icon</title>
-            <path
-              d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
-            />
-          </svg>
-          <span class="lh-title ml2" role="status" style="flex-grow: 1">{{
-            flashMessage
-          }}</span>
-          <button
-            aria-hidden="true"
-            role="button"
-            class="b--none ml2 mr2 bg-black-90 white br2 grow pointer close"
-            @click="hideFlashMessage"
-          >
-            x
-          </button>
-        </div>
-      </transition>
-      <div v-if="profile">
-        <div v-if="canEdit()" class="fn fr-l">
-          <router-link
-            :to="{ name: 'editProfile' }"
-            role="link"
-            tabindex="0"
-            class="f6 link dim br2 ph3 pv2 mb3 dib white bg-gray"
-            >{{ $t('message.shared.editProfile') }}</router-link
-          >
-        </div>
+          <title>info icon</title>
+          <path
+            d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
+          />
+        </svg>
+        <span class="lh-title ml2" role="status" style="flex-grow: 1">{{
+          flashMessage
+        }}</span>
+        <button
+          aria-hidden="true"
+          role="button"
+          class="b--none ml2 mr2 bg-black-90 white br2 grow pointer close"
+          @click="hideFlashMessage"
+        >
+          x
+        </button>
+      </div>
 
-        <div v-if="isAdmin" class="fn fr-l">
-          <button
-            tabindex="0"
-            class="resend-invite f6 link dim br2 ph3 pv2 mb3 dib white bg-gray b--none ml2 mr2"
-            @click="resendInvite"
-          >
-            {{ $t('message.profileDetail.resendInvite') }}
-          </button>
+      <v-card> </v-card>
+
+      <div v-if="profile">
+        <!-- profile controls -->
+        <div>
+          <div class="text-center float-right">
+            <v-btn rounded color="red" small dark @click="hideProfile">
+              Close
+            </v-btn>
+          </div>
+
+          <div v-if="canEdit()" class="fn fr-l">
+            <router-link
+              :to="{ name: 'editProfile' }"
+              role="link"
+              tabindex="0"
+              class="f6 link dim br2 ph3 pv2 mb3 dib white bg-gray"
+              >{{ $t('message.shared.editProfile') }}</router-link
+            >
+          </div>
+
+          <div v-if="isAdmin" class="fn fr-l">
+            <button
+              tabindex="0"
+              class="resend-invite f6 link dim br2 ph3 pv2 mb3 dib white bg-gray b--none ml2 mr2"
+              @click="resendInvite"
+            >
+              {{ $t('message.profileDetail.resendInvite') }}
+            </button>
+          </div>
         </div>
 
         <div class="fl w-70 w-20-m w-20-l mr3">
@@ -229,7 +241,12 @@ export default {
       return this.profile.bio ? marked(sanitizeHTML(this.profile.bio)) : null
     },
     isAdmin() {
-      return !!this.user.admin
+      if (this.user) {
+        return !!this.user.admin
+      } else{
+        return false
+      }
+
     },
     messageClassObject: function () {
       return {
@@ -245,6 +262,9 @@ export default {
         return this.profile.id == this.user.id
       }
       return false
+    },
+    hideProfile: function (ev) {
+      this.$store.dispatch('hideProfile')
     },
     toggleTag: function (ev) {
       let tag = ev.target.textContent.trim().toLowerCase()
@@ -296,7 +316,7 @@ export default {
         this.showFlashMessage = true
       }
     }
-  }
+  },
 }
 </script>
 

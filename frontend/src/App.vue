@@ -1,22 +1,18 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="drawer" absolute bottom temporary>
-      <!-- -->
-      <slot></slot>
-    </v-navigation-drawer>
-
-    <v-app-bar app flat>
-      <!-- -->
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <h1 class="text-center text-h5">Icebreaker One</h1>
+    <v-app-bar app flat color="white">
+      <v-toolbar flat>
+        <v-toolbar-title>Constellate</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <nav-header-logged-in></nav-header-logged-in>
+      </v-toolbar>
     </v-app-bar>
 
-    <!-- Sizes your content based upon application components -->
     <v-main>
-      <!-- Provides the application the proper gutter -->
       <v-container fluid>
-        <!-- If using vue-router -->
-        <router-view></router-view>
+        <transition>
+          <router-view></router-view>
+        </transition>
       </v-container>
     </v-main>
 
@@ -36,15 +32,23 @@
 <script>
 import debugLib from 'debug'
 import { fetchCurrentUser } from './utils'
+import NavHeaderLoggedIn from '@/components/shared/NavHeaderLoggedIn.vue'
 // eslint-disable-next-line
 const debug = debugLib('cl8.App')
 
 export default {
-  components: {},
+  components: {
+    NavHeaderLoggedIn
+  },
   name: 'app',
   data() {
     return {
       drawer: false
+    }
+  },
+  computed: {
+    loggedIn() {
+      return this.$store.getters.profile
     }
   },
   methods: {},
@@ -61,6 +65,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

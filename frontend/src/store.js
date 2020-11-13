@@ -140,8 +140,10 @@ const mutations = {
   },
   SET_PROFILE: function (state, payload) {
     debug('SET_PROFILE', payload)
-    debug('PROFILE TAGS', payload.tags.map(x => { return x.name }))
-    state.profileShowing = true
+    if (payload) {
+      debug('PROFILE TAGS', payload.tags.map(x => { return x.name }))
+      state.profileShowing = true
+    }
     state.profile = payload
   },
   SET_PROFILE_TAGS: function (state, payload) {
@@ -245,7 +247,7 @@ const actions = {
       headers: { Authorization: `Token ${token}` }
     })
     context.commit('SET_USER', profileResponse.data)
-    context.commit('SET_PROFILE', profileResponse.data)
+    // context.commit('SET_PROFILE', profileResponse.data)
   },
   updateActiveTags: function (context, payload) {
     debug('action:updateActiveTags')
@@ -336,6 +338,9 @@ const actions = {
     } else {
       return 'There was a problem creating the account'
     }
+  },
+  hideProfile: function (context, payload) {
+    context.commit('SET_PROFILE', null)
   },
   fetchProfile: async function (context, payload) {
 

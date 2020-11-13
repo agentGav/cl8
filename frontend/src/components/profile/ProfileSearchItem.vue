@@ -48,8 +48,10 @@ export default {
   computed: {},
   methods: {
     profileChosen() {
-      debug(this.item)
-      this.$store.dispatch('fetchProfile', this.item)
+      debug({profile: this.item})
+      debug({profileId: this.item.id})
+      this.$router.push({ name: 'viewProfile', params: { profileId: this.item.id } })
+
     },
     hasPhoto,
     showPhoto(size) {

@@ -1,47 +1,39 @@
 <template>
   <div>
-    <div v-if="loading">
-      <div class="spinner">
-        <img src="../assets/loading.svg" alt="loading" />
-      </div>
+    <div class="tag-list pa2 bb b--light-gray" v-if="activeTags">
+      <p>
+        <button
+          v-for="tag in activeTags"
+          :key="tag"
+          class="remove-tag list pt2 pb2 mr1 mb1 ph3 pr5 br2 bn f7 white bg-dark-blue relative bg-animate hover-bg-red"
+          @click.stop.prevent="toggleTag"
+        >
+          {{ tag }}
+        </button>
+      </p>
     </div>
 
-    <div v-else>
-      <div class="tag-list pa2 bb b--light-gray" v-if="activeTags">
-        <p>
-          <button
-            v-for="tag in activeTags"
-            :key="tag"
-            class="remove-tag list pt2 pb2 mr1 mb1 ph3 pr5 br2 bn f7 white bg-dark-blue relative bg-animate hover-bg-red"
-            @click.stop.prevent="toggleTag"
-          >
-            {{ tag }}
-          </button>
-        </p>
-      </div>
-
-      <div class="tag-list pa2 bb b--light-gray" v-if="activeClusters">
-        <p>
-          <button
-            v-for="cluster in activeClusters"
-            :key="cluster"
-            :data-name="cluster"
-            class="remove-cluster list pt2 pb2 mr1 mb1 ph3 pr5 br2 bn f7 white bg-dark-blue relative bg-animate hover-bg-red"
-            @click.stop.prevent="toggleCluster"
-          >
-            {{ cluster }}
-          </button>
-        </p>
-      </div>
-
-      <ul class="list ma0 ml0 pl0 pa0">
-        <profile-search-item
-          v-for="item in searchResults"
-          :item="item"
-          :key="item.id"
-        />
-      </ul>
+    <div class="tag-list pa2 bb b--light-gray" v-if="activeClusters">
+      <p>
+        <button
+          v-for="cluster in activeClusters"
+          :key="cluster"
+          :data-name="cluster"
+          class="remove-cluster list pt2 pb2 mr1 mb1 ph3 pr5 br2 bn f7 white bg-dark-blue relative bg-animate hover-bg-red"
+          @click.stop.prevent="toggleCluster"
+        >
+          {{ cluster }}
+        </button>
+      </p>
     </div>
+
+    <ul class="list ma0 ml0 pl0 pa0">
+      <profile-search-item
+        v-for="item in searchResults"
+        :item="item"
+        :key="item.id"
+      />
+    </ul>
   </div>
 </template>
 
