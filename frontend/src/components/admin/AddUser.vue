@@ -373,18 +373,18 @@ p span.list {
   box-sizing: border-box;
 }
 
-/deep/ input,
-textarea {
-  box-sizing: border-box;
-  background: #fafafa;
-  border: 1px solid rgba(#000, 0.1);
-  @include rounded(3px);
-  padding: 0.25em 0.5em;
-  font-size: 1.25rem;
-}
-/deep/ textarea {
-  font-size: 1rem;
-}
+// /deep/ input,
+// textarea {
+//   box-sizing: border-box;
+//   background: #fafafa;
+//   border: 1px solid rgba(#000, 0.1);
+//   @include rounded(3px);
+//   padding: 0.25em 0.5em;
+//   font-size: 1.25rem;
+// }
+// /deep/ textarea {
+//   font-size: 1rem;
+// }
 .edithover {
   position: relative;
   display: inline-block;

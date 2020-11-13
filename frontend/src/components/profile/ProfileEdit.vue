@@ -5,9 +5,12 @@
       <div class="pa3 center w-80-l cf">
         <div>
           <form class v-if="profile">
-            <div class="cf w-100" style="min-height:11em;">
+            <div class="cf w-100" style="min-height: 11em">
               <div class="fl w-100 w-25-ns mb3">
-                <router-link :to="{ name: 'editProfilePhoto' }" class="edithover w-80 mr4">
+                <router-link
+                  :to="{ name: 'editProfilePhoto' }"
+                  class="edithover w-80 mr4"
+                >
                   <img
                     v-if="hasPhoto(profile)"
                     :src="showPhoto()"
@@ -25,7 +28,10 @@
                 <div class="w-40 w-100-ns fn-ns dib v-btm mt2">
                   <div
                     class="f6 dim br2 dib w-80 white mb2"
-                    v-bind:class="{ 'bg-green': profile.visible, 'bg-red': !profile.visible }"
+                    v-bind:class="{
+                      'bg-green': profile.visible,
+                      'bg-red': !profile.visible
+                    }"
                   >
                     <input
                       type="checkbox"
@@ -34,27 +40,22 @@
                       v-model="profile.visible"
                     />
                     <label
-                    v-if="profile.visible"
-                    for="visible-checkbox"
-                    class="dib w-70">
+                      v-if="profile.visible"
+                      for="visible-checkbox"
+                      class="dib w-70"
+                    >
                       {{ $t('message.shared.visible') }}
                     </label>
-                    <label
-                    v-else
-                    for="visible-checkbox"
-                    class="dib w-70">
+                    <label v-else for="visible-checkbox" class="dib w-70">
                       {{ $t('message.shared.hidden') }}
                     </label>
                   </div>
-<p
-class="f6 lh-copy i gray ph2"
-v-if="profile.visible"
->{{ $t('message.profileEdit.profileVisible') }}</p>
-<p
-class="f6 lh-copy i gray ph2"
-v-else
->{{ $t('message.profileEdit.profileHidden') }}</p>
-
+                  <p class="f6 lh-copy i gray ph2" v-if="profile.visible">
+                    {{ $t('message.profileEdit.profileVisible') }}
+                  </p>
+                  <p class="f6 lh-copy i gray ph2" v-else>
+                    {{ $t('message.profileEdit.profileHidden') }}
+                  </p>
                 </div>
               </div>
 
@@ -63,7 +64,9 @@ v-else
                   <li class="list name">
                     <label class="f5" for>
                       {{ $t('message.profileEdit.name') }}
-                      <span class="f6 lh-copy i gray">{{ $t('message.profileEdit.nameMessage') }}</span>
+                      <span class="f6 lh-copy i gray">{{
+                        $t('message.profileEdit.nameMessage')
+                      }}</span>
                     </label>
 
                     <input class="w-100 mt1 pa1" v-model="profile.name" />
@@ -72,9 +75,11 @@ v-else
                   <li class="list email mt2">
                     <label class="f5" for>
                       {{ $t('message.profileEdit.email') }}
-                      <span class="f6 lh-copy i gray">{{$t('message.profileEdit.emailMessage') }}</span>
+                      <span class="f6 lh-copy i gray">{{
+                        $t('message.profileEdit.emailMessage')
+                      }}</span>
                     </label>
-                    <div  class="w-100 mt1 bg-near-white pa2">
+                    <div class="w-100 mt1 bg-near-white pa2">
                       {{ profile.email }}
                     </div>
                   </li>
@@ -82,22 +87,25 @@ v-else
                     <label class="f5 mb2" for>
                       {{ $t('message.profileEdit.phone') }}
                     </label>
-                    <span class="f6 lh-copy i gray"> {{ $t('message.profileEdit.phoneMessage') }} </span>
+                    <span class="f6 lh-copy i gray">
+                      {{ $t('message.profileEdit.phoneMessage') }}
+                    </span>
                     <input class="w-100 mt1 pa1" v-model="profile.phone" />
                   </li>
                   <li class="list website mt2">
                     <label class="f5" for>
                       {{ $t('message.shared.website') }}
-
                     </label>
                     <input class="w-100 mt1 pa1" v-model="profile.website" />
                   </li>
                   <li class="list organisation mt2">
                     <label class="f5" for>
                       {{ $t('message.profileEdit.organisation') }}
-
                     </label>
-                    <input class="w-100 mt1 pa1" v-model="profile.organisation" />
+                    <input
+                      class="w-100 mt1 pa1"
+                      v-model="profile.organisation"
+                    />
                   </li>
                 </ul>
 
@@ -117,7 +125,9 @@ v-else
                   <li class="list linkedin mt2">
                     <label class="f5" for>
                       {{ $t('message.shared.linkedIn') }}
-                      <span class="f6 lh-copy i gray"> {{ $t('message.profileEdit.linkedInMessage') }}</span>
+                      <span class="f6 lh-copy i gray">
+                        {{ $t('message.profileEdit.linkedInMessage') }}</span
+                      >
                     </label>
                     <input class="w-100 mt1" v-model="profile.linkedin" />
                   </li>
@@ -127,7 +137,9 @@ v-else
                       {{ $t('message.shared.about') }}
                       <span class="f6 lh-copy i gray">
                         ({{ $t('message.shared.markdownMessage') }}
-                        <a href="https://daringfireball.net/projects/markdown/">markdown</a>)
+                        <a href="https://daringfireball.net/projects/markdown/"
+                          >markdown</a
+                        >)
                       </span>
                     </label>
                     <textarea
@@ -144,22 +156,29 @@ v-else
               </div>
 
               <div class="cf pt2 bg-white mb4 mb5">
-                <label class="typo__label">{{ $t('message.profileEdit.clusters') }}</label>
+                <label class="typo__label">{{
+                  $t('message.profileEdit.clusters')
+                }}</label>
                 <p class="f6 mb3">
-                  <span class="f6 lh-copy i gray">{{ $t('message.profileEdit.clusterMessage') }}</span>
+                  <span class="f6 lh-copy i gray">{{
+                    $t('message.profileEdit.clusterMessage')
+                  }}</span>
                 </p>
                 <profile-clusters-component></profile-clusters-component>
               </div>
 
               <div class="cf pt2 bg-white mb4 mb5">
-                <label class="typo__label">{{ $t('message.shared.tags') }}</label>
+                <label class="typo__label">{{
+                  $t('message.shared.tags')
+                }}</label>
                 <p class="f6 mb3">
-                  <span class="f6 lh-copy i gray">{{ $t('message.shared.tagMessage') }}</span>
+                  <span class="f6 lh-copy i gray">{{
+                    $t('message.shared.tagMessage')
+                  }}</span>
                 </p>
                 <profile-tags-component></profile-tags-component>
               </div>
             </div>
-
           </form>
         </div>
       </div>
@@ -246,7 +265,7 @@ export default {
     setUserProfile() {
       debug('setting own profile for ', this.user)
       let user = this.user
-      let matchingProfiles = this.items.filter(function(peep) {
+      let matchingProfiles = this.items.filter(function (peep) {
         return peep.id === user.uid
       })
       if (matchingProfiles.length > 0) {
@@ -263,37 +282,12 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style media="screen" lang="scss" scoped>
-@import '../../../../node_modules/tachyons/css/tachyons.css';
 p span.list {
   display: inline-block;
 }
 
-@mixin rounded($r: 5px) {
-  -webkit-border-radius: $r;
-  -moz-border-radius: $r;
-  border-radius: $r;
-}
-
-@mixin padding() {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-/deep/ input,
-textarea {
-  box-sizing: border-box;
-  background: #fafafa;
-  border: 1px solid rgba(#000, 0.1);
-  @include rounded(3px);
-  padding: 0.25em 0.5em;
-  font-size: 1.25rem;
-}
-/deep/ textarea {
-  font-size: 1rem;
-}
 li.email div {
-  cursor:not-allowed
+  cursor: not-allowed;
 }
 
 .edithover {

@@ -320,7 +320,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
 ul.tags li.list {
   display: inline-block;
 }
@@ -332,84 +332,5 @@ img.gravatar {
 .social-links li + li {
   border-left: 1px solid #000000;
   padding-left: 1em;
-}
-
-@mixin animation(
-  $name,
-  $times: infinite,
-  $duration: 0.5s,
-  $ease: ease-out,
-  $direction: forwards
-) {
-  @keyframes #{$name} {
-    @content;
-  }
-  @-moz-keyframes #{$name} {
-    @content;
-  }
-  @-webkit-keyframes #{$name} {
-    @content;
-  }
-  -webkit-animation: $name $ease $times;
-  -moz-animation: $name $ease $times;
-  animation: $name $ease $times;
-  -webkit-animation-fill-mode: $direction;
-  -moz-animation-fill-mode: $direction;
-  animation-fill-mode: $direction;
-  animation-duration: $duration;
-}
-@mixin transform($arguments) {
-  -webkit-transform: $arguments;
-  -moz-transform: $arguments;
-  -o-transform: $arguments;
-  -ms-transform: $arguments;
-  transform: $arguments;
-}
-.theprofile {
-  top: 0;
-  left: 0;
-  // width:100vw;
-  height: 100vh;
-  overflow: auto;
-  @media screen and (max-width: 960px) {
-    @include animation(profilein, 1, 0.25s, ease-in-out) {
-      from {
-        opacity: 0;
-        // @include transform(translateX(0vw));
-      }
-      to {
-        opacity: 1;
-        // @include transform(translateX(0vw));
-      }
-    }
-  }
-}
-.closeProfile {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 2rem;
-  height: 2rem;
-  background: #fff;
-  border: 0;
-  outline: none;
-  background-image: url('../../assets/cross-thin.svg');
-  background-size: contain;
-  @media screen and (min-width: 960px) {
-    display: none;
-  }
-}
-
-.fade-enter {
-  opacity: 0;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease-out;
-}
-
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
