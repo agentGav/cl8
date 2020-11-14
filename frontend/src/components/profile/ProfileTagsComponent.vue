@@ -19,13 +19,9 @@
         class="ma-1"
         color="primary"
         :outlined="!inProfileTags(option.name)"
-
-    
       >
       {{option.name}}
       </v-chip>
-      
-     
     </div>
   </div>
 </template>

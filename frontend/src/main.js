@@ -41,7 +41,7 @@ app.$validator.localize('en', validationLocalizedStrings)
 
 router.beforeEach(async (to, from, next) => {
 
-  debug(to.name, to.from, next)
+  debug({to: to.name}, {from: to.from})
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const currentUser = await fetchCurrentUser(VueStore)
