@@ -265,6 +265,7 @@ export default {
     },
     hideProfile: function (ev) {
       this.$store.dispatch('hideProfile')
+      this.$router.push({ name: 'home'})
     },
     toggleTag: function (ev) {
       let tag = ev.target.textContent.trim().toLowerCase()

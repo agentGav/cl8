@@ -44,8 +44,11 @@ export default {
     },
     myProfile: function () {
       debug('setting profile back to user')
-      debug('currentUser', this.$store.getters.currentUser)
-      this.$store.dispatch('fetchProfile', this.$store.getters.currentUser)
+      const currentUserId = this.$store.getters.currentUser.id
+      this.$router.push({
+        name: 'viewProfile',
+        params: { profileId: currentUserId }
+      })
     }
   }
 }
