@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="loggedIn">
     <router-link
       v-if="canAddUsers"
       :to="{ name: 'addUser' }"
@@ -35,6 +35,9 @@ export default {
   computed: {
     canAddUsers() {
       return this.$store.getters.isAdmin
+    },
+    loggedIn() {
+      return this.$store.getters.currentUser
     }
   },
   methods: {

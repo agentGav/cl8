@@ -1,40 +1,15 @@
 <template>
   <div>
-    <div class="tag-list" v-if="activeTags.length > 0">
-      <p>
-        <v-chip
-          color="primary"
-          v-for="tag in activeTags"
-          :key="tag"
-          :data-name="tag"
-          close
-          @click.stop.prevent="toggleTag"
-          >{{ tag }}
-        </v-chip>
-      </p>
-    </div>
+   
 
-    <div class="tag-list" v-if="activeClusters.length > 0">
-      <p>
-        <v-chip
-          color="primary"
-          v-for="cluster in activeClusters"
-          :key="cluster"
-          :data-name="cluster"
-          @click.stop.prevent="toggleCluster"
-          close
-          >{{ cluster }}
-        </v-chip>
-      </p>
-    </div>
-
-    <ul class="list">
+    <v-list three-line class="woop">
       <profile-search-item
-        v-for="item in searchResults"
+        v-for="(item, index) in searchResults"
         :item="item"
+        :index="index"
         :key="item.id"
       />
-    </ul>
+    </v-list>
   </div>
 </template>
 

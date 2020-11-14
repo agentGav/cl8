@@ -1,153 +1,95 @@
 <template>
-  <div
-    :key="profile.id"
-    class="theprofile pa3 pa4-ns center w-100 cf border-box fixed relative-l bg-white"
-  >
-    <div v-if="loading">
-      <div class="spinner">
-        <img src="../../assets/loading.svg" alt="loading" width="50px" />
-      </div>
-    </div>
+  <div>
+    <transition name="fade" mode="out-in" appear>
+    
+      
+    <v-card
+      elevation=1
+      v-if="profile"
+      :key="profile.id"
+      class="theprofile pa-2"
+    >
+    <v-row>
+      <v-col>
+        <v-card-actions>  
+      <v-btn rounded color="red" small text @click="hideProfile">
+        <v-icon dark>
+        mdi-minus
+      </v-icon>
 
-    <div v-else>
-      <!-- Message box -->
-      <div
-        v-if="showFlashMessage"
-        class="status-message cf flex items-center pa3 mb2"
-        v-bind:class="messageClassObject"
-      >
-        <svg
-          class="w1"
-          data-icon="info"
-          viewBox="0 0 32 32"
-          style="fill: currentcolor"
+              Clear selection
+      </v-btn>
+      <v-spacer></v-spacer>
+    
+      <v-menu offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          dark
+          v-bind="attrs"
+          v-on="on"
         >
-          <title>info icon</title>
-          <path
-            d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6"
-          />
-        </svg>
-        <span class="lh-title ml2" role="status" style="flex-grow: 1">{{
-          flashMessage
-        }}</span>
-        <button
-          aria-hidden="true"
-          role="button"
-          class="b--none ml2 mr2 bg-black-90 white br2 grow pointer close"
-          @click="hideFlashMessage"
+          Actions
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in items"
+          :key="index"
         >
-          x
-        </button>
-      </div>
+          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    </v-card-actions>
+      </v-col>
+      </v-row>
+    
+    <v-row>
+      <v-col cols="12" sm="4">
+        <v-img
+        v-if="hasPhoto(profile)"
+        :src="showPhoto()"
 
-      <v-card> </v-card>
+        />
 
-      <div v-if="profile">
-        <!-- profile controls -->
-        <div>
-          <div class="text-center float-right">
-            <v-btn rounded color="red" small dark @click="hideProfile">
-              Close
-            </v-btn>
-          </div>
-
-          <div v-if="canEdit()" class="fn fr-l">
-            <router-link
-              :to="{ name: 'editProfile' }"
-              role="link"
-              tabindex="0"
-              class="f6 link dim br2 ph3 pv2 mb3 dib white bg-gray"
-              >{{ $t('message.shared.editProfile') }}</router-link
-            >
-          </div>
-
-          <div v-if="isAdmin" class="fn fr-l">
-            <button
-              tabindex="0"
-              class="resend-invite f6 link dim br2 ph3 pv2 mb3 dib white bg-gray b--none ml2 mr2"
-              @click="resendInvite"
-            >
-              {{ $t('message.profileDetail.resendInvite') }}
-            </button>
-          </div>
-        </div>
-
-        <div class="fl w-70 w-20-m w-20-l mr3">
-          <img
-            v-if="hasPhoto(profile)"
-            :src="showPhoto()"
-            class="supplied-photo b--light-gray ba w-100"
-          />
-
-          <v-gravatar
-            v-else
-            :email="profile.email"
-            :size="200"
-            class="gravatar b--light-gray ba w-100"
-          />
-
-          <div v-if="canEdit()">
-            <div
-              v-if="isVisible()"
-              class="f6 link dim br2 ph3 pv2 mb2 dib white bg-green w-100 mt2 tc"
-            >
-              {{ $t('message.shared.visible') }}
-            </div>
-            <div
-              v-else
-              class="f6 link dim br2 ph3 pv2 mb2 dib white bg-red w-100 tc mt2"
-            >
-              {{ $t('message.shared.invisible') }}
-            </div>
-          </div>
-        </div>
-
-        <div class="fl w-100 w-60-m w-60-l mt0 pt0">
-          <ul class="list mt0 pt0 pl0">
-            <li class="list f3 name mt2 mt0-l mb2 name truncate">
-              {{ profile.name }}
-            </li>
-            <li class="list f5 email truncate mb2">
-              <a :href="'mailto:' + profile.email">{{ profile.email }}</a>
-            </li>
-            <li class="list f5 phone">{{ profile.phone }}</li>
-          </ul>
-
-          <ul class="list pl0">
-            <li v-if="profile.website" class="list f5 website">
-              <a :href="websiteLink" target="_blank">{{ profile.website }}</a>
-            </li>
-            <li v-if="profile.organisation" class="list f5 organisation mv3">
-              {{ profile.organisation }}
-            </li>
-          </ul>
-
-          <ul class="list pl0 social-links">
-            <li v-if="this.profile.twitter" class="list f5 twitter dib mr1">
-              <a :href="twitterLink" target="_blank">{{
-                $t('message.shared.twitter')
-              }}</a>
-            </li>
-            <li v-if="this.profile.facebook" class="list f5 linkedin dib mr1">
-              <a :href="facebookLink" target="_blank">{{
-                $t('message.shared.facebook')
-              }}</a>
-            </li>
-            <li v-if="this.profile.linkedin" class="list f5 twitter dib mr1">
-              <a :href="linkedinLink" target="_blank">{{
-                $t('message.shared.linkedIn')
-              }}</a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="fl cf pt2 w-100">
+        <v-gravatar
+        v-else
+        :email="profile.email"
+        :size="200"
+        class="gravatar b--light-gray ba w-100"
+        />    
+      </v-col>
+      
+      <v-col cols="12" sm="8">
+        <v-card-title class="pl-0">
+          {{ profile.name }}
+        </v-card-title>
+        <v-card-subtitle class="pl-0">
+         <v-icon>
+           mdi-email
+        </v-icon> 
+         <a :href="'mailto:' + profile.email">{{ profile.email }}</a>
+         
+        {{ profile.phone }}
+        </v-card-subtitle>
+      
+      </v-col>      
+    </v-row>
+    
+    <v-row>
+      <v-col>
+        
+        <div class="">
+          <h4>
+              Skills and interests
+            </h4>
           <v-chip
             class="ma-1"
             color="primary"
             v-for="tag in profile.tags"
             v-bind:key="tag.name"
-            :data-name="cluster"
+            :data-name="tag"
             @click.stop.prevent="toggleTag"
             >{{ tag.name }}
           </v-chip>
@@ -168,14 +110,23 @@
               >{{ cluster.name }}
             </v-chip>
           </div>
-
-          <div v-if="this.profile.bio" class="w-100 bio lh-copy measure-wide">
-            <div v-html="bioOutput"></div>
           </div>
-        </div>
-      </div>
-    </div>
+        </v-col>
+      
+      </v-row>
+      
+      <v-row v-if="this.profile.bio">
+          <v-col>
+             <div class="w-100 bio lh-copy measure-wide">
+                <div v-html="bioOutput"></div>
+            </div>
+          </v-col>
+      </v-row>
+        
+    </v-card>
+    </transition>
   </div>
+  
 </template>
 
 <script>
@@ -199,7 +150,11 @@ export default {
     return {
       loading: false,
       showFlashMessage: false,
-      flashMessage: ''
+      flashMessage: '',
+      items: [
+        { title: 'message.profileDetail.resendInvite' },
+        { title: 'message.shared.editProfile' },
+      ],
     }
   },
   computed: {
@@ -326,5 +281,11 @@ img.gravatar {
 .social-links li + li {
   border-left: 1px solid #000000;
   padding-left: 1em;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

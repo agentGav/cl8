@@ -136,7 +136,7 @@ export default {
 </script>
 
 <style>
-@import '../../../../node_modules/tachyons/css/tachyons.css';
+
 
 input {
   outline-style: none;

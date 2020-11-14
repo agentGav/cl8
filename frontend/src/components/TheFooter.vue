@@ -1,6 +1,6 @@
 <template>
   <footer class="cf" style="clear: both">
-    <p class="tc f6 mw-80">
+    <p class="">
       <em>{{ $t('message.footer.helpMessage') }} </em>
     </p>
   </footer>
