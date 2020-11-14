@@ -1,15 +1,16 @@
 <template>
   <div>
-    <div class="tag-list pa2 bb b--light-gray" v-if="activeTags">
+    <div class="tag-list pa2 bb b--light-gray" v-if="activeTags.length > 0">
       <p>
-        <button
+        <v-chip
+          color="primary"
           v-for="tag in activeTags"
           :key="tag"
-          class="remove-tag list pt2 pb2 mr1 mb1 ph3 pr5 br2 bn f7 white bg-dark-blue relative bg-animate hover-bg-red"
+          :data-name="cluster"
+          close
           @click.stop.prevent="toggleTag"
-        >
-          {{ tag }}
-        </button>
+          >{{ tag }}
+        </v-chip>
       </p>
     </div>
 
