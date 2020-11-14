@@ -1,6 +1,22 @@
 <template>
   <div>
     <v-row>
+      <v-container>
+      <v-form>
+        <v-col>
+          <!-- // placeholder="Search across tags, names and profile details" -->
+          <v-text-field
+            outlined
+            :placeholder="$t('message.navHeaderLoggedIn.search')"
+            name="search-term"
+            @input="updateSearchTerm"
+          ></v-text-field>
+        </v-col>
+        
+      </v-form>
+      </v-container>
+    </v-row>
+    <v-row>
       <v-col order="2" v-if="profile">
         <profile-detail />
       </v-col>
@@ -48,7 +64,11 @@ export default {
     }
   },
   watch: {},
-  methods: {},
+  methods: {
+    updateSearchTerm(term) {
+      this.$store.commit('setTerm', term)
+    }
+  },
   async beforeRouteEnter(routeTo, routeFrom, next)  {
         debug("beforeRouteEnter")
         if (routeTo.params.profileId) {
@@ -65,36 +85,3 @@ export default {
   },
 }
 </script>
-
-
-<style media="screen" lang="scss">
-p span.list {
-  display: inline-block;
-}
-
-.tag-list span {
-  cursor: pointer;
-}
-
-.tag-list span i.remove_icon:after {
-  content: '\D7';
-  color: white;
-}
-
-.tag-list span i.remove_icon {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 1em;
-  font-style: normal;
-}
-
-button.remove-tag {
-  background-image: url(../assets/cross-mark.svg);
-  background-size: 0.75em;
-  background-repeat: no-repeat;
-  background-position: top 0.5em right 0.5em;
-  padding-right: 1.5em;
-}
-</style>
