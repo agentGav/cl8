@@ -1,14 +1,19 @@
 <template>
   <div id="clusters">
     <div id="cluster-options" v-if="sortedTagObjectList">
-      <button
-        class="f6 grow no-underline b br-pill ph3 pv2 mb2 ml1 mr1 dib white bg-mid-gray bn pointer"
+      <v-chip
         v-for="(option, index) in sortedTagObjectList"
         :key="index"
+        class="ma-1"
+        color="primary"
+        :outlined="!inProfileClusters(option.name)"
+        
         :data-tagname="option.name"
         @click.stop.prevent="toggle(option)"
-        v-bind:class="{'active bg-dark-green': inProfileClusters(option.name)}"
-      >{{option.name}}</button>
+      >
+      {{option.name}}
+      </v-chip>
+      
     </div>
   </div>
 </template>

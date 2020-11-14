@@ -68,8 +68,12 @@
                         $t('message.profileEdit.nameMessage')
                       }}</span>
                     </label>
-
-                    <input class="w-100 mt1 pa1" v-model="profile.name" />
+                    <v-text-field
+                      class="mt-1"
+                      outlined
+                      v-model="profile.name"
+                    >
+                    </v-text-field>
                   </li>
 
                   <li class="list email mt2">
@@ -90,22 +94,36 @@
                     <span class="f6 lh-copy i gray">
                       {{ $t('message.profileEdit.phoneMessage') }}
                     </span>
-                    <input class="w-100 mt1 pa1" v-model="profile.phone" />
+                    <v-text-field
+                      class="mt-1"
+                      outlined
+                      v-model="profile.phone"
+                    >
+                    </v-text-field>
                   </li>
                   <li class="list website mt2">
                     <label class="f5" for>
                       {{ $t('message.shared.website') }}
                     </label>
-                    <input class="w-100 mt1 pa1" v-model="profile.website" />
+                    
+                     <v-text-field
+                      class="mt-1"
+                      outlined
+                      v-model="profile.website"
+                    >
+                    </v-text-field>
                   </li>
                   <li class="list organisation mt2">
                     <label class="f5" for>
                       {{ $t('message.profileEdit.organisation') }}
                     </label>
-                    <input
-                      class="w-100 mt1 pa1"
+                    
+                    <v-text-field
+                      class="mt-1"
+                      outlined
                       v-model="profile.organisation"
-                    />
+                    >
+                    </v-text-field>
                   </li>
                 </ul>
 
@@ -120,7 +138,12 @@
                     <label class="f5" for>
                       {{ $t('message.shared.facebook') }}
                     </label>
-                    <input class="w-100 mt1" v-model="profile.facebook" />
+                     <v-text-field
+                      class="mt-1"
+                      outlined
+                      v-model="profile.facebook"
+                    >
+                    </v-text-field>
                   </li>
                   <li class="list linkedin mt2">
                     <label class="f5" for>
@@ -129,7 +152,12 @@
                         {{ $t('message.profileEdit.linkedInMessage') }}</span
                       >
                     </label>
-                    <input class="w-100 mt1" v-model="profile.linkedin" />
+                    <v-text-field
+                      class="mt-1"
+                      outlined
+                      v-model="profile.linkedin"
+                    >
+                    </v-text-field>
                   </li>
 
                   <li class="list mt2">
@@ -142,15 +170,14 @@
                         >)
                       </span>
                     </label>
-                    <textarea
-                      class="w-100 mt1 pa1 ba b--light-gray"
-                      v-model="profile.bio"
+                    <v-textarea
+                      outlined
                       :placeholder="$t('message.shared.bioPlaceholder')"
+                      v-model="profile.bio"
                       name
                       id
-                      cols="30"
-                      rows="10"
-                    ></textarea>
+                      auto-grow>
+                      </v-textarea>
                   </li>
                 </ul>
               </div>
@@ -164,6 +191,7 @@
                     $t('message.profileEdit.clusterMessage')
                   }}</span>
                 </p>
+                
                 <profile-clusters-component></profile-clusters-component>
               </div>
 
@@ -179,11 +207,26 @@
                 <profile-tags-component></profile-tags-component>
               </div>
             </div>
+
+            <v-btn
+              class="mr-4"
+              color="secondary"
+              outlined
+              @click="cancelFormUpdate"
+            >
+              {{ $t('message.shared.cancel') }}
+            </v-btn>
+
+            <v-btn
+              color="primary"
+              @click="onSubmit"
+            >
+            {{ $t('message.shared.save') }}
+    </v-btn>
           </form>
         </div>
       </div>
     </div>
-    <the-footer />
   </div>
 </template>
 
@@ -192,7 +235,6 @@
 import NavHeaderEdit from '../shared/NavHeaderEdit.vue'
 import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
 import ProfileClustersComponent from '@/components/profile/ProfileClusters.vue'
-import TheFooter from '@/components/TheFooter.vue'
 
 import { includes } from 'lodash'
 import debugLib from 'debug'
@@ -206,7 +248,6 @@ export default {
     NavHeaderEdit,
     ProfileTagsComponent,
     ProfileClustersComponent,
-    TheFooter
   },
 
   data() {
@@ -230,7 +271,7 @@ export default {
       return this.$store.getters.tagList
     },
     profileClusters: function () {
-      return this.profile.tags
+      return this.profile.clusters
     },
     fullClusterList: function () {
       return this.$store.getters.fullClusterList
@@ -262,6 +303,17 @@ export default {
     showPhoto(size) {
       return this.profile.photo
     },
+    cancelFormUpdate() {
+      debug('cancel update', this.profile)
+      this.$router.push({
+        name: 'viewProfile',
+        params: { profileId: this.profile.id }
+      })
+    },
+    onSubmit: function(item) {
+      debug('updating profile', this.profile)
+      this.$store.dispatch('updateProfile', this.profile)
+    },
     setUserProfile() {
       debug('setting own profile for ', this.user)
       let user = this.user
@@ -278,42 +330,3 @@ export default {
   }
 }
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-<style media="screen" lang="scss" scoped>
-p span.list {
-  display: inline-block;
-}
-
-li.email div {
-  cursor: not-allowed;
-}
-
-.edithover {
-  position: relative;
-  display: inline-block;
-  width: auto;
-  color: #fff;
-  text-align: center;
-  &:before {
-    content: 'change';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 101%;
-    height: 100%;
-    background-color: rgba(#09f, 0.3);
-    pointer-events: none;
-    opacity: 0;
-    padding: 1em;
-    @include padding();
-    transition: all 0.2s;
-  }
-  &:hover {
-    &:before {
-      opacity: 1;
-    }
-  }
-}
-</style>

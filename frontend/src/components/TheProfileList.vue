@@ -6,7 +6,7 @@
           color="primary"
           v-for="tag in activeTags"
           :key="tag"
-          :data-name="cluster"
+          :data-name="tag"
           close
           @click.stop.prevent="toggleTag"
           >{{ tag }}
@@ -21,6 +21,7 @@
           v-for="cluster in activeClusters"
           :key="cluster"
           :data-name="cluster"
+          @click.stop.prevent="toggleCluster"
           close
           >{{ cluster }}
         </v-chip>

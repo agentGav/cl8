@@ -10,14 +10,22 @@
     />
 
     <div id="tagoptions" v-if="sortedTagList">
-      <button
-        class="f6 grow no-underline b br-pill ph3 pv2 mb2 ml1 mr1 dib white bg-mid-gray bn pointer"
-        v-for="(option, index) in sortedTagList"
+       <v-chip
+       v-for="(option, index) in sortedTagList"
         :key="index"
         :data-tagname="option.name"
+
         @click.stop.prevent="toggle(option)"
-        v-bind:class="{'active bg-dark-green': inProfileTags(option.name)}"
-      >{{option.name}}</button>
+        class="ma-1"
+        color="primary"
+        :outlined="!inProfileTags(option.name)"
+
+    
+      >
+      {{option.name}}
+      </v-chip>
+      
+     
     </div>
   </div>
 </template>
