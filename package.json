@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.10.2",
+    "@mdi/js": "^5.8.55",
     "@vue/cli-plugin-eslint": "^4.4.1",
     "@vue/cli-plugin-unit-jest": "^4.4.1",
     "@vue/cli-service": "^4.4.1",
