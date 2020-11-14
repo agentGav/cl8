@@ -16,7 +16,15 @@
       </ul>
 
       <div class="dib mt1-m">
-        <div class="dib mr2 black-30 f7 f6-m" v-for="tag in item.tags" :key="tag.id">{{tag.name}}</div>
+        
+         <v-chip
+            small
+            class="ma-1"
+            v-for="tag in item.tags"
+            :key="tag.id"
+            >{{ tag.name }}
+          </v-chip>
+          
       </div>
     </div>
   </li>

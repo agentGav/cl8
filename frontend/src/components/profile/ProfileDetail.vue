@@ -142,38 +142,31 @@
         </div>
 
         <div class="fl cf pt2 w-100">
-          <ul class="db list tags ml0 pl0">
-            <li
-              v-for="tag in profile.tags"
-              v-bind:key="tag.name"
-              class="list bg-near-white br2 f7 pa2 mr1 mb1 ph3 b--light-silver bg-animate hover-bg-blue hover-white"
-              :class="{
-                'bg-dark-blue white': isActive(tag.name.toLowerCase())
-              }"
-              @click="toggleTag"
-            >
-              {{ tag.name.toLowerCase().trim() }}
-            </li>
-          </ul>
+          <v-chip
+            class="ma-1"
+            color="primary"
+            v-for="tag in profile.tags"
+            v-bind:key="tag.name"
+            :data-name="cluster"
+            @click.stop.prevent="toggleTag"
+            >{{ tag.name }}
+          </v-chip>
 
           <!-- TODO, make this into a tag list component -->
           <div v-if="hasActiveClusters()" class="cluster-component">
             <h4>
               {{ $t('message.profileDetail.clusterMember') }}
             </h4>
-            <ul class="db list tags clusters ml0 pl0">
-              <li
-                v-for="cluster in profile.clusters"
-                v-bind:key="cluster.name"
-                class="list bg-near-white br2 f7 pa2 mr1 mb1 ph3 b--light-silver bg-animate hover-bg-blue hover-white"
-                :class="{
-                  'bg-dark-blue white': isActive(cluster.name.toLowerCase())
-                }"
-                @click="toggleCluster"
-              >
-                {{ cluster.name }}
-              </li>
-            </ul>
+
+            <v-chip
+              class="ma-1"
+              color="primary"
+              v-for="cluster in profile.clusters"
+              v-bind:key="cluster.name"
+              :data-name="cluster"
+              @click.stop.prevent="toggleCluster"
+              >{{ cluster.name }}
+            </v-chip>
           </div>
 
           <div v-if="this.profile.bio" class="w-100 bio lh-copy measure-wide">
