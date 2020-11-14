@@ -36,7 +36,13 @@ module.exports = {
   // proxy requests that are not matched by our own files
   // to the django server running at the address below
   devServer: {
-    proxy: 'http://127.0.0.1:8000'
+    proxy: {
+      '^/': {
+        target: 'http://127.0.0.1:8000',
+        ws: true,
+        changeOrigin: true
+      },
+    }
   },
 
   pluginOptions: {
