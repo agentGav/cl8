@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="tag-list pa2 bb b--light-gray" v-if="activeTags.length > 0">
+    <div class="tag-list" v-if="activeTags.length > 0">
       <p>
         <v-chip
           color="primary"
@@ -14,7 +14,7 @@
       </p>
     </div>
 
-    <div class="tag-list pa2 bb b--light-gray" v-if="activeClusters.length > 0">
+    <div class="tag-list" v-if="activeClusters.length > 0">
       <p>
         <v-chip
           color="primary"
@@ -28,7 +28,7 @@
       </p>
     </div>
 
-    <ul class="list ma0 ml0 pl0 pa0">
+    <ul class="list">
       <profile-search-item
         v-for="item in searchResults"
         :item="item"
@@ -203,66 +203,3 @@ export default {
   }
 }
 </script>
-
-
-<style>
-.side-column,
-.profile-holder {
-  height: auto;
-  overflow: visible;
-  @media (min-width: 960px) {
-    overflow: auto;
-    height: calc(100vh - 4.25rem - 1px);
-  }
-}
-p span.list {
-  display: inline-block;
-}
-.tag-list span {
-  cursor: pointer;
-}
-.tag-list span i.remove_icon:after {
-  content: '\D7';
-  color: white;
-}
-.tag-list span i.remove_icon {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 1em;
-  font-style: normal;
-}
-.bg-network {
-  /* background-image: url(../../assets/network-watermark.png); */
-  background-repeat: no-repeat;
-}
-.profile-holder {
-  /* box-shadow: 5px 0px 20px #ddd; */
-}
-hr {
-  border: 0;
-  border-top: 1px solid #ddd;
-}
-button.remove-tag {
-  background-image: url(../assets/cross-mark.svg);
-  background-size: 0.75em;
-  background-repeat: no-repeat;
-  background-position: top 0.5em right 0.5em;
-  padding-right: 2em;
-}
-input {
-  outline-style: none;
-}
-.navnav {
-  top: 0;
-}
-.mainframe {
-  @media screen and (max-width: 960px) {
-    margin-top: calc(4.25rem + 1px);
-  }
-  @media screen and (max-width: 480px) {
-    margin-top: calc(6.25rem + 1px);
-  }
-}
-</style>
