@@ -11,7 +11,7 @@
     >
     <v-row>
       <v-col>
-        <v-card-actions>  
+        <v-card-actions>
       <v-btn rounded color="red" small text @click="hideProfile">
         <v-icon dark>
         mdi-minus
@@ -29,7 +29,12 @@
           v-bind="attrs"
           v-on="on"
         >
-          Actions
+        <v-icon
+        role="img"
+        aria-label="Profile Actions" aria-hidden="false">
+            {{ icons.mdiCog }}
+        </v-icon>
+
         </v-btn>
       </template>
       <v-list>
@@ -37,7 +42,9 @@
           v-for="(item, index) in items"
           :key="index"
         >
-          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+          <v-list-item-title>
+            {{ $t(item.title) }}
+            </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -66,8 +73,8 @@
           {{ profile.name }}
         </v-card-title>
         <v-card-subtitle class="pl-0">
-         <v-icon>
-           mdi-email
+         <v-icon color="primary" class="pr-2">
+           {{ icons.mdiEmail }}
         </v-icon> 
          <a :href="'mailto:' + profile.email">{{ profile.email }}</a>
          
@@ -138,7 +145,7 @@ import marked from 'marked'
 import sanitizeHTML from 'sanitize-html'
 const debug = debugLib('cl8.ProfileDetail')
 Vue.component('v-gravatar', Gravatar)
-
+import { mdiAccount, mdiEmail, mdiCog } from '@mdi/js'
 import { linkify, hasPhoto } from '@/utils'
 
 export default {
@@ -148,6 +155,10 @@ export default {
   },
   data() {
     return {
+      icons: {
+        mdiEmail,
+        mdiCog
+      },
       loading: false,
       showFlashMessage: false,
       flashMessage: '',
@@ -282,8 +293,9 @@ img.gravatar {
   border-left: 1px solid #000000;
   padding-left: 1em;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .1s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;

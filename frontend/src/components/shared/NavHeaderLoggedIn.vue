@@ -1,37 +1,64 @@
 <template>
   <div v-if="loggedIn">
-    <router-link
-      v-if="canAddUsers"
-      :to="{ name: 'addUser' }"
-      role="link"
-      tabindex="0"
-      class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
-      >{{ $t('message.shared.addUser') }}</router-link
-    >
-    <span
-      :title="$t('message.navHeaderLoggedIn.myProfile')"
-      role="link"
-      tabindex="0"
-      class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
-      @click="myProfile"
-      >{{ $t('message.navHeaderLoggedIn.myProfile') }}</span
-    >
-    <span
-      :title="$t('message.navHeaderLoggedIn.logOut')"
-      role="link"
-      tabindex="0"
-      class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
-      @click="logout"
-      >{{ $t('message.navHeaderLoggedIn.logOut') }}</span
-    >
+    <v-menu offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn color="primary"  v-bind="attrs" v-on="on">
+          <v-icon aria-label="Navigation" role="img" aria-hidden="false">
+            {{ icons.mdiMenu }}
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item>
+          <router-link
+            v-if="canAddUsers"
+            :to="{ name: 'addUser' }"
+            role="link"
+            tabindex="0"
+            class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
+            >{{ $t('message.shared.addUser') }}</router-link
+          >
+        </v-list-item>
+
+        <v-list-item>
+          <span
+            :title="$t('message.navHeaderLoggedIn.myProfile')"
+            role="link"
+            tabindex="0"
+            class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
+            @click="myProfile"
+            >{{ $t('message.navHeaderLoggedIn.myProfile') }}</span
+          >
+        </v-list-item>
+        <v-list-item>
+          <span
+            :title="$t('message.navHeaderLoggedIn.logOut')"
+            role="link"
+            tabindex="0"
+            class="link dark-gray f6 nowrap f6-ns dib fr fn-ns pointer pt0 pb3 pa2-m pa2-l ph3 v-mid order-1 tr"
+            @click="logout"
+            >{{ $t('message.navHeaderLoggedIn.logOut') }}</span
+          >
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 <script>
 import debugLib from 'debug'
+import { mdiMenu } from '@mdi/js'
+
 const debug = debugLib('cl8.NavHeaderLoggedIn.vue')
 export default {
   name: 'Header',
+  data() {
+    return {
+      icons: {
+        mdiMenu,
+      }
+    }
+  },
   computed: {
     canAddUsers() {
       return this.$store.getters.isAdmin
