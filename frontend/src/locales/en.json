@@ -44,7 +44,9 @@
         "sendInvite": "Send the user an invite mail for this constellation",
         "isAdmin": "Make this user a constellation moderator",
         "twitterMessage": "(just add your @username)",
-        "websiteMessage": "(http:// is added automatically)"
+        "websiteMessage": "(http:// is added automatically)",
+        "profileHidden": "This profile is hidden from other members",
+        "profileVisible": "This profile is visible to other members"
       },
       "profileDetail": {
         "clusterMember": "is a member of the following clusters",
