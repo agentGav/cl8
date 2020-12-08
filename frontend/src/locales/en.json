@@ -47,7 +47,7 @@
         "websiteMessage": "(http:// is added automatically)"
       },
       "profileDetail": {
-        "clusterMember": "Is a member of the following clusters",
+        "clusterMember": "is a member of the following clusters",
         "resendInvite": "Re-send Invite"
       },
       "profileEdit": {
@@ -79,6 +79,7 @@
         "linkedIn": "LinkedIn",
         "markdownMessage": "For formatting tips, see: ",
         "save": "Save",
+        "clusters": "Clusters",
         "tagMessage": "(type below to add new tags)",
         "tags": "Skills and Interests",
         "twitter": "Twitter",
