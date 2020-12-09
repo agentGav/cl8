@@ -319,10 +319,21 @@ const actions = {
     }
   },
   addUser: async function (context, payload) {
-    debug('action:fetchProfile')
+    debug('action:fetchProfile', {payload})
     payload.tags = payload.tags.map(function (obj) {
       return obj.name
     })
+    // if (payload.clusters.length) {
+    //   payload.clusters = payload.clusters.map(function (obj) {
+    //     return obj.name
+    //   })
+    // }
+    // commenting this out for now until we have a set of common
+    // validations and transformations for sending updates to the
+    // the server from Vue - this is better done with a few tests
+    // than manual faffing
+    payload.clusters = []
+    payload.tags = []
 
     const token = context.getters.token
     // check we have token, or log user out

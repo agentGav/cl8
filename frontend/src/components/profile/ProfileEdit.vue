@@ -149,11 +149,17 @@ import NavHeaderEdit from "../shared/NavHeaderEdit.vue";
 import ProfileTagsComponent from "@/components/profile/ProfileTagsComponent.vue";
 import ProfileClustersComponent from "@/components/profile/ProfileClusters.vue";
 
+import Vue from "vue";
+import Vuex from "vuex";
 import { includes } from "lodash";
 import debugLib from "debug";
-import { hasPhoto } from "@/utils";
+
+import { fetchCurrentUser, hasPhoto } from "@/utils";
+import store from "@/store";
 
 const debug = debugLib("cl8.ProfileEdit");
+Vue.use(Vuex);
+const VueStore = new Vuex.Store(store);
 
 export default {
   name: "ProfileEdit",
@@ -189,15 +195,12 @@ export default {
       return this.$store.getters.fullClusterList;
     },
   },
-  async created() {
-    debug("fetching latest profiles and tags");
-    try {
-      await this.$store.dispatch("fetchProfileList");
-      await this.$store.dispatch("fetchTags");
-      await this.$store.dispatch("fetchClusters");
-    } catch (e) {
-      debug("couldn't load tags or clusters for the profile: ", e);
-    }
+  async beforeRouteEnter(routeTo, routeFrom, next) {
+    debug("beforeRouteEnter");
+    const currentUser = await fetchCurrentUser(VueStore);
+    debug({ currentUser });
+    await VueStore.dispatch("fetchProfile", { id: currentUser.id });
+    next();
   },
   methods: {
     updatePhoto(ev) {

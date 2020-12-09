@@ -7,32 +7,29 @@
             <v-row>
               <v-col class="col-12 col-md-4">
                 <div class="pa-4">
-                  
-                <v-img v-if="hasPhoto(profile)" :src="showPhoto()" class=""></v-img>
+                  <v-img v-if="hasPhoto(profile)" :src="showPhoto()" class=""></v-img>
 
-                <v-gravatar v-else :email="profile.email" :size="200" class="" />
+                  <v-gravatar v-else :email="profile.email" :size="200" class="" />
 
-                <div class="">
-                  <v-switch
-                    v-model="profile.visible"
-                    :label="profileVisibility"
-                  ></v-switch>
-                </div>
-                <p class="" v-if="profile.visible">
-                  {{ $t("message.addUser.profileVisible") }}
-                </p>
-                <p class="" v-else>
-                  {{ $t("message.addUser.profileHidden") }}
-                </p>
+                  <div class="">
+                    <v-switch
+                      v-model="profile.visible"
+                      :label="profileVisibility"
+                    ></v-switch>
+                  </div>
+                  <p class="" v-if="profile.visible">
+                    {{ $t("message.addUser.profileVisible") }}
+                  </p>
+                  <p class="" v-else>
+                    {{ $t("message.addUser.profileHidden") }}
+                  </p>
                 </div>
               </v-col>
 
               <v-col>
-                
-                  <!-- Warning message box -->
-                <div
-                  v-if="warning"
-                >
+                <h2 class="mx-4">Add a new user to this constellation</h2>
+                <!-- Warning message box -->
+                <div v-if="warning">
                   <svg
                     class="w1"
                     data-icon="info"
@@ -48,10 +45,7 @@
                 </div>
 
                 <!-- Error message box -->
-                <div
-                  v-if="error"
-                  class="flex items-center pa3 bg-light-red mb2"
-                >
+                <div v-if="error" class="flex items-center pa3 bg-light-red mb2">
                   <svg
                     class="w1"
                     data-icon="info"
@@ -65,7 +59,7 @@
                   </svg>
                   <span class="lh-title ml2">{{ error }}</span>
                 </div>
-                
+
                 <div class="pa-4">
                   <v-text-field
                     class="mt-1"
@@ -153,21 +147,19 @@
 
                   <profile-tags-component></profile-tags-component>
                 </div>
-              
-              
-              <div class="mx-4">
-                
-              <v-checkbox
-                v-model="profile.sendInvite"
-                :label="$t('message.addUser.sendInvite')">
-              </v-checkbox>
-      
-              <v-checkbox
-                v-model="profile.admin"
-                :label="$t('message.addUser.isAdmin')"
-              ></v-checkbox>
-              </div>
-            
+
+                <div class="mx-4">
+                  <v-checkbox
+                    v-model="profile.sendInvite"
+                    :label="$t('message.addUser.sendInvite')"
+                  >
+                  </v-checkbox>
+
+                  <v-checkbox
+                    v-model="profile.admin"
+                    :label="$t('message.addUser.isAdmin')"
+                  ></v-checkbox>
+                </div>
 
                 <v-divider class="mt-8 mr-8"></v-divider>
 
@@ -196,18 +188,26 @@
 
 <script>
 import ProfileTagsComponent from "@/components/profile/ProfileTagsComponent.vue";
+import ProfileClustersComponent from "@/components/profile/ProfileClusters.vue";
 import TheFooter from "@/components/TheFooter.vue";
 
 import { includes } from "lodash";
-import { hasPhoto } from "@/utils";
+import { fetchCurrentUser, hasPhoto } from "@/utils";
 import debugLib from "debug";
+
+import Vue from "vue";
+import Vuex from "vuex";
+import store from "@/store";
+Vue.use(Vuex);
+const VueStore = new Vuex.Store(store);
 
 const debug = debugLib("cl8.AddUser");
 
 export default {
   name: "AddUser",
   components: {
-    // ProfileTagsComponent,
+    ProfileTagsComponent,
+    ProfileClustersComponent,
   },
   data() {
     return {
@@ -215,6 +215,7 @@ export default {
       warning: null,
       error: null,
       loading: false,
+      profileVisibility: "Show your profile",
       profile: {
         name: "",
         email: "",
@@ -232,8 +233,16 @@ export default {
       },
     };
   },
+  async beforeRouteEnter(routeTo, routeFrom, next) {
+    debug("beforeRouteEnter");
+    const currentUser = await fetchCurrentUser(VueStore);
+    debug({ currentUser });
+    next();
+  },
   async created() {
     debug("fetching latest profiles and tags");
+    await VueStore.commit("SET_PROFILE", this.profile);
+
     try {
       await this.$store.dispatch("fetchTags");
       await this.$store.dispatch("fetchClusters");
@@ -246,17 +255,17 @@ export default {
       return this.$store.getters.currentUser ? this.$store.getters.currentUser : false;
     },
     profileTags: function () {
-      return this.profile.tags;
+      return [];
     },
     fullTagList: function () {
       return this.$store.getters.tagList;
     },
     profileClusters: function () {
-      return this.profile.clusters;
+      return [];
     },
     fullClusterList: function () {
       return this.$store.getters.fullClusterList;
-    }
+    },
   },
   methods: {
     cancelFormUpdate() {

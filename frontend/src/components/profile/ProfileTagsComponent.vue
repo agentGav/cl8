@@ -10,93 +10,96 @@
     />
 
     <div id="tagoptions" v-if="sortedTagList">
-       <v-chip
-       v-for="(option, index) in sortedTagList"
+      <v-chip
+        v-for="(option, index) in sortedTagList"
         :key="index"
         :data-tagname="option.name"
-
         @click.stop.prevent="toggle(option)"
         class="ma-1"
         color="primary"
         :outlined="!inProfileTags(option.name)"
       >
-      {{option.name}}
+        {{ option.name }}
       </v-chip>
     </div>
   </div>
 </template>
 <script>
-import { sortBy, includes, remove } from 'lodash'
-import debugLib from 'debug'
+import { sortBy, includes, remove } from "lodash";
+import debugLib from "debug";
 
-const debug = debugLib('cl8.ProfileTagsComponent')
+const debug = debugLib("cl8.ProfileTagsComponent");
 
 export default {
-  name: 'ProfileTagsComponent',
+  name: "ProfileTagsComponent",
   computed: {
     profileTags: function () {
-      return this.$store.getters.profile.tags || []
+      // return this.tags || []
+      return this.$store.getters.profile.tags || [];
     },
     originalTagList: function () {
-      return this.$store.getters.fullTagList
+      return this.$store.getters.fullTagList;
     },
-    sortedTagList: function() {
-      const tags = this.originalTagList
+    sortedTagList: function () {
+      const tags = this.originalTagList;
 
-      return sortBy(tags, function(x){
-        return x.name ? x.name.toLowerCase() : x.toLowerCase()
-      })
-      return tags
-    }
+      return sortBy(tags, function (x) {
+        return x.name ? x.name.toLowerCase() : x.toLowerCase();
+      });
+      return tags;
+    },
   },
   data: () => {
     return {
-      input: ''
-    }
-
+      input: "",
+    };
   },
   methods: {
-    inProfileTags: function(tagName) {
-      if (this.profileTags.length < 1){
-        return false
+    inProfileTags: function (tagName) {
+      if (this.profileTags.length < 1) {
+        return false;
       }
-      const tagNames = this.profileTags.map(x => x.name)
-      return includes(tagNames, tagName)
+      const tagNames = this.profileTags.map((x) => x.name);
+      return includes(tagNames, tagName);
     },
-    toggle: function(tag) {
-      debug('toggle', tag)
+    toggle: function (tag) {
+      debug("toggle", tag);
 
-      let profileTags = this.profileTags.slice()
+      let profileTags = this.profileTags.slice();
 
       if (this.inProfileTags(tag.name)) {
-        remove(profileTags, function(x) { return x.name === tag.name})
+        remove(profileTags, function (x) {
+          return x.name === tag.name;
+        });
       } else {
-        profileTags.push(tag)
+        profileTags.push(tag);
       }
-      debug('profileTags', this.profileTags.map(x => x.name))
-      this.$store.commit('SET_PROFILE_TAGS', profileTags)
-
+      debug(
+        "profileTags",
+        this.profileTags.map((x) => x.name)
+      );
+      this.$store.commit("SET_PROFILE_TAGS", profileTags);
     },
-    newtag: function(event) {
-      event.stopPropagation()
-      event.preventDefault()
-      debug('newtag:', this.input)
+    newtag: function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      debug("newtag:", this.input);
       if (this.input.length > 0) {
-        const newTagName = this.input.toLowerCase().trim()
+        const newTagName = this.input.toLowerCase().trim();
         if (!this.inProfileTags(newTagName)) {
-          debug('new tag, adding to the list:', newTagName)
-          this.$store.dispatch('newProfileTag', newTagName)
+          debug("new tag, adding to the list:", newTagName);
+          this.$store.dispatch("newProfileTag", newTagName);
         } else {
-          debug('this tag already exists. Doing nothing for:', newTagName)
+          debug("this tag already exists. Doing nothing for:", newTagName);
         }
       }
       // then reset input
-      this.input = ''
+      this.input = "";
     },
-    checkInList: function(option){
-      debug('checkInList', option)
-      return this.inTagList(option.name)
-    }
-  }
-}
+    checkInList: function (option) {
+      debug("checkInList", option);
+      return this.inTagList(option.name);
+    },
+  },
+};
 </script>
