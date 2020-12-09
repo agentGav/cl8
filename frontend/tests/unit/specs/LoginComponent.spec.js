@@ -4,9 +4,7 @@ import VeeValidate from 'vee-validate'
 import Login from '@/components/auth/Login.vue'
 
 import debugLib from 'debug'
-
 const debug = debugLib('cl8.LoginComponent.spec')
-
 
 // we need to augment our Vue object for this component test
 // as we're not evaluating any setup in main.js
@@ -14,16 +12,15 @@ const localVue = createLocalVue()
 const config = { events: 'blur' }
 localVue.use(VeeValidate, config)
 
-
-
 describe('Login.Vue', () => {
 
   // declare mutable variable
   let wrapper
 
+
   let mockStore = {
     getters: {
-      isLoading: true,
+      isLoading: false,
       signInData: {
         message: null,
         email: null
@@ -32,6 +29,8 @@ describe('Login.Vue', () => {
     dispatch: jest.fn()
   }
 
+
+  
   describe('mounting with expected data', () => {
 
     wrapper = mount(Login, {
@@ -41,13 +40,7 @@ describe('Login.Vue', () => {
       }
     })
 
-    test('login mounts with when loading ', () => {
-
-      expect(wrapper.html()).toMatchSnapshot()
-      expect(wrapper.findAll('form').length).toBe(0)
-    })
-
-    test('shows login form when loaded', async () => {
+    test.only('shows login form when loaded', async () => {
       mockStore.getters.isLoading = false
 
       wrapper = mount(Login, {
@@ -59,7 +52,6 @@ describe('Login.Vue', () => {
 
 
       expect(wrapper.html()).toMatchSnapshot()
-      expect(wrapper.findAll('form').length).toBe(1)
     })
   })
 
@@ -79,7 +71,7 @@ describe('Login.Vue', () => {
 
       test('the submit button should be disabled with invalid data', () => {
 
-        expect(wrapper.find('button').element.disabled).toBeTruthy()
+        expect(wrapper.find('v-btn').element.disabled).toBeTruthy()
       })
 
       test.skip('the submit button should no longer be disabled with valid data', async () => {
