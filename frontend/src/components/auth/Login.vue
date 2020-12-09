@@ -14,7 +14,7 @@
           <v-text-field label="your email address" v-model="email" />
 
           <v-card-actions>
-            <v-btn class="" color="info" @click="submitEmail"
+            <v-btn :loading="this.submissionInFlight" color="info" @click="submitEmail"
               >Request login code</v-btn
             >
           </v-card-actions>
@@ -75,40 +75,23 @@ export default {
     }
   },
   methods: {
-    checkForValidFormSubmission: function () {
-      let validation = {
-        email: this.email
-      }
-
-      return this.$validator
-        .validateAll(validation)
-        .then((result) => {
-          if (!result) {
-            this.formIsValid = result
-            return false
-          }
-          this.formIsValid = result
-          return result
-        })
-        .catch((err) => {
-          debug(err)
-        })
-    },
     resetForm: function () {
-      this.email = null
-      this.emailSubmitted = false
+      this.email = null;
+      this.emailSubmitted = false;
+      this.submissionInFlight = false;
+      this.loginInFLight = false;
     },
     signIn: function () {
       let user = {
         email: this.email,
-        token: this.token
-      }
-      this.$store.dispatch('login', user)
+        token: this.token,
+      };
+      this.$store.dispatch("login", user);
     },
     submitEmail: async function () {
       // TODO set loading state with viewtify
-
-      let emailSubmitted
+      this.submissionInFlight = true;
+      let emailSubmitted;
       try {
         emailSubmitted = await this.$store.dispatch('submitEmail', this.email)
       } catch (e) {
@@ -116,10 +99,11 @@ export default {
         // bubble up the error so we see it in the login
       }
 
+      this.submissionInFlight = false;
       if (emailSubmitted) {
-        this.emailSubmitted = true
+        this.emailSubmitted = true;
       }
-    }
+    },
   },
   computed: {
     formValid: function () {
