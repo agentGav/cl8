@@ -1,66 +1,35 @@
 <template>
-  <div v-if="loading" class>
-    <div class="spinner">
-      <img src="../../assets/loading.svg" alt="loading" />
-    </div>
-  </div>
-  <div v-else class="cf bg-white">
-    <div class="editprofile cf bg-white">
-      <nav class="pa3 ph3 ph4-ns bb b--light-gray flex items-center">
-        <span class="w-100">{{ $t('message.shared.addUser') }}</span>
-        <a
-          href="#"
-          v-on:submit.prevent="onSubmit"
-          @click="onSubmit"
-          class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-green hover-bg-green"
-          >{{ $t('message.shared.save') }}</a
-        >
-        <router-link
-          :to="{ name: 'home' }"
-          class="fr v-btm f6 link br2 ph3 pv2 dib white bg-gray hover-bg-dark-gray"
-          >{{ $t('message.shared.cancel') }}</router-link
-        >
-      </nav>
-    </div>
-    <div class="fl pa2">
-      <div class="pa3 center w-80-l cf">
-        <div>
-          <form class v-if="profile">
-            <div class="cf w-100" style="min-height: 11em">
-              <div class="fl w-100 w-25-ns mb3">
-                <v-gravatar
-                  :email="profile.email"
-                  :size="200"
-                  class="gravatar b--light-silver ba w-80 mr4"
-                />
+  <div>
+    <transition name="fade" mode="out-in" appear>
+      <v-container>
+        <v-card>
+          <v-form>
+            <v-row>
+              <v-col class="col-12 col-md-4">
+                <div class="pa-4">
+                  <v-img v-if="hasPhoto(profile)" :src="showPhoto()" class=""></v-img>
 
-                <div class="w-40 w-100-ns fn-ns dib v-btm mt2">
-                  <div
-                    class="f6 dim br2 dib w-80 white mb2"
-                    v-bind:class="{
-                      'bg-green': profile.visible,
-                      'bg-red': !profile.visible
-                    }"
-                  >
-                    <input
-                      type="checkbox"
-                      class="dib w-20 mv2 ml2"
-                      id="visible-checkbox"
+                  <v-gravatar v-else :email="profile.email" :size="200" class="" />
+
+                  <div class="">
+                    <v-switch
                       v-model="profile.visible"
-                    />
-                    <label for="visible-checkbox" class="dib w-70">{{
-                      $t('message.shared.visible')
-                    }}</label>
+                      :label="profileVisibility"
+                    ></v-switch>
                   </div>
+                  <p class="" v-if="profile.visible">
+                    {{ $t("message.addUser.profileVisible") }}
+                  </p>
+                  <p class="" v-else>
+                    {{ $t("message.addUser.profileHidden") }}
+                  </p>
                 </div>
-              </div>
+              </v-col>
 
-              <!-- Warning message box -->
-              <div class="fl w-100 w-75-ns mt0 pt0">
-                <div
-                  v-if="warning"
-                  class="flex items-center pa3 bg-light-blue mb2"
-                >
+              <v-col>
+                <h2 class="mx-4">Add a new user to this constellation</h2>
+                <!-- Warning message box -->
+                <div v-if="warning">
                   <svg
                     class="w1"
                     data-icon="info"
@@ -76,10 +45,7 @@
                 </div>
 
                 <!-- Error message box -->
-                <div
-                  v-if="error"
-                  class="flex items-center pa3 bg-light-red mb2"
-                >
+                <div v-if="error" class="flex items-center pa3 bg-light-red mb2">
                   <svg
                     class="w1"
                     data-icon="info"
@@ -94,321 +60,246 @@
                   <span class="lh-title ml2">{{ error }}</span>
                 </div>
 
-                <ul class="list mt0 pt0 f4 pa0 border-box">
-                  <li class="list name">
-                    <label class="f5" for>{{
-                      $t('message.addUser.name')
-                    }}</label>
-                    <input class="w-100 mt1 pa1" v-model="profile.name" />
-                  </li>
+                <div class="pa-4">
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.name"
+                    :hint="$t('message.profileEdit.nameMessage')"
+                    :label="$t('message.profileEdit.name')"
+                  ></v-text-field>
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.email"
+                    :label="$t('message.profileEdit.email')"
+                  ></v-text-field>
 
-                  <li class="list email mt2">
-                    <label class="f5" for>{{
-                      $t('message.addUser.email')
-                    }}</label>
-                    <input class="w-100 mt1 pa1" v-model="profile.email" />
-                  </li>
-                  <li class="list phone mt2">
-                    <label class="f5 mb2" for>{{
-                      $t('message.addUser.phone')
-                    }}</label>
-                    <input class="w-100 mt1 pa1" v-model="profile.phone" />
-                  </li>
-                  <li class="list website mt2">
-                    <label class="f5" for>
-                      {{ $t('message.shared.website') }}
-                      <small>{{ $t('message.addUser.websiteMessage') }}</small>
-                    </label>
-                    <input class="w-100 mt1 pa1" v-model="profile.website" />
-                  </li>
-                </ul>
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.phone"
+                    :hint="$t('message.profileEdit.phoneMessage')"
+                    :label="$t('message.profileEdit.phone')"
+                  ></v-text-field>
 
-                <ul class="list mt0 pt0 pa0">
-                  <li class="list twitter">
-                    <label class="f5" for>
-                      {{ $t('message.shared.twitter') }}
-                      <small></small>
-                    </label>
-                    <input class="w-100 mt1" v-model="profile.twitter" />
-                  </li>
-                  <li class="list facebook mt2">
-                    <label class="f5" for>
-                      {{ $t('message.shared.facebook') }}
-                      <small>{{ $t('message.addUser.twitterMessage') }}</small>
-                    </label>
-                    <input class="w-100 mt1" v-model="profile.facebook" />
-                  </li>
-                  <li class="list linkedin mt2">
-                    <label class="f5" for>
-                      {{ $t('message.shared.linkedIn') }}
-                      <small>{{ $t('message.addUser.linkedInMessage') }}</small>
-                    </label>
-                    <input class="w-100 mt1" v-model="profile.linkedin" />
-                  </li>
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.website"
+                    :hint="$t('message.addUser.websiteMessage')"
+                    :label="$t('message.shared.website')"
+                  ></v-text-field>
 
-                  <li class="list mt2">
-                    <label class="f5" for>
-                      {{ $t('message.shared.about') }}
-                      <small>
-                        ({{ $t('message.shared.markdownMessage') }}
-                        <a href="https://daringfireball.net/projects/markdown/"
-                          >markdown</a
-                        >)
-                      </small>
-                    </label>
-                    <textarea
-                      class="w-100 mt1 pa1 ba b--light-gray"
-                      v-model="profile.bio"
-                      :placeholder="$t('message.shared.bioPlaceholder')"
-                      name
-                      id
-                      cols="30"
-                      rows="10"
-                    ></textarea>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="cf pt2 bg-white mb3">
-              <label class="typo__label">{{ $t('message.shared.tags') }}</label>
-              <p class="f6 mb3">
-                <em>{{ $t('message.shared.tagMessage') }}</em>
-              </p>
-              <profile-tags-component
-                :data.sync="profile.tags"
-                :options="profileTags"
-                @newtag="addTag"
-              ></profile-tags-component>
-            </div>
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.organisation"
+                    :hint="$t('message.addUser.websiteMessage')"
+                    :label="$t('message.profileEdit.organisation')"
+                  ></v-text-field>
 
-            <ul class="list mt0 pt0 f4 pa0 border-box bg-washed-green pa3">
-              <li class="list send-invite pt3">
-                <input
-                  type="checkbox"
-                  id="send-invite"
-                  class="mr2"
-                  v-model="profile.sendInvite"
-                />
-                <label for="send-invite" class="f5">{{
-                  $t('message.addUser.sendInvite')
-                }}</label>
-              </li>
-              <li class="list is-admin pt3">
-                <input
-                  type="checkbox"
-                  id="is-Admin"
-                  class="mr2"
-                  v-model="profile.admin"
-                />
-                <label for="is-Admin" class="f5">{{
-                  $t('message.addUser.isAdmin')
-                }}</label>
-              </li>
-            </ul>
-          </form>
-        </div>
-        <div class="editprofile cf bg-white">
-          <nav class="pv3 bb b--light-gray flex items-center">
-            <a
-              href="#"
-              v-on:submit.prevent="onSubmit"
-              @click="onSubmit"
-              class="fr v-btm f6 mr3 link br2 ph3 pv2 dib white bg-green hover-bg-green"
-              >{{ $t('message.shared.save') }}</a
-            >
-            <router-link
-              :to="{ name: 'home' }"
-              class="fr v-btm f6 link br2 ph3 pv2 dib white bg-gray hover-bg-dark-gray"
-              >{{ $t('message.shared.cancel') }}</router-link
-            >
-          </nav>
-        </div>
-      </div>
-    </div>
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.twitter"
+                    :hint="$t('message.addUser.twitterMessage')"
+                    :label="$t('message.shared.twitter')"
+                  ></v-text-field>
 
-    <the-footer />
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.facebook"
+                    :hint="$t('message.addUser.facebookMessage')"
+                    :label="$t('message.shared.facebook')"
+                  ></v-text-field>
+
+                  <v-text-field
+                    class="mt-1"
+                    outlined
+                    v-model="profile.linkedIn"
+                    :hint="$t('message.addUser.linkedInMessage')"
+                    :label="$t('message.shared.linkedIn')"
+                  ></v-text-field>
+
+                  <v-textarea
+                    outlined
+                    :label="$t('message.shared.about')"
+                    :placeholder="$t('message.shared.bioPlaceholder')"
+                    v-model="profile.bio"
+                    name
+                    id
+                    auto-grow
+                  ></v-textarea>
+                </div>
+
+                <div class="mx-4">
+                  <h3>{{ $t("message.profileEdit.clusters") }}</h3>
+                  <p>{{ $t("message.profileEdit.clusterMessage") }}</p>
+
+                  <profile-clusters-component></profile-clusters-component>
+                </div>
+
+                <div class="mt-4 mx-4">
+                  <h3>{{ $t("message.shared.tags") }}</h3>
+                  <p>{{ $t("message.shared.tagMessage") }}</p>
+
+                  <profile-tags-component></profile-tags-component>
+                </div>
+
+                <div class="mx-4">
+                  <v-checkbox
+                    v-model="profile.sendInvite"
+                    :label="$t('message.addUser.sendInvite')"
+                  >
+                  </v-checkbox>
+
+                  <v-checkbox
+                    v-model="profile.admin"
+                    :label="$t('message.addUser.isAdmin')"
+                  ></v-checkbox>
+                </div>
+
+                <v-divider class="mt-8 mr-8"></v-divider>
+
+                <v-card-actions class="pt-8">
+                  <v-btn
+                    class="mr-4"
+                    color="secondary"
+                    outlined
+                    @click="cancelFormUpdate"
+                  >
+                    {{ $t("message.shared.cancel") }}
+                  </v-btn>
+
+                  <v-btn color="primary" @click="onSubmit">
+                    {{ $t("message.shared.save") }}
+                  </v-btn>
+                </v-card-actions>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card>
+      </v-container>
+    </transition>
   </div>
 </template>
 
 <script>
-import ProfileTagsComponent from '@/components/profile/ProfileTagsComponent.vue'
-import TheFooter from '@/components/TheFooter.vue'
+import ProfileTagsComponent from "@/components/profile/ProfileTagsComponent.vue";
+import ProfileClustersComponent from "@/components/profile/ProfileClusters.vue";
+import TheFooter from "@/components/TheFooter.vue";
 
-import { includes } from 'lodash'
-import { hasPhoto } from '@/utils'
-import debugLib from 'debug'
+import { includes } from "lodash";
+import { fetchCurrentUser, hasPhoto } from "@/utils";
+import debugLib from "debug";
 
-const debug = debugLib('cl8.AddUser')
+import Vue from "vue";
+import Vuex from "vuex";
+import store from "@/store";
+Vue.use(Vuex);
+const VueStore = new Vuex.Store(store);
+
+const debug = debugLib("cl8.AddUser");
 
 export default {
-  name: 'AddUser',
+  name: "AddUser",
   components: {
     ProfileTagsComponent,
-    TheFooter
+    ProfileClustersComponent,
   },
   data() {
     return {
-      items: [],
-      tagList: [],
-      unsyncedTags: [],
       localPhoto: null,
       warning: null,
       error: null,
       loading: false,
+      profileVisibility: "Show your profile",
       profile: {
-        name: '',
-        email: '',
-        phone: '',
-        website: '',
-        twitter: '',
-        facebook: '',
-        linkedin: '',
-        bio: '',
+        name: "",
+        email: "",
+        phone: "",
+        website: "",
+        twitter: "",
+        facebook: "",
+        linkedin: "",
+        bio: "",
         visible: true,
         sendInvite: false,
         pitchable: false,
-        tags: []
-      }
+        tags: [],
+        clusters: [],
+      },
+    };
+  },
+  async beforeRouteEnter(routeTo, routeFrom, next) {
+    debug("beforeRouteEnter");
+    const currentUser = await fetchCurrentUser(VueStore);
+    debug({ currentUser });
+    next();
+  },
+  async created() {
+    debug("fetching latest profiles and tags");
+    await VueStore.commit("SET_PROFILE", this.profile);
+
+    try {
+      await this.$store.dispatch("fetchTags");
+      await this.$store.dispatch("fetchClusters");
+    } catch (e) {
+      debug("couldn't load tags or clusters for the profile: ", e);
     }
   },
   computed: {
     user() {
-      return this.$store.getters.currentUser
-        ? this.$store.getters.currentUser
-        : false
+      return this.$store.getters.currentUser ? this.$store.getters.currentUser : false;
     },
     profileTags: function () {
-      let tagList = []
-
-      if (this.items.length > 0) {
-        this.items.forEach(function (peep) {
-          if (typeof peep.fields !== 'undefined') {
-            if (typeof peep.tags !== 'undefined') {
-              peep.tags.forEach(function (t) {
-                let tagListNames = tagList.map(function (tt) {
-                  return tt.name
-                })
-                if (!includes(tagListNames, t.name)) {
-                  tagList.push(t)
-                }
-              })
-            }
-          }
-        })
-      }
-      if (this.unsyncedTags.length > 0) {
-        this.unsyncedTags.forEach(function (t) {
-          tagList.push(t)
-        })
-      }
-      return tagList
-    }
+      return [];
+    },
+    fullTagList: function () {
+      return this.$store.getters.tagList;
+    },
+    profileClusters: function () {
+      return [];
+    },
+    fullClusterList: function () {
+      return this.$store.getters.fullClusterList;
+    },
   },
   methods: {
-    addTag(newTag) {
-      let tempVal =
-        newTag.substring(0, 2) + Math.floor(Math.random() * 10000000)
-      const tag = {
-        name: newTag,
-        code: tempVal,
-        id: 'tempval' + tempVal
-      }
-      this.profile.tags.push(tag)
-      this.unsyncedTags.push(tag)
+    cancelFormUpdate() {
+      this.$router.push({ name: "home" });
     },
     onSubmit: async function () {
-      this.error = null
-      this.warning = null
+      this.error = null;
+      this.warning = null;
 
       if (this.profile.name.length == 0) {
-        this.warning = 'Please enter a name for the new user'
-        return
+        this.warning = "Please enter a name for the new user";
+        return;
       }
 
       if (this.profile.email.length == 0) {
-        this.warning = 'Please enter an email address for the new user'
-        return
+        this.warning = "Please enter an email address for the new user";
+        return;
       }
 
-      debug('creating profile')
-      this.loading = true
+      debug("creating profile");
+      this.loading = true;
       try {
         // console.log(this.profile)
-        const resp = await this.$store.dispatch('addUser', this.profile)
+        const resp = await this.$store.dispatch("addUser", this.profile);
         // Any response is a warning as `addUser` will redirect to the new
         // profile if all goes well
         // this.warning = resp
       } catch (err) {
-        debug('Error creating account', err)
-        this.error = err.message
+        debug("Error creating account", err);
+        this.error = err.message;
       }
-      this.loading = false
+      this.loading = false;
     },
-    hasPhoto
-  }
-}
+    hasPhoto,
+  },
+};
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-<style media="screen" lang="scss" scoped>
-@import '../../../../node_modules/tachyons/css/tachyons.css';
-p span.list {
-  display: inline-block;
-}
-
-.gravatar:hover {
-  cursor: not-allowed;
-}
-
-@mixin rounded($r: 5px) {
-  -webkit-border-radius: $r;
-  -moz-border-radius: $r;
-  border-radius: $r;
-}
-
-@mixin padding() {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-/deep/ input,
-textarea {
-  box-sizing: border-box;
-  background: #fafafa;
-  border: 1px solid rgba(#000, 0.1);
-  @include rounded(3px);
-  padding: 0.25em 0.5em;
-  font-size: 1.25rem;
-}
-/deep/ textarea {
-  font-size: 1rem;
-}
-.edithover {
-  position: relative;
-  display: inline-block;
-  width: auto;
-  color: #fff;
-  text-align: center;
-  &:before {
-    content: 'change';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 101%;
-    height: 100%;
-    background-color: rgba(#09f, 0.3);
-    pointer-events: none;
-    opacity: 0;
-    padding: 1em;
-    @include padding();
-    transition: all 0.2s;
-  }
-  &:hover {
-    &:before {
-      opacity: 1;
-    }
-  }
-}
-</style>

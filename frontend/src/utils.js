@@ -33,6 +33,7 @@ function linkify (url, prefix) {
 async function fetchCurrentUser(store) {
   debug('currentProfile', store.getters.currentUser)
   if (!localStorage.token) {
+    debug('No local storage token available. This is needed to log in.')
     return false
   }
   if (!store.getters.currentUser && localStorage.token) {

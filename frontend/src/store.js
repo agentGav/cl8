@@ -140,8 +140,10 @@ const mutations = {
   },
   SET_PROFILE: function (state, payload) {
     debug('SET_PROFILE', payload)
-    debug('PROFILE TAGS', payload.tags.map(x => { return x.name }))
-    state.profileShowing = true
+    if (payload) {
+      debug('PROFILE TAGS', payload.tags.map(x => { return x.name }))
+      state.profileShowing = true
+    }
     state.profile = payload
   },
   SET_PROFILE_TAGS: function (state, payload) {
@@ -245,7 +247,7 @@ const actions = {
       headers: { Authorization: `Token ${token}` }
     })
     context.commit('SET_USER', profileResponse.data)
-    context.commit('SET_PROFILE', profileResponse.data)
+    // context.commit('SET_PROFILE', profileResponse.data)
   },
   updateActiveTags: function (context, payload) {
     debug('action:updateActiveTags')
@@ -317,10 +319,21 @@ const actions = {
     }
   },
   addUser: async function (context, payload) {
-    debug('action:fetchProfile')
+    debug('action:fetchProfile', {payload})
     payload.tags = payload.tags.map(function (obj) {
       return obj.name
     })
+    // if (payload.clusters.length) {
+    //   payload.clusters = payload.clusters.map(function (obj) {
+    //     return obj.name
+    //   })
+    // }
+    // commenting this out for now until we have a set of common
+    // validations and transformations for sending updates to the
+    // the server from Vue - this is better done with a few tests
+    // than manual faffing
+    payload.clusters = []
+    payload.tags = []
 
     const token = context.getters.token
     // check we have token, or log user out
@@ -336,6 +349,9 @@ const actions = {
     } else {
       return 'There was a problem creating the account'
     }
+  },
+  hideProfile: function (context, payload) {
+    context.commit('SET_PROFILE', null)
   },
   fetchProfile: async function (context, payload) {
 

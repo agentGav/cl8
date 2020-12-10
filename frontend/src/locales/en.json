@@ -15,7 +15,7 @@
           "requestLoginCodeButton": "Request login code"
         },
         "emailSubmitted": {
-          "nextStepGuidance": "Ok, we've just sent an email to your address. It's valid for the next 15 minutes. Enter it below and you're in.",
+          "nextStepGuidance": "Ok, we've just sent an email to your address with a login code. It's valid for the next 15 minutes. Enter it below and you're in.",
           "loginCode": "your login code",
           "signinButton": "Sign in",
           "resetButton": "Reset"
@@ -44,10 +44,12 @@
         "sendInvite": "Send the user an invite mail for this constellation",
         "isAdmin": "Make this user a constellation moderator",
         "twitterMessage": "(just add your @username)",
-        "websiteMessage": "(http:// is added automatically)"
+        "websiteMessage": "(http:// is added automatically)",
+        "profileHidden": "This profile is hidden from other members",
+        "profileVisible": "This profile is visible to other members"
       },
       "profileDetail": {
-        "clusterMember": "Is a member of the following clusters",
+        "clusterMember": "is a member of the following clusters",
         "resendInvite": "Re-send Invite"
       },
       "profileEdit": {
@@ -79,6 +81,7 @@
         "linkedIn": "LinkedIn",
         "markdownMessage": "For formatting tips, see: ",
         "save": "Save",
+        "clusters": "Clusters",
         "tagMessage": "(type below to add new tags)",
         "tags": "Skills and Interests",
         "twitter": "Twitter",

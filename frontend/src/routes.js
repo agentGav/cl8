@@ -27,6 +27,12 @@ const router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      path: '/profile/:profileId',
+      name: 'viewProfile',
+      component: TheHomePanel,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/edit',
       name: 'editProfile',
       component: ProfileEdit,

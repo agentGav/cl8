@@ -7,6 +7,8 @@ import Vuex from 'vuex'
 // 3rd party
 import VueFuse from 'vue-fuse'
 import debugLib from 'debug'
+import vuetify from '@/plugins/vuetify' // path to vuetify export
+
 
 // our own libraries
 import { fetchCurrentUser } from './utils'
@@ -24,9 +26,11 @@ Vue.config.devtools = true
 Vue.use(Vuex)
 Vue.use(VueFuse)
 
+
 const VueStore = new Vuex.Store(store)
 
 const app = new Vue({
+  vuetify,
   i18n,
   router,
   store: VueStore,
@@ -37,7 +41,7 @@ app.$validator.localize('en', validationLocalizedStrings)
 
 router.beforeEach(async (to, from, next) => {
 
-  debug(to.name, to.from, next)
+  debug({to: to.name}, {from: to.from})
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const currentUser = await fetchCurrentUser(VueStore)
