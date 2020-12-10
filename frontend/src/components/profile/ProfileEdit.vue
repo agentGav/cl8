@@ -8,7 +8,13 @@
               <v-col class="col-12 col-md-4">
                 <div class="pa-4">
                   <router-link :to="{ name: 'editProfilePhoto' }">
-                    <v-img v-if="hasPhoto(profile)" :src="showPhoto()" class=""></v-img>
+                    <v-img
+                      class="justify-center"
+                      width="200"
+                      height="200"
+                      v-if="hasPhoto(profile)"
+                      :src="showPhoto()"
+                    ></v-img>
 
                     <v-gravatar v-else :email="profile.email" :size="200" class="" />
                   </router-link>
