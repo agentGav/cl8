@@ -1,20 +1,24 @@
 <template>
   <div>
     <transition name="fade" mode="out-in" appear>
-      <v-card elevation="1" v-if="profile" :key="profile.id" class="theprofile pa-4">
+      <v-card elevation="1" :key="profile.id" class="theprofile pa-4">
         <v-row>
           <v-col>
             <v-card-actions>
               <v-btn rounded color="red" small text @click="hideProfile">
-                <v-icon dark> mdi-minus </v-icon>
-
                 Clear selection
               </v-btn>
               <v-spacer></v-spacer>
 
-              <v-menu offset-y>
+              <v-menu offset-y attach>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                  <v-btn
+                    color="primary"
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                    data-name="profile-actions"
+                  >
                     <v-icon role="img" aria-label="Profile Actions" aria-hidden="false">
                       {{ icons.mdiCog }}
                     </v-icon>
@@ -22,7 +26,7 @@
                 </template>
 
                 <v-list>
-                  <v-list-item @click="resendInvite">
+                  <v-list-item @click="resendInvite" class="resend-invite">
                     <v-list-item-title>
                       {{ $t("message.profileDetail.resendInvite") }}
                     </v-list-item-title>
@@ -42,10 +46,12 @@
         <v-row>
           <v-col cols="12" sm="4">
             <v-img
+              class="supplied-photo"
               max-width="200"
               max-height="200"
               v-if="hasPhoto(profile)"
               :src="showPhoto()"
+              alt="Profile photo"
             >
               <template v-slot:placeholder>
                 <v-row class="fill-height ma-0" align="center" justify="center">

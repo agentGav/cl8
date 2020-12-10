@@ -166,7 +166,6 @@ import { store } from "@/store";
 const debug = debugLib("cl8.ProfileEdit");
 Vue.use(Vuex);
 const VueStore = new Vuex.Store(store);
-console.log({ VueStore });
 
 export default {
   name: "ProfileEdit",

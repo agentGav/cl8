@@ -119,7 +119,7 @@ describe('TheProfileList', () => {
     })
     it('renders a list of profiles', async () => {
       expect(wrapper.html()).toBeTruthy()
-      expect(wrapper.findAll('.list .peep').length).toBe(2)
+      expect(wrapper.findAll('.profile').length).toBe(2)
     })
   })
 
@@ -154,10 +154,8 @@ describe('TheProfileList', () => {
 
     it('renders a list of profiles matching the tag', async () => {
       expect(wrapper.html()).toBeTruthy()
-      console.log(wrapper.html())
-
       await wrapper.vm.checkAgainstSearch()
-      expect(wrapper.findAll('.list .peep').length).toBe(1)
+      expect(wrapper.findAll('.profile').length).toBe(1)
     })
   })
   describe('filtered by cluster', () => {
@@ -192,9 +190,9 @@ describe('TheProfileList', () => {
 
       await wrapper.vm.checkAgainstSearch()
       expect(wrapper.vm.matchingTags()).toHaveLength(1)
-      expect(wrapper.findAll('.list .peep').length).toBe(1)
+      expect(wrapper.findAll('.profile').length).toBe(1)
     })
-    it.only('it dispatches a call to updateActiveClusters on click', async () => {
+    it.skip('it dispatches a call to updateActiveClusters on click', async () => {
       expect(wrapper.html()).toBeTruthy()
 
       await wrapper.vm.checkAgainstSearch()
