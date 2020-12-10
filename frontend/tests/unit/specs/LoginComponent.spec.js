@@ -59,6 +59,9 @@ describe('Login.Vue', () => {
 
       it('sends the provided token to finish sign in', async () => {
         // when we add the token, check that the action is dispatched
+        // arguably, triggering this 'from the outside' lives in an
+        // e2e test. TODO: work out the idiomatic way to do this
+        // with vue
         wrapper.find('[data-name="login-code"]').setValue(123456)
         wrapper.get('[data-name="sign-in"]').trigger('click')
 
