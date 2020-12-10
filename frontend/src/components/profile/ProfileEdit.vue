@@ -155,11 +155,12 @@ import { includes } from "lodash";
 import debugLib from "debug";
 
 import { fetchCurrentUser, hasPhoto } from "@/utils";
-import store from "@/store";
+import { store } from "@/store";
 
 const debug = debugLib("cl8.ProfileEdit");
 Vue.use(Vuex);
 const VueStore = new Vuex.Store(store);
+console.log({ VueStore });
 
 export default {
   name: "ProfileEdit",
@@ -197,9 +198,13 @@ export default {
   },
   async beforeRouteEnter(routeTo, routeFrom, next) {
     debug("beforeRouteEnter");
-    const currentUser = await fetchCurrentUser(VueStore);
-    debug({ currentUser });
-    await VueStore.dispatch("fetchProfile", { id: currentUser.id });
+    try {
+      const currentUser = await fetchCurrentUser(VueStore);
+      debug({ currentUser });
+      await VueStore.dispatch("fetchProfile", { id: currentUser.id });
+    } catch (error) {
+      debug("Error fetching current user", error);
+    }
     next();
   },
   methods: {
