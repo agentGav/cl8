@@ -60,8 +60,21 @@
       </v-container>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="8" order="2" v-if="profile">
-        <profile-detail />
+      <v-col cols="12" sm="8" order="2" >
+
+        <profile-detail v-if="profile"></profile-detail>
+        <v-card elevation="1" v-else class="pa-4 intro-card">
+          <h1>Welcome to constellate</h1>
+          <p>Constellate is shared directory for members of this constellation. You can use it to find other members with complementary skills and interests for your projects, or just understand who else is here.</p>
+        
+          <h2>How to use constellate</h2>
+          <p>You can type anything above to see an updated list of profiles matching your search terms, browse using tags, or both.</p>
+        
+          
+          <h3>(Sample tags here)</h3>
+          
+          
+        </v-card>
       </v-col>
       <v-col cols="12" sm="4" :class="profileListClassObject">
         <v-card elevation="1">
@@ -177,6 +190,10 @@ export default {
 </script>
 
 <style>
+.intro-card {
+  min-height: 20rem;
+}
+
 .scrollable-height {
   @media (min-width: 600px) {
     max-height: 77vh;
