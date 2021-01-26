@@ -161,7 +161,7 @@ import { includes } from "lodash";
 import debugLib from "debug";
 
 import { fetchCurrentUser, hasPhoto } from "@/utils";
-import { store } from "@/store";
+import store from "@/store";
 
 const debug = debugLib("cl8.ProfileEdit");
 Vue.use(Vuex);
@@ -192,7 +192,7 @@ export default {
       return this.profile.tags;
     },
     fullTagList: function () {
-      return this.$store.getters.tagList;
+      return this.$store.getters.fullTagList;
     },
     profileClusters: function () {
       return this.profile.clusters;
@@ -207,6 +207,8 @@ export default {
       const currentUser = await fetchCurrentUser(VueStore);
       debug({ currentUser });
       await VueStore.dispatch("fetchProfile", { id: currentUser.id });
+      await VueStore.dispatch("fetchTags");
+      await VueStore.dispatch("fetchClusters");
     } catch (error) {
       debug("Error fetching current user", error);
     }

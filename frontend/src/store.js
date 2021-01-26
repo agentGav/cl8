@@ -77,8 +77,13 @@ const getters = {
   fullTagList: function (state) {
     // check for unsaved tags on the profile, and include
     // them if they are there
+    debug("getters:fullTagList")
+    debug({searchTags: state.searchTags})
+    // debug({fullTags: state.fullTagList})
     if (state.profile) {
+      debug({searchTags: state.searchTags})
       const combined = state.fullTagList.concat(state.profile.tags)
+      debug({combined})
       return dedupedTagList(combined)
     }
     else {
@@ -386,31 +391,31 @@ const actions = {
   updateProfile: async function (context, payload) {
     debug('sending update to API', payload)
 
-    // doing this round trip returns a JSON object we
-    // can save back to the realtime database more easily,
-    // and strips out properties we wouldn't want to save into it
-    payload.tags = payload.tags.map(function (obj) {
+    // make a copy, so when we mutate it to send along,
+    // we don't affect the state that the page is relying on
+    const profilePayload =  JSON.parse(JSON.stringify(payload))
+
+    profilePayload.tags = profilePayload.tags.map(function (obj) {
       return obj.name
     })
-    payload.clusters = payload.clusters.map(function (obj) {
+    profilePayload.clusters = profilePayload.clusters.map(function (obj) {
       return obj.name
     })
 
 
     // add the http(s) if missing
     if (payload.website) {
-      payload.website = linkify(payload.website)
+      profilePayload.website = linkify(profilePayload.website)
     }
-
 
 
     const token = context.getters.token
     const profileId = payload.id
 
-    const profile = await instance.put(`/api/profiles/${profileId}/`, payload, {
+    const profile = await instance.put(`/api/profiles/${profileId}/`, profilePayload, {
       headers: { Authorization: `Token ${token}` }
     })
-
+    debug({profile})
     if (profile) {
       context.commit('SET_PROFILE', profile.data)
       context.dispatch('fetchprofileList')
