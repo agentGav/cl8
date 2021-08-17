@@ -173,6 +173,8 @@ LOGGING = {
     },
 }
 
+# with heroku, we call python from the root of the project, not in 'backend'
+MJML_EXEC_CMD = ["./node_modules/.bin/mjml", "--config.validationLevel", "skip"]
 # Sentry
 # ------------------------------------------------------------------------------
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import environ
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+PROJECT_DIR = ROOT_DIR.parent
 # backend/
 APPS_DIR = ROOT_DIR / "backend"
 env = environ.Env()
@@ -327,7 +328,8 @@ REST_FRAMEWORK = {
 # Your stuff...
 # ------------------------------------------------------------------------------
 MJML_CHECK_CMD_ON_STARTUP = True
-MJML_EXEC_CMD = ["../node_modules/.bin/mjml", "--config.validationLevel", "skip"]
+MJML_PATH = str(PROJECT_DIR / "node_modules/.bin/mjml")
+MJML_EXEC_CMD = [MJML_PATH, "--config.validationLevel", "skip"]
 
 MODERATOR_GROUP_NAME = "Constellation Moderators"
 
