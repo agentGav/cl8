@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve ./frontend/src/main.js",
     "build": "vue-cli-service build ./frontend/src/main.js",
-    "build:django": "npm run build && cp ./static-vue/index.html ./backend/backend/templates/pages/vue.html && mv ./static-vue/ ./backend/backend/static-vue/",
+    "build:django": "npm run build && mv ./static-vue/ ./backend/backend/static-vue/",
     "test:unit": "vue-cli-service test:unit --config=./frontend/jest.config.js",
     "lint": "vue-cli-service lint ./frontend/src/main.js",
     "release": "vue-cli-service build ./frontend/src/main.js && npm run notify"
