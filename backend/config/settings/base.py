@@ -340,7 +340,7 @@ THUMBNAIL_DEBUG = False
 # slack connection
 SLACK_TOKEN = env.str("DJANGO_SLACK_TOKEN", default=None)
 SLACK_CHANNEL_NAME = env.str("DJANGO_SLACK_CHANNEL_NAME", default=None)
-DJANGO_SLACK_SIGNIN_AUTHORIZE_URL = env.str(
+SLACK_SIGNIN_AUTHORIZE_URL = env.str(
     "DJANGO_SLACK_SIGNIN_AUTHORIZE_URL",
     default="https://slack.com/openid/connect/authorize",
 )
