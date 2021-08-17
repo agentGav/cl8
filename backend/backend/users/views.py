@@ -62,7 +62,7 @@ def sample_csv_template(request):
         "name": "Example name",
         "admin": False,
         "visible": False,
-        "tags": "comma, separated tags, here in quotes",
+        "tags": "comma, separated tags, 'here in quotes'",
         "photo": "https://link.website.com/profile-photo.jpg",
         "email": "email@example.com",
         "phone": "07974 123 456",
@@ -78,3 +78,4 @@ def sample_csv_template(request):
     writer.writerow(sampleProfile.values())
 
     return response
+

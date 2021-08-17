@@ -22,6 +22,14 @@ class NoEmailFound(Exception):
     pass
 
 
+def safe_username(username):
+    """
+    Adjust a username to avoid naming collisions.
+    """
+    safer_int = str(datetime.now().microsecond)[:4]
+    return f"{slugify(username)}-{safer_int}"
+
+
 class ProfileImporter:
 
     rows = []
@@ -180,18 +188,31 @@ class SlackImporter:
             logger.debug(f"Found channel id {chan_id} for channel #{chan_name}")
             return chan_id
 
+    def _fetch_user_for_id(self, user_id):
+        """
+        Fetch the user from the slack API with the provided user_id
+        """
+        return self.client.users_info(user="U0146CBHFH7").data["user"]
+
     def list_new_users(self):
         """
         Return a list of user ids for users that
         do not already exist in the constellation
         """
 
-        # TODO: figure out if we use email, or store the slack ID?
         import_ids = Profile.objects.all().values_list("import_id", flat=True)
 
         user_ids = self._fetch_user_ids()
 
-        pass
+        # we adjust the returned ids to match the format
+        # kept in the local database
+        adjusted_user_ids = [f"slack-{user_id}" for user_id in user_ids]
+
+        new_user_ids = [
+            user_id for user_id in adjusted_user_ids if user_id not in import_ids
+        ]
+
+        return new_user_ids
 
     def import_slack_user(self, user_id):
         """
@@ -199,16 +220,35 @@ class SlackImporter:
         from slack, and import it into the constellation
         """
 
-        # fetch the user object from slack
-        # slack_user = client.users_info(user=user_id).data
+        # fetch the user object from slack, and extract
+        # the values we want to save
+        user_from_api = self._fetch_user_for_id(user_id)
+        email = user_from_api["profile"]["email"]
+        username = safe_username(email)
+        real_name = user_from_api["profile"]["real_name_normalized"]
+        photo_url = user_from_api["profile"].get("photo")
+        import_id = f"slack-{user_from_api['id']}"
 
         # add the user to constellate
+        user, user_created = User.objects.get_or_create(email=email)
+        user.name = real_name
+        if user_created:
+            user.username = username
+        user.save()
 
         # add the matching profile to constellate for user
+        profile, profile_created = Profile.objects.get_or_create(user=user)
 
-        # return the profile
+        # then add the info we have from the API
+        profile.import_id = import_id
+        if photo_url:
+            profile.photo = self.fetch_user_pic(photo_url)
 
-        pass
+        # return the procfile
+        profile.save()
+        user.save()
+
+        return user
 
     def import_users(self):
         """
@@ -218,7 +258,7 @@ class SlackImporter:
 
         user_ids = self._fetch_user_ids()
 
-        new_ids = self.list_new_usrs(user_ids)
+        new_ids = self.list_new_users()
 
         imported_users = []
         for new_user_id in new_ids:
