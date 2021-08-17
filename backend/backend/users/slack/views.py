@@ -22,7 +22,7 @@ class SlackOpenIdCcnnectAdapter(OAuth2Adapter):
     identity_url = "https://slack.com/api/openid.connect.userInfo"
 
     @property
-    def authorise_url(self):
+    def authorize_url(self):
         """
         Return the authorise url, allowing for a custom
         authorise url to be explicit about the slack
