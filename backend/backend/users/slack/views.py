@@ -1,26 +1,38 @@
 import requests
-
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
     OAuth2CallbackView,
     OAuth2LoginView,
 )
+from django.conf import settings
 
 from .provider import SlackProvider
 
 
 class SlackOpenIdCcnnectAdapter(OAuth2Adapter):
+    """
+    An updated slack adapter designed to use the updated openid connect
+    flow as opposed to the deprecated auth2, identity-based flow.
+    """
+
     provider_id = SlackProvider.id
 
-    # access_token_url = "https://slack.com/api/oauth.access"
     access_token_url = "https://slack.com/api/openid.connect.token"
-    # authorize_url = "https://slack.com/oauth/authorize"
-    # authorize_url = "https://slack.com/openid/connect/authorize"
-    authorize_url = "https://climate-tech.slack.com/openid/connect/authorize"
-
-    # identity_url = "https://slack.com/api/users.identity"
     identity_url = "https://slack.com/api/openid.connect.userInfo"
+
+    @property
+    def authorise_url(self):
+        """
+        Return the authorise url, allowing for a custom
+        authorise url to be explicit about the slack
+        workspace to auth to.
+        """
+        if settings.SLACK_SIGNIN_AUTHORIZE_URL:
+            return settings.SLACK_SIGNIN_AUTHORIZE_URL
+
+        # otherwise return our default url
+        return "https://slack.com/openid/connect/authorize"
 
     def complete_login(self, request, app, token, **kwargs):
         extra_data = self.get_data(token.token)
