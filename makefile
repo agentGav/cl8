@@ -13,7 +13,6 @@ clean_vue_static:
 
 front_end_bundle: clean_vue_static
 	npm run build && \
-	cp ./static-vue/index.html ./backend/backend/templates/pages/vue.html && \
 	cp -R ./static-vue/ ./backend/static-vue/
 
 dev.frontend:
