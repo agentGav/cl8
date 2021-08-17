@@ -141,14 +141,27 @@ class SlackImporter:
     a slack workspace, then adding each user to a given constellation.
     """
 
+    def __init__(self):
+        self.client = slack.WebClient(token=settings.SLACK_TOKEN)
+
     def _fetch_user_ids(self):
-        """Fetch a list of usrs from slack"""
+        """Fetch a list of users from slack"""
 
-        client = slack.WebClient(token=settings.SLACK_TOKEN)
         channel_id = self._id_for_channel_name(settings.SLACK_CHANNEL_NAME)
+        user_ids = []
 
-        client.conversations_members(channel=channel_id).data
-        pass
+        response = self.client.conversations_members(channel=channel_id).data
+        cursor = response["response_metadata"].get("next_cursor")
+
+        # we paginate through the responses because some channels have more
+        # than 100 members in them
+        while cursor:
+            logger.info(f"paginating with cursor: {cursor}")
+            resp = self.client.conversations_members(channel=channel_id, cursor=cursor)
+            user_ids = [*user_ids, *resp["members"]]
+            cursor = resp["response_metadata"].get("next_cursor")
+
+        return user_ids
 
     def _id_for_channel_name(self, channel_name):
         """
@@ -156,15 +169,28 @@ class SlackImporter:
         with slack API
         """
 
-        pass
+        response = self.client.conversations_list(types="public_channel")
+        channel_name_id_pair, *rest = [
+            (channel["name"], channel["id"])
+            for channel in response.data["channels"]
+            if channel["name"] == channel_name
+        ]
+        if channel_name_id_pair:
+            chan_name, chan_id = channel_name_id_pair
+            logger.debug(f"Found channel id {chan_id} for channel #{chan_name}")
+            return chan_id
 
-    def list_new_usrs(self):
+    def list_new_users(self):
         """
         Return a list of user ids for users that
         do not already exist in the constellation
         """
 
         # TODO: figure out if we use email, or store the slack ID?
+        import_ids = Profile.objects.all().values_list("import_id", flat=True)
+
+        user_ids = self._fetch_user_ids()
+
         pass
 
     def import_slack_user(self, user_id):
