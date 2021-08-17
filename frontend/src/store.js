@@ -237,7 +237,6 @@ const actions = {
       debug('Error logging in', error)
     }
   },
-  logout: function (context) {
   logout: async function (context) {
     context.commit('CLEAR_USER')
     const response = await instance.post('/auth/token/', payload)
