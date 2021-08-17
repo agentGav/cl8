@@ -6,6 +6,7 @@ from django.db.models import CharField
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.models import Site
 from sorl.thumbnail import get_thumbnail
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, TaggedItemBase
@@ -51,6 +52,11 @@ class Profile(models.Model):
 
     tags = TaggableManager(blank=True)
     clusters = TaggableManager("Clusters", blank=True, through=TaggedCluster)
+
+    # for tracking where this profile was imported from
+    import_id = models.CharField(
+        _("import_code"), max_length=254, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Profile")
@@ -119,3 +125,21 @@ class Profile(models.Model):
         )
 
         return {"text": rendered_invite_txt, "html": rendered_invite_html}
+
+
+class Constellation(models.Model):
+    """
+    A Constellation is a name we give to a specific 'container' for the members
+    using constellate. Constellations might have a description, some specific welcome text, and logo to members recognise it.
+    """
+
+    site = models.OneToOneField(
+        Site,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="profiles",
+        verbose_name="site",
+    )
+
+    # logo = models.ImageField(_("photo"), blank=True, null=True, max_length=200)
+

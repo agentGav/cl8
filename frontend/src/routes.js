@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Login from '@/components/auth/Login'
+import SlackSignIn from '@/components/auth/SlackSignIn'
 import ResetPassword from '@/components/auth/ResetPassword'
 import NewPassword from '@/components/auth/NewPassword'
 
@@ -47,6 +48,11 @@ const router = new Router({
     {
       path: '/signin',
       name: 'signin',
+      component: SlackSignIn
+    },
+    {
+      path: '/signin-email',
+      name: 'signin-email',
       component: Login
     },
     {

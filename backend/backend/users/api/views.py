@@ -13,6 +13,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from backend.users.models import User
+from rest_framework.authtoken.models import Token
 
 from .serializers import (
     ProfileSerializer,
@@ -27,6 +29,7 @@ from django.utils.text import slugify
 from django.urls import resolve
 
 from django.http import HttpRequest, QueryDict
+from django.views.generic.base import TemplateView
 from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
 
@@ -37,11 +40,32 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def vue_view(request):
+class VueTemplateView(TemplateView):
     """
-    Server the template compiled by Vuejs
+    A template view that exposes information about the
+    user being logged in
     """
-    return TemplateView.as_view(template_name="pages/vue.html")
+
+    template_name = "pages/vue.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Check server-side if our user is authenticated already,
+        and expose sign in tokens to Vue, to support social sign-in.
+        """
+        is_authenticated = self.request.user.is_authenticated
+        ctx = {
+            "is_authenticated": self.request.user.is_authenticated,
+        }
+
+        if is_authenticated:
+            # We make sure we have a token available to put into local storage
+            user = User.objects.get(email=self.request.user.email)
+            token, created = Token.objects.get_or_create(user=user)
+
+            ctx["local_storage_token"] = token.key
+
+        return ctx
 
 
 class ProfileViewSet(

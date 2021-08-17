@@ -1,7 +1,5 @@
 import csv
-
-# once we have that we iterate through each row, and create a user and the
-# necessary tags
+import io
 import logging
 from collections import OrderedDict
 from datetime import datetime
@@ -9,18 +7,12 @@ from pathlib import Path
 from typing import List
 
 import requests
+import slack
 from django.conf import settings
 from django.core.files.images import ImageFile
 from django.utils.text import slugify
-import slack
 
-from backend.users.models import Profile, User
-
-# How it works
-
-# We instantiate the CSV import, and either load the path to the file,
-# or load the file directly.
-
+from .models import Profile, User
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
@@ -39,7 +31,7 @@ class ProfileImporter:
             self.load_csv(csvfile)
 
     def load_csv(self, csvfile=None):
-        # Loads the rows contents of a CSV, returning an datastructure
+        # Loads the rows contents of a CSV, returning a datastructure
         self.rows = []
 
         reader = csv.DictReader(csvfile)
@@ -56,7 +48,7 @@ class ProfileImporter:
 
         for count, row in enumerate(rows):
 
-            logger.debug(f"{count}, {row['name']}, rows to run through: {len(rows)}")
+            logger.debug(f"Importing. Rows to run through: {len(rows)}")
             try:
                 new_user = self.create_user(row)
                 created_users.append(new_user)
@@ -94,40 +86,41 @@ class ProfileImporter:
         Accepts a row, and returns the corresponding user generated based
         on the info passed in
         """
+
         if not row["email"]:
             raise (NoEmailFound)
-            return None
 
         # create django user
         safer_int = str(datetime.now().microsecond)[:4]
         safer_name = f"{slugify(row['name'])}-{safer_int}"
 
-        user, created = User.objects.get_or_create(
-            name=row["name"], email=row["email"], username=safer_name
-        )
+        user, created = User.objects.get_or_create(email=row["email"])
 
         logger.debug(user)
+        user.name = row["name"]
+        user.username = safer_name
         user.save()
         logger.debug(user.id)
 
         visible = True
 
-        profile, created = Profile.objects.get_or_create(
-            user=user,
-            phone=row.get("phone"),
-            website=row.get("website"),
-            twitter=row.get("twitter"),
-            facebook=row.get("facebook"),
-            linkedin=row.get("linkedin"),
-            bio=row.get("bio"),
-            visible=visible,
-            photo=self.fetch_user_pic(row.get("photo")),
-        )
+        profile, created = Profile.objects.get_or_create(user=user)
+        profile.phone = row.get("phone")
+        profile.website = row.get("website")
+        profile.twitter = row.get("twitter")
+        profile.facebook = row.get("facebook")
+        profile.linkedin = row.get("linkedin")
+        profile.bio = row.get("bio")
+        profile.visible = visible
+        profile.photo = self.fetch_user_pic(row.get("photo"))
+        self.add_tags_to_profile(profile, row)
+        profile.save()
 
         logger.debug(f"profile: {profile}")
         logger.debug(f"user: {user}")
         logger.debug(profile.user.id)
 
+        profile.save()
         return user
 
     def fetch_user_pic(self, url: str = None):

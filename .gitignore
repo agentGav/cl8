@@ -54,3 +54,4 @@ static-vue
 # don't track sqlite databases
 
 *.sqlite
+.venv

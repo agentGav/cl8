@@ -8,10 +8,11 @@ from rest_framework.authtoken.views import obtain_auth_token
 from django.contrib.flatpages.views import flatpage
 from backend.users.admin import constellation_admin as cl8_admin
 from backend.users.views import sample_csv_template
+from backend.users.api.views import VueTemplateView
 
 urlpatterns = [
     # serve the vue template instead of the default home
-    path("", TemplateView.as_view(template_name="pages/vue.html"), name="home"),
+    path("", VueTemplateView.as_view(), name="home"),
     # Django Admin, use {% url 'admin:index' %}
     path("admin/", cl8_admin.urls),
     path("advanced-admin/", admin.site.urls),
@@ -21,9 +22,12 @@ urlpatterns = [
     # User management
     path("users/", include("backend.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
+    # add our extra custom providers and views for sign-in with slack
+    path("accounts/", include("backend.users.slack.urls")),
+    # basic CMS pages
     path("about/", flatpage, {"url": "/about/"}, name="about"),
     path("privacy/", flatpage, {"url": "/privacy/"}, name="privacy"),
-    # Your stuff: custom urls includes go here
+    #
     path(
         "favicon.ico", RedirectView.as_view(url="/static/images/favicons/favicon.ico")
     ),
@@ -37,11 +41,6 @@ urlpatterns += [
     path("auth-token/", obtain_auth_token),
     path("", include("backend.users.api.passwordless_urls")),
 ]
-# + [
-#     path('', TemplateView.as_view(template_name="pages/vue.html")),
-#     path('<path:resource>', TemplateView.as_view(template_name="pages/vue.html"))
-# ]
-
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

@@ -1,4 +1,10 @@
 import pytest
+from .. import importers, models
+
+import logging
+
+logger = logging.getLogger(__file__)
+logger.setLevel(logging.INFO)
 
 
 @pytest.fixture
@@ -6,7 +12,7 @@ def slack_dummy_user():
     return {
         "ok": True,
         "user": {
-            "id": "XXXXXXXXX",
+            "id": "UXXXXXXXX",
             "team_id": "XXXXXXXXX",
             "name": "chris",
             "deleted": False,
@@ -57,19 +63,109 @@ def slack_dummy_user():
 
 
 class TestSlackImporter:
-    def test_fetch_users(self, slack_dummy_user):
+    @pytest.mark.smoke_test
+    def test_fetch_users(self, db, profile, slack_dummy_user):
         """
         Test that we can fetch the list of users, or user ids in a given public channel
         """
 
-    def test_import_user(self, slack_dummy_user):
+        # set our email to we expect to have returned in data
+        # by our calls to the slack API
+        # profile.user.email = "chris@productscience.co.uk"
+        profile.import_id = "slack-UXXXXXXXX"
+        # profile.user.save()
+        profile.save()
+        # we expect to get back a list of IDs, but none of the IDs
+        importer = importers.SlackImporter()
+        res = importer.list_new_users()
+
+        # do we have any results?
+        assert len(res) > 0
+        import_ids = models.Profile.objects.all().values_list("import_id", flat=True)
+
+        # have we filtered for already existing users?
+        for id in res:
+            logger.info(f"slack-{id}")
+            assert f"slack-{id}" not in import_ids
+
+    def test_fetch_users_without_dupes(self, db, profile, slack_dummy_user):
+        """
+        Test that we can fetch the list of users, or user ids in a given public channel
+        """
+
+        # set our email to we expect to have returned in data
+        # by our calls to the slack API
+        # profile.user.email = "chris@productscience.co.uk"
+        # we expect to get back a list of IDs, but none of the IDs
+        importer = importers.SlackImporter()
+        res = importer.list_new_users()
+
+        imported_id = res[0]
+
+        profile.import_id = f"slack-{imported_id}"
+        profile.save()
+
+        updated_res = importer.list_new_users()
+
+        # do we have any results?
+        assert len(updated_res) < len(res)
+        assert imported_id not in updated_res
+
+    def test_import_user(self, db, slack_dummy_user):
         """test that we can create a profile from a given slack payload"""
-        pass
+
+        importer = importers.SlackImporter()
+        j
+
+        user_id = res[8]
+        user_from_api = importer._fetch_user_for_id(user_id)
+        imported_user = importer.import_slack_user(user_id)
+
+        # email
+        assert imported_user.email == user_from_api["profile"]["email"]
+        assert imported_user.profile.email == user_from_api["profile"]["email"]
 
         # slack_id
-        # display_name_normalized -
-        # tz_label
-        # profile
-        # image_original
-        # email
+        assert imported_user.profile.import_id == f"slack-{user_from_api['id']}"
 
+        # display_name_normalized -
+        assert (
+            imported_user.profile.name
+            == user_from_api["profile"]["real_name_normalized"]
+        )
+
+        # do we now have a photo?
+        assert imported_user.profile.photo.url is not None
+
+        # use this as a sanity check
+        # webbrowser.open(imported_user.profile.photo.path)
+
+    def test_import_users(self, db):
+        """
+        Smoke test for running an import
+        """
+
+        # pass
+        importer = importers.SlackImporter()
+        first_run_users = importer.import_users()
+
+        #
+        assert len(first_run_users) > 0
+
+    def test_import_users_idempotent(self, db):
+        """
+        Check that we can run this importer repeatedly,
+        without making multiples of profiles or users.
+
+        This lets us run the import on a cronjob, or expose
+        an HTTP enpdpoint if sensible.
+        """
+
+        # pass
+        importer = importers.SlackImporter()
+        first_run = importer.import_users()
+
+        #
+        second_run = importer.import_users()
+
+        assert len(first_run) > len(second_run)

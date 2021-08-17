@@ -195,9 +195,7 @@ export default {
 }
 
 .scrollable-height {
-  @media (min-width: 600px) {
-    max-height: 77vh;
-    overflow: auto;
-  }
+  max-height: 77vh;
+  overflow: auto;
 }
 </style>

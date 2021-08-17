@@ -238,7 +238,10 @@ const actions = {
     }
   },
   logout: function (context) {
+  logout: async function (context) {
     context.commit('CLEAR_USER')
+    const response = await instance.post('/auth/token/', payload)
+    // also try to log out
     router.push('signin')
   },
   createUserSession: async function (context, payload) {

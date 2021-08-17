@@ -2,7 +2,7 @@ import logging
 
 import django.contrib.auth
 from django.core.management import BaseCommand
-from backend.users.importers import ProfileImporter
+from backend.users.importers import CATAirtableImporter
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -16,14 +16,13 @@ class Command(BaseCommand):
     help = "Import user profiles into constallte "
 
     def handle(self, *args, **kwargs):
-        importer = ProfileImporter()
-        csv_path = Path() / "cats.csv"
+        importer = CATAirtableImporter()
+        csv_path = Path() / "cat-directory.csv"
 
         importer.load_csv_from_path(csv_path)
-        first_row = importer.rows[1]
+        first_row = importer.rows[0]
 
         logger.debug(f"importing: {first_row}")
         users = importer.create_users(importer.rows)
         logger.debug(f"imported: {users}")
-        # logger.debug(f"No of profiles to import: {len(importer.rows)}")
-        # logger.debug(f"No of profiles to import: {len(importer.rows)}")
+

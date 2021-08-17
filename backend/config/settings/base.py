@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.slack",
     "rest_framework",
     "rest_framework.authtoken",
     "drfpasswordless",
@@ -88,6 +89,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "backend.users.apps.UsersConfig",
+    "backend.users.slack",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -101,6 +103,7 @@ MIGRATION_MODULES = {"sites": "backend.contrib.sites.migrations"}
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
+# https://django-allauth.readthedocs.io/en/latest/installation.html
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -108,7 +111,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+LOGIN_REDIRECT_URL = "home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
@@ -254,7 +257,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Chris Adams""", "chris@greening.digital")]
+ADMINS = [("""Chris Adams""", "chris@productscience.net")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -291,11 +294,25 @@ ACCOUNT_AUTHENTICATION_METHOD = "username"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = "backend.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 SOCIALACCOUNT_ADAPTER = "backend.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_PROVIDERS = {
+    "slack_openid_connect": {
+        "APP": {
+            "client_id": env.str("DJANGO_SLACK_CLIENT_ID", default=None),
+            "secret": env.str("DJANGO_SLACK_SECRET", default=None),
+            "token": env.str("DJANGO_SLACK_USER_TOKEN", default=None),
+        },
+        "SCOPE": ["openid", "email", "profile"],
+    },
+}
+
 
 # django-rest-framework
 # -------------------------------------------------------------------------------
@@ -317,3 +334,7 @@ MODERATOR_GROUP_NAME = "Constellation Moderators"
 # Photos
 
 THUMBNAIL_DEBUG = False
+
+# slack connection
+SLACK_TOKEN = env.str("DJANGO_SLACK_TOKEN", default=None)
+SLACK_CHANNEL_NAME = env.str("DJANGO_SLACK_CHANNEL_NAME", default=None)

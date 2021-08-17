@@ -110,12 +110,6 @@
                   ></v-textarea>
                 </div>
 
-                <div class="mx-4">
-                  <h3>{{ $t("message.profileEdit.clusters") }}</h3>
-                  <p>{{ $t("message.profileEdit.clusterMessage") }}</p>
-
-                  <profile-clusters-component></profile-clusters-component>
-                </div>
 
                 <div class="mt-4 mx-4">
                   <h3>{{ $t("message.shared.tags") }}</h3>

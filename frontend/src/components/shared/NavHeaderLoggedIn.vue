@@ -50,9 +50,9 @@ export default {
     addUser() {
       this.$router.push({ name: "addUser" });
     },
-    logout: function () {
-      debug("log out");
-      this.$store.dispatch("logout");
+    logout: async function() {
+      debug('log out')
+      await this.$store.dispatch('logout')
     },
     myProfile: function () {
       debug("setting profile back to user");
