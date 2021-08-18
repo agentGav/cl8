@@ -15,6 +15,7 @@
                     name="search-term"
                     clearable
                     @input="updateSearchTerm"
+                    @submit.prevent="updateSearchTerm"
                   ></v-text-field>
                   <v-fade-transition>
                     <div class="tag-list" v-if="activeTags.length > 0">
