@@ -10,7 +10,7 @@
       tabindex="0"
     >
       <v-list-item-avatar>
-        <img v-if="hasPhoto(item)" :src="showPhoto('thumbnail')" class="" />
+        <img v-if="item.thumbnail_photo" :src="item.thumbnail_photo" class="" />
 
         <v-gravatar
           v-else
@@ -69,20 +69,15 @@ export default {
   computed: {},
   methods: {
     profileChosen() {
-      debug({ profile: this.item });
-      debug({ profileId: this.item.id });
-      this.$router.push({ name: "viewProfile", params: { profileId: this.item.id } });
-    },
-    hasPhoto,
-    showPhoto(size) {
-      if (size == "thumbnail") {
-        return this.item.thumbnail_photo;
-      } else {
-        return this.item.photo;
-      }
-    },
-  },
-};
+      debug({ profile: this.item })
+      debug({ profileId: this.item.id })
+      this.$router.push({
+        name: 'viewProfile',
+        params: { profileId: this.item.id }
+      })
+    }
+  }
+}
 </script>
 
 <style>

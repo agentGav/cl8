@@ -8,13 +8,13 @@
       />
 
       <img
-        v-if="hasPhoto(profile) && !localPhoto"
-        :src="profile.photo"
+        v-if="profile.detail_photo && !localPhoto"
+        :src="profile.detail_photo"
         class="supplied-photo dib b--light-silver ba"
       />
 
       <v-gravatar
-        v-if="!hasPhoto(profile) && !localPhoto"
+        v-if="!profile.detail_photo && !localPhoto"
         :email="profile.email"
         :size="200"
         class="gravatar dib b--light-silver ba"

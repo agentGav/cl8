@@ -2,13 +2,13 @@ import debugLib from 'debug'
 import axios from 'axios'
 const debug = debugLib('cl8.utils')
 
-function hasPhoto (profile) {
+function hasPhoto(profile) {
 
   if (!profile) {
     return false
   }
 
-  debug({photoPhoto: profile.photo})
+  debug({ photoPhoto: profile.photo })
   if (profile.photo != null && profile.photo.length > 0) {
     return true
   }

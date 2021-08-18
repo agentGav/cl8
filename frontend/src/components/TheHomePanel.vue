@@ -150,30 +150,35 @@ export default {
   },
   watch: {},
   methods: {
-    toggleTag: function (ev) {
-      const tag = ev.target.textContent.trim();
-      debug("toggleTag", { tag });
-      this.$store.dispatch("updateActiveTags", tag);
+    toggleTag: function(ev) {
+      const tag = ev.target.textContent.trim()
+      debug('toggleTag', { tag })
+      this.$store.dispatch('updateActiveTags', tag)
     },
-    toggleCluster: function (ev) {
-      const cluster = ev.target.textContent.trim();
-      debug("toggleCluster", { cluster });
-      this.$store.dispatch("updateActiveClusters", cluster);
+    toggleCluster: function(ev) {
+      const cluster = ev.target.textContent.trim()
+      debug('toggleCluster', { cluster })
+      this.$store.dispatch('updateActiveClusters', cluster)
     },
-    updateSearchTerm(term) {
-      this.$store.commit("setTerm", term);
-    },
+    /*
+     * we debounce here to avoid an expensive and messy reflow on
+     * each keyprocess
+     * https://css-tricks.com/debouncing-throttling-explained-examples/
+     */
+    updateSearchTerm: debounce(function(term) {
+      this.$store.commit('setTerm', term)
+    }, 250)
   },
   created() {
     if (this.$route.params.profileId) {
-      this.showingProfile = true;
-      debug({ showingProfile: this.showingProfile });
+      this.showingProfile = true
+      debug({ showingProfile: this.showingProfile })
     }
   },
   async beforeRouteEnter(routeTo, routeFrom, next) {
-    debug("beforeRouteEnter");
+    debug('beforeRouteEnter')
     if (routeTo.params.profileId) {
-      await VueStore.dispatch("fetchProfile", { id: routeTo.params.profileId });
+      await VueStore.dispatch('fetchProfile', { id: routeTo.params.profileId })
     }
     next();
   },

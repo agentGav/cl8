@@ -12,11 +12,16 @@
                       class="justify-center"
                       width="200"
                       height="200"
-                      v-if="hasPhoto(profile)"
-                      :src="showPhoto()"
+                      v-if="profile.detail_photo"
+                      :src="profile.detail_photo"
                     ></v-img>
 
-                    <v-gravatar v-else :email="profile.email" :size="200" class="" />
+                    <v-gravatar
+                      v-else
+                      :email="profile.email"
+                      :size="200"
+                      class=""
+                    />
                   </router-link>
 
                   <div class="">
