@@ -76,7 +76,12 @@ class ProfileViewSet(
     GenericViewSet,
 ):
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.filter(visible=True)
+    queryset = (
+        Profile.objects.filter(visible=True)
+        .prefetch_related("tags")
+        .prefetch_related("clusters")
+        .select_related("user")
+    )
     lookup_field = "id"
 
     @action(detail=True, methods=["POST"])
