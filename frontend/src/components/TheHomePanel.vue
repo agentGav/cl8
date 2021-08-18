@@ -60,20 +60,34 @@
       </v-container>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="8" order="2" >
-
+      <v-col cols="12" sm="8" order="2">
         <profile-detail v-if="profile"></profile-detail>
         <v-card elevation="1" v-else class="pa-4 intro-card">
           <h1>Welcome to constellate</h1>
-          <p>Constellate is shared directory for members of this constellation. You can use it to find other members with complementary skills and interests for your projects, or just understand who else is here.</p>
-        
+          <p>
+            Constellate is shared directory for members of this group
+            <em>(a constellation is a collection or stars, geddit?)</em> You can
+            use it to find other members with complementary skills and interests
+            for your projects, or just understand who else is here.
+          </p>
+
           <h2>How to use constellate</h2>
-          <p>You can type anything above to see an updated list of profiles matching your search terms, browse using tags, or both.</p>
-        
+          <p>
+            You can type anything above to see an updated list of profiles
+            matching your search terms, browse using tags, or both.
+          </p>
+
+          <h3>Try typing a name, or clicking on a tag in a someone's profile. Once you have a tag active, you search is filtered based on that tag.</h3>
+
+          <h2>Updating your own details</h2>
+
+          <p>You need to either sign into this directory via slack, or have an approved email address to sign in. Once you're in, you can update your details, and control who can see your profile.</p> 
+          <p>Hit the icon in the top right to update your profile.</p>
+
+          <h2>There will be bugs</h2>
           
-          <h3>(Sample tags here)</h3>
-          
-          
+          <p>There are lots of rough edges - if you know you way around django or Vue, and have some UX skills do get in touch in the #cat-directory channel.</p>
+
         </v-card>
       </v-col>
       <v-col cols="12" sm="4" :class="profileListClassObject">
@@ -90,64 +104,64 @@
 
 <script>
 /* eslint-disable */
-import ProfileDetail from "@/components/profile/ProfileDetail.vue";
-import ProfileSearchItem from "@/components/profile/ProfileSearchItem.vue";
-import TheProfileList from "@/components/TheProfileList.vue";
-import TheFooter from "@/components/TheFooter.vue";
+import ProfileDetail from '@/components/profile/ProfileDetail.vue'
+import ProfileSearchItem from '@/components/profile/ProfileSearchItem.vue'
+import TheProfileList from '@/components/TheProfileList.vue'
+import TheFooter from '@/components/TheFooter.vue'
 
-import store from "@/store";
-import debugLib from "debug";
-const debug = debugLib("cl8.TheHomePanel");
+import store from '@/store'
+import debugLib from 'debug'
 import { debounce } from 'lodash'
+const debug = debugLib('cl8.TheHomePanel')
 
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-Vue.use(Vuex);
-const VueStore = new Vuex.Store(store);
+Vue.use(Vuex)
+const VueStore = new Vuex.Store(store)
 
 export default {
-  name: "TheHomePanel",
+  name: 'TheHomePanel',
   components: {
     ProfileDetail,
     TheProfileList,
-    TheFooter,
+    TheFooter
   },
 
   data() {
     return {
-      showingProfile: false,
-    };
+      showingProfile: false
+    }
   },
   computed: {
     profile() {
-      return this.$store.getters.profile;
+      return this.$store.getters.profile
     },
-    profileDetailClassObject: function () {
+    profileDetailClassObject: function() {
       // if there is no profile,
       // screens larger than a phone
       return {
-        "d-sm-block": this.profile,
-        "d-none d-sm-block": !this.showingProfile,
-      };
+        'd-sm-block': this.profile,
+        'd-none d-sm-block': !this.showingProfile
+      }
     },
-    profileListClassObject: function () {
+    profileListClassObject: function() {
       // only show the full profile list on
       // screens larger than a phone
       return {
-        "d-block": !this.profile,
-        "d-none d-sm-block": this.profile,
-      };
+        'd-block': !this.profile,
+        'd-none d-sm-block': this.profile
+      }
     },
     term() {
-      return this.$store.getters.currentTerm;
+      return this.$store.getters.currentTerm
     },
     activeTags() {
-      return this.$store.getters.activeTags;
+      return this.$store.getters.activeTags
     },
     activeClusters() {
-      return this.$store.getters.activeClusters;
-    },
+      return this.$store.getters.activeClusters
+    }
   },
   watch: {},
   methods: {
@@ -181,18 +195,20 @@ export default {
     if (routeTo.params.profileId) {
       await VueStore.dispatch('fetchProfile', { id: routeTo.params.profileId })
     }
-    next();
+    next()
   },
   async beforeRouteUpdate(routeTo, routeFrom, next) {
-    debug("beforeRouteUpdate");
+    debug('beforeRouteUpdate')
     if (routeTo.params.profileId) {
-      this.showingProfile = true;
-      debug({ showingProfile: this.showingProfile });
-      await this.$store.dispatch("fetchProfile", { id: routeTo.params.profileId });
+      this.showingProfile = true
+      debug({ showingProfile: this.showingProfile })
+      await this.$store.dispatch('fetchProfile', {
+        id: routeTo.params.profileId
+      })
     }
-    next();
-  },
-};
+    next()
+  }
+}
 </script>
 
 <style>
