@@ -19,7 +19,11 @@
                     v-on="on"
                     data-name="profile-actions"
                   >
-                    <v-icon role="img" aria-label="Profile Actions" aria-hidden="false">
+                    <v-icon
+                      role="img"
+                      aria-label="Profile Actions"
+                      aria-hidden="false"
+                    >
                       {{ icons.mdiCog }}
                     </v-icon>
                   </v-btn>
