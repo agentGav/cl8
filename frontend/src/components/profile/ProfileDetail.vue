@@ -30,7 +30,11 @@
                 </template>
 
                 <v-list>
-                  <v-list-item @click="resendInvite" class="resend-invite">
+                  <v-list-item
+                    @click="resendInvite"
+                    class="resend-invite"
+                    v-if="profile.admin"
+                  >
                     <v-list-item-title>
                       {{ $t("message.profileDetail.resendInvite") }}
                     </v-list-item-title>
