@@ -78,17 +78,27 @@
             matching your search terms, browse using tags, or both.
           </p>
 
-          <h3>Try typing a name, or clicking on a tag in a someone's profile. Once you have a tag active, you search is filtered based on that tag.</h3>
+          <h3>
+            Try typing a name, or clicking on a tag in a someone's profile. Once
+            you have a tag active, you search is filtered based on that tag.
+          </h3>
 
           <h2>Updating your own details</h2>
 
-          <p>You need to either sign into this directory via slack, or have an approved email address to sign in. Once you're in, you can update your details, and control who can see your profile.</p> 
+          <p>
+            You need to either sign into this directory via slack, or have an
+            approved email address to sign in. Once you're in, you can update
+            your details, and control who can see your profile.
+          </p>
           <p>Hit the icon in the top right to update your profile.</p>
 
           <h2>There will be bugs</h2>
-          
-          <p>There are lots of rough edges - if you know you way around django or Vue, and have some UX skills do get in touch in the #cat-directory channel.</p>
 
+          <p>
+            There are lots of rough edges - if you know you way around django or
+            Vue, and have some UX skills do get in touch in the #cat-directory
+            channel.
+          </p>
         </v-card>
       </v-col>
       <v-col cols="12" sm="4" :class="profileListClassObject">
