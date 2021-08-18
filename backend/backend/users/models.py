@@ -11,6 +11,10 @@ from sorl.thumbnail import get_thumbnail
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, TaggedItemBase
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class User(AbstractUser):
 
@@ -57,6 +61,11 @@ class Profile(models.Model):
     import_id = models.CharField(
         _("import_code"), max_length=254, blank=True, null=True
     )
+    # we have these as cache tables because when we use object storage
+    # we end up making loads of requests to AWS just to return an url
+    _photo_url = models.URLField(blank=True, null=True)
+    _photo_thumbnail_url = models.URLField(blank=True, null=True)
+    _photo_detail_url = models.URLField(blank=True, null=True)
 
     class Meta:
         verbose_name = _("Profile")
@@ -85,8 +94,8 @@ class Profile(models.Model):
     @property
     def detail_photo(self):
         """
-        A photo, designed for showing on a page, when viewing a profile, with
-        a user's details
+        A photo, designed for showing on a page, when viewing a profile,
+        with a user's details
 
         """
         if not self.photo:
@@ -99,6 +108,19 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("profile_detail", kwargs={"pk": self.pk})
+
+    def update_thumbnail_urls(self):
+        """Generate the thumbnails for a profile"""
+        if self.photo:
+            self._photo_url = self.photo.url
+            self._photo_thumbnail_url = get_thumbnail(
+                self.photo, "100x100", crop="center", quality=99
+            ).url
+            self._photo_detail_url = get_thumbnail(
+                self.photo, "250x250", crop="center", quality=99
+            ).url
+
+            self.save()
 
     def send_invite_mail(self):
         support_email_address = settings.SUPPORT_EMAIL

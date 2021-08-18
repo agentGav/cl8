@@ -46,6 +46,14 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
     email = serializers.EmailField(allow_blank=True, required=False)
     admin = serializers.BooleanField(required=False)
 
+    # we override these to return just the url, not do the expensive
+    # back and forth communication with object storage
+    # photo = serializers.CharField(source="_photo_url", read_only=True)
+    thumbnail_photo = serializers.CharField(
+        source="_photo_thumbnail_url", read_only=True
+    )
+    detail_photo = serializers.CharField(source="_photo_detail_url", read_only=True)
+
     def create(self, validated_data, user=None):
 
         ModelClass = self.Meta.model
@@ -139,11 +147,11 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
             # need their own handler
             "tags",
             "clusters",
-            "photo",
+            # "photo",
             "thumbnail_photo",
             "detail_photo",
         ]
-        read_only_fields = ["photo", "id", "thumbnail_photo", "detail_photo"]
+        read_only_fields = ["id", "thumbnail_photo", "detail_photo"]
 
 
 class TagSerializer(TaggitSerializer, serializers.ModelSerializer):
