@@ -160,6 +160,7 @@ class SlackImporter:
 
         response = self.client.conversations_members(channel=channel_id).data
         cursor = response["response_metadata"].get("next_cursor")
+        user_ids = [*response["members"]]
 
         # we paginate through the responses because some channels have more
         # than 100 members in them
@@ -192,7 +193,7 @@ class SlackImporter:
         """
         Fetch the user from the slack API with the provided user_id
         """
-        return self.client.users_info(user="U0146CBHFH7").data["user"]
+        return self.client.users_info(user=user_id).data["user"]
 
     def list_new_users(self):
         """
@@ -208,9 +209,7 @@ class SlackImporter:
         # kept in the local database
         adjusted_user_ids = [f"slack-{user_id}" for user_id in user_ids]
 
-        new_user_ids = [
-            user_id for user_id in adjusted_user_ids if user_id not in import_ids
-        ]
+        new_user_ids = [user_id for user_id in user_ids if user_id not in import_ids]
 
         return new_user_ids
 
@@ -226,8 +225,9 @@ class SlackImporter:
         email = user_from_api["profile"]["email"]
         username = safe_username(email)
         real_name = user_from_api["profile"]["real_name_normalized"]
-        photo_url = user_from_api["profile"].get("photo")
+        photo_url = user_from_api["profile"].get("image_original")
         import_id = f"slack-{user_from_api['id']}"
+        visible = True
 
         # add the user to constellate
         user, user_created = User.objects.get_or_create(email=email)
@@ -244,7 +244,8 @@ class SlackImporter:
         if photo_url:
             profile.photo = self.fetch_user_pic(photo_url)
 
-        # return the procfile
+        # default to being visible for directory
+        profile.visible = visible
         profile.save()
         user.save()
 
@@ -256,8 +257,6 @@ class SlackImporter:
         and import all the new users.
         """
 
-        user_ids = self._fetch_user_ids()
-
         new_ids = self.list_new_users()
 
         imported_users = []
@@ -266,3 +265,16 @@ class SlackImporter:
             imported_users.append(imported_user)
 
         return imported_users
+
+    def fetch_user_pic(self, url: str = None):
+        """
+        """
+        if not url:
+            return None
+
+        res = requests.get(url)
+
+        if res.content:
+            filename = url.split("/")[-1]
+            return ImageFile(io.BytesIO(res.content), name=filename)
+
