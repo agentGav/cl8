@@ -98,6 +98,7 @@ import TheFooter from "@/components/TheFooter.vue";
 import store from "@/store";
 import debugLib from "debug";
 const debug = debugLib("cl8.TheHomePanel");
+import { debounce } from 'lodash'
 
 import Vue from "vue";
 import Vuex from "vuex";
