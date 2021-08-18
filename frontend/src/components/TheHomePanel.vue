@@ -6,7 +6,7 @@
           <v-col>
             <v-card elevation="1">
               <v-card-actions> </v-card-actions>
-              <v-form>
+              <v-form @submit.prevent="updateSearchTerm">
                 <v-col class="py-0 my-0">
                   <!-- // placeholder="Search across tags, names and profile details" -->
                   <v-text-field
@@ -15,7 +15,6 @@
                     name="search-term"
                     clearable
                     @input="updateSearchTerm"
-                    @submit.prevent="updateSearchTerm"
                   ></v-text-field>
                   <v-fade-transition>
                     <div class="tag-list" v-if="activeTags.length > 0">
