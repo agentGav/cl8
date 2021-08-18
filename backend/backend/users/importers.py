@@ -271,10 +271,76 @@ class SlackImporter:
         """
         if not url:
             return None
-
-        res = requests.get(url)
+        try:
+            res = requests.get(url)
+        except Exception as err:
+            logger.warning(f"Unable to get url: {url}: Error: {err}")
 
         if res.content:
             filename = url.split("/")[-1]
             return ImageFile(io.BytesIO(res.content), name=filename)
 
+
+class CATAirtableImporter(ProfileImporter):
+    """
+    An importer to take the current data stored in an airtable, and update a user's info
+    with the data in the provided CSV file - uses email address as the key to match on.
+    """
+
+    def create_user(self, row):
+        """
+        Accepts a row, and returns the corresponding user generated based
+        on the info passed in
+        """
+        email_key = "Email address"
+        email = row[email_key]
+        if not email:
+            raise (NoEmailFound)
+
+        logger.info(f"email: {email}")
+        user, created = User.objects.get_or_create(email=email)
+        logger.info(f"user: {user}")
+        if created or not user.username:
+            user.username = safe_username(row.get("name"))
+
+        logger.info(f"user: {user}")
+        user.save()
+
+        profile, created = Profile.objects.get_or_create(user=user)
+
+        profile.twitter = row.get("Twitter")
+        profile.linkedin = row.get("LinkedIn URL")
+        profile.bio = row.get("bio")
+        profile.visible = True
+
+        self.add_tags_to_profile(profile, row)
+        profile.save()
+        return user
+
+    def add_tags_to_profile(
+        self, profile: Profile, row: OrderedDict, columns: List = None
+    ):
+        """
+        Take a profile object, and add all the relevant tags,
+        in the properties from the CSV listed `columns`.
+        """
+
+        # allow for override of defaults
+        if not columns:
+            columns = [
+                "Offers",
+                "Asks",
+                "Specific skills",
+                "Areas of focus",
+            ]
+
+        for colname in columns:
+            tags = row.get(colname)
+            # exit early
+            if not tags:
+                continue
+
+            for tag in tags.split(","):
+                profile.tags.add(f"{colname}:{tag.strip()}")
+
+        return profile
