@@ -49,8 +49,8 @@
               class="supplied-photo"
               max-width="200"
               max-height="200"
-              v-if="hasPhoto(profile)"
-              :src="showPhoto()"
+              v-if="profile.detail_photo"
+              :src="profile.detail_photo"
               alt="Profile photo"
             >
               <template v-slot:placeholder>
