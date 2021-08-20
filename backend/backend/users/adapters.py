@@ -9,6 +9,7 @@ from django.http import HttpRequest
 from django.shortcuts import redirect
 from .models import Profile
 
+
 class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest):
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
@@ -37,7 +38,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             # if this is a totally new user, we might not have a profile to populate
             # create one if so
             if not user.profile:
-                Profile.objects.create(user=user))
+                Profile.objects.create(user=user)
 
         # if it does not, let allauth take care of this new social account
         except User.DoesNotExist:
