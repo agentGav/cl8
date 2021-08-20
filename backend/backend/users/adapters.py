@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.http import HttpRequest
 from django.shortcuts import redirect
-
+from .models import Profile
 
 class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest):
@@ -28,7 +28,16 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
         try:
             email = sociallogin.account.extra_data.get("email")
-            user = User.objects.get(email__iexact=email.lower())
+
+            # we assume we trust the email address coming from slack
+            # TODO: make this a thing you can set in an UI, or an env var
+            # rather than hard coding it
+            user = User.objects.get_or_create(email__iexact=email.lower())
+
+            # if this is a totally new user, we might not have a profile to populate
+            # create one if so
+            if not user.profile:
+                Profile.objects.create(user=user))
 
         # if it does not, let allauth take care of this new social account
         except User.DoesNotExist:
