@@ -1,3 +1,4 @@
+from backend.backend.users.importers import safe_username
 from typing import Any
 
 from allauth.account.adapter import DefaultAccountAdapter
@@ -13,6 +14,9 @@ from .models import Profile
 class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest):
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
+
+
+from .importers import safe_username
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -33,7 +37,11 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             # we assume we trust the email address coming from slack
             # TODO: make this a thing you can set in an UI, or an env var
             # rather than hard coding it
-            user = User.objects.get_or_create(email__iexact=email.lower())
+            try:
+                user = User.objects.get(email__iexact=email.lower())
+            except User.DoesNotExist:
+                user = User(email=email.lower(), username=safe_username(email))
+                user.save()
 
             # if this is a totally new user, we might not have a profile to populate
             # create one if so
