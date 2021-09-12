@@ -50,7 +50,9 @@ class TestProfileSerializer:
         new_data = new_ps.data
 
         assert "id" in new_data.keys()
-        assert "photo" in new_data.keys()
+
+        assert "thumbnail_photo" in new_data.keys()
+        assert "detail_photo" in new_data.keys()
         assert new_data["name"] == user.name
         assert new_data["email"] == user.email
 
