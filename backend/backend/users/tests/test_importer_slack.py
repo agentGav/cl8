@@ -88,6 +88,7 @@ class TestSlackImporter:
             logger.info(f"slack-{id}")
             assert f"slack-{id}" not in import_ids
 
+    @pytest.mark.smoke_test
     def test_fetch_users_without_dupes(self, db, profile, slack_dummy_user):
         """
         Test that we can fetch the list of users, or user ids in a given public channel
@@ -113,6 +114,7 @@ class TestSlackImporter:
         assert len(updated_res) < len(res)
         assert imported_id not in updated_res
 
+    @pytest.mark.smoke_test
     def test_import_user(self, db, slack_dummy_user):
         """test that we can create a profile from a given slack payload"""
 
@@ -147,6 +149,7 @@ class TestSlackImporter:
 
         # webbrowser.open(imported_user.profile.photo.path)
 
+    @pytest.mark.smoke_test
     def test_import_users(self, db):
         """
         Smoke test for running an import
@@ -159,6 +162,7 @@ class TestSlackImporter:
         #
         assert len(first_run_users) > 0
 
+    @pytest.mark.smoke_test
     def test_import_users_idempotent(self, db):
         """
         Check that we can run this importer repeatedly,
