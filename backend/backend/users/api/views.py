@@ -13,8 +13,11 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.generics import get_object_or_404
+
 from backend.users.models import User
 from rest_framework.authtoken.models import Token
+
 
 from .serializers import (
     ProfileSerializer,
@@ -28,7 +31,7 @@ from taggit.models import Tag
 from django.utils.text import slugify
 from django.urls import resolve
 
-from django.http import HttpRequest, QueryDict
+from django.http import HttpRequest, QueryDict, request
 from django.views.generic.base import TemplateView
 from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
@@ -142,6 +145,42 @@ class ProfileViewSet(
             headers=headers,
         )
 
+    def get_object(self):
+        """
+        Override the standard request to allow a user to see their own profile,
+        even when it's hidden.
+        """
+
+        # First the boiler plate
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            "Expected view %s to be called with a URL keyword argument "
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            "attribute on the view correctly."
+            % (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+
+        # now our check for when a user is hidden but also logged in
+        current_user = self.request.user
+
+        if current_user:
+            if current_user.has_profile():
+                return current_user.profile
+
+        # otherwise do the usual
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
     def update(self, request, *args, **kwargs):
 
         partial = kwargs.pop("partial", False)
@@ -183,6 +222,7 @@ class ProfilePhotoUploadView(APIView):
             img = ImageFile(profile_pic)
             photo_path = f"{slugify(profile.name)}.png"
             profile.photo.save(photo_path, img, save=True)
+            profile.update_thumbnail_urls()
 
         return Response(ProfileSerializer(profile).data)
 
