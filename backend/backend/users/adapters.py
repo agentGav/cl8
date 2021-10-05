@@ -1,4 +1,4 @@
-from backend.backend.users.importers import safe_username
+from backend.users.importers import safe_username
 from typing import Any
 
 from allauth.account.adapter import DefaultAccountAdapter
@@ -45,7 +45,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
             # if this is a totally new user, we might not have a profile to populate
             # create one if so
-            if not user.profile:
+            if not Profile.objects.filter(user__email=email):
                 Profile.objects.create(user=user)
 
         # if it does not, let allauth take care of this new social account
