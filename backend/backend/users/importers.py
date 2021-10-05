@@ -301,7 +301,7 @@ class CATAirtableImporter(ProfileImporter):
         user, created = User.objects.get_or_create(email=email)
         logger.info(f"user: {user}")
         if created or not user.username:
-            user.username = safe_username(row.get("name"))
+            user.username = safe_username(row.get("email"))
 
         logger.info(f"user: {user}")
         user.save()
