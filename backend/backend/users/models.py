@@ -98,6 +98,9 @@ class Profile(models.Model):
         if not self.photo:
             return None
 
+        if self._photo_thumbnail_url:
+            return self._photo_thumbnail_url
+
         return get_thumbnail(self.photo, "100x100", crop="center", quality=99).url
 
     @property
@@ -109,6 +112,9 @@ class Profile(models.Model):
         """
         if not self.photo:
             return None
+
+        if self._photo_detail_url:
+            return self._photo_detail_url
 
         return get_thumbnail(self.photo, "250x250", crop="center", quality=99).url
 
@@ -129,7 +135,13 @@ class Profile(models.Model):
                 self.photo, "250x250", crop="center", quality=99
             ).url
 
-            self.save()
+            self.save(
+                update_fields=[
+                    "_photo_thumbnail_url",
+                    "_photo_detail_url",
+                    "_photo_url",
+                ]
+            )
 
     def send_invite_mail(self):
         support_email_address = settings.SUPPORT_EMAIL
