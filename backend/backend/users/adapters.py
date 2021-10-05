@@ -45,7 +45,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
             # if this is a totally new user, we might not have a profile to populate
             # create one if so
-            if not Profile.objects.filter(user__email=email):
+            if not user.has_profile():
                 Profile.objects.create(user=user)
 
         # if it does not, let allauth take care of this new social account

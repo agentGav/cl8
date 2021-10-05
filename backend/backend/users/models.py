@@ -25,6 +25,15 @@ class User(AbstractUser):
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
 
+    def has_profile(self) -> bool:
+        """
+        A convenience function to safely check if
+        a user has a matching profile.
+        """
+        matching_profiles = Profile.objects.filter(user__id=self.id)
+        if matching_profiles:
+            return matching_profiles[0]
+
 
 class Cluster(TagBase):
     class Meta:
