@@ -169,7 +169,7 @@ class ProfileViewSet(
         # now our check for when a user is hidden but also logged in
         current_user = self.request.user
 
-        if current_user:
+        if current_user.profile.id == int(filter_kwargs.get("id")):
             if current_user.has_profile():
                 return current_user.profile
 

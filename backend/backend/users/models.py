@@ -30,7 +30,7 @@ class User(AbstractUser):
         A convenience function to safely check if
         a user has a matching profile.
         """
-        matching_profiles = Profile.objects.filter(user__id=self.id)
+        matching_profiles = Profile.objects.filter(user_id=self.id)
         if matching_profiles:
             return matching_profiles[0]
 
