@@ -102,10 +102,26 @@ class TestSlackImporter:
             assert f"slack-{id}" not in import_ids
 
     @pytest.mark.smoke_test
-    def test_fetch_users_without_dupes(self, db, profile, slack_dummy_user):
+    def test_fetch_users_without_dupes(self, db, profile, mocker, slack_dummy_user):
         """
         Test that we can fetch the list of users, or user ids in a given public channel
         """
+
+        # first patch the initialise call for the the web client for slack
+        mocker.patch(
+            "backend.users.importers.SlackImporter.__init__", return_value=None,
+        )
+        # then patch the method we use to fetch a list of users back using the
+        # underlying slack API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_ids",
+            return_value=["UCM06DU1K"],
+        )
+        # return the user as if we had fetched it from the API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_for_id",
+            return_value=slack_dummy_user["user"],
+        )
 
         # set our email to we expect to have returned in data
         # by our calls to the slack API
