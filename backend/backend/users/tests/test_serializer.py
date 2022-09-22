@@ -6,18 +6,18 @@ from backend.users.models import User, Profile
 from backend.users.api.serializers import ProfileSerializer, ProfilePicSerializer
 from backend.users.tests.factories import ProfileFactory
 
+import io
+
 pytestmark = pytest.mark.django_db
 
 
 class TestProfileSerializer:
-    @pytest.mark.only
     @pytest.mark.parametrize("photo_size", [("thumbnail_photo"), ("detail_photo")])
     def test_profile_with_photo(self, fake_photo_profile: Profile, photo_size):
 
         ps = ProfileSerializer(fake_photo_profile)
         assert photo_size in ps.data.keys()
 
-    # @pytest.mark.only
     def test_create_profile_data(self):
 
         # profile_data = ProfileFactory(
@@ -56,7 +56,6 @@ class TestProfileSerializer:
         assert new_data["name"] == user.name
         assert new_data["email"] == user.email
 
-    @pytest.mark.only
     def test_update_profile_data(self, profile):
 
         # import ipdb ; ipdb.set_trace()
@@ -89,7 +88,11 @@ class TestProfileSerializer:
         # and has the profile been updated?
         assert res.bio == profile_dict["bio"]
 
+    @pytest.mark.only
     def test_update_profile_tags(self, profile):
+        """
+        Given
+        """
 
         assert profile.tags.count() == 0
 
@@ -101,11 +104,9 @@ class TestProfileSerializer:
         assert ps.is_valid()
 
         res = ps.update(profile, ps.data)
-
         new_ps = ProfileSerializer(res)
         new_data = new_ps.data
 
-        assert res.tags.first().name == "tech"
         assert res.tags.first().name == "tech"
 
 
@@ -115,9 +116,9 @@ class TestProfilePicSerializer:
         assert pro.data["id"] == profile.id
         assert pro.data["photo"] == profile.photo
 
-    @pytest.mark.skip(
-        reason="The functionality is working, but it's not clear why this fails. Skipped with an issue to investigate as issue #79"
-    )
+    # @pytest.mark.skip(
+    #     reason="The functionality is working, but it's not clear why this fails. Skipped with an issue to investigate as issue #79"
+    # )
     def test_validate_profile_pic_submission(self, profile, tmp_pic_path):
         """
         We expect to see an orderedDict returned with the

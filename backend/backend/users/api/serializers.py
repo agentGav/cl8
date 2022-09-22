@@ -109,7 +109,8 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
         instance.user.save()
 
         # we need to update the tags separately to the other properties
-        validated_data = self.update_tags(instance, validated_data)
+        if validated_data.get("tags"):
+            validated_data = self.update_tags(instance, validated_data)
 
         # finally update the profile itself
         for attr, value in validated_data.items():
@@ -119,13 +120,36 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
         return instance
 
     def update_tags(self, instance, validated_data):
+        """
+        Update tags, accounting for the different format
+        sent by the Vue client.
+        """
 
         to_be_tagged, validated_data = self._pop_tags(validated_data)
-        tag_object = super(TaggitSerializer, self).update(instance, validated_data)
+        tagged_object = super(TaggitSerializer, self).update(instance, validated_data)
 
-        saved_tags = self._save_tags(tag_object, to_be_tagged)
+        # make a dict comprehension, turning
+        # ['tag1', 'tag2']
+        # into
+        # {'tag1': 'tag1', 'tag2': 'tag2'}
+        adjusted_tags = {val: val for (key, val) in enumerate(to_be_tagged["tags"])}
+
+        self._save_tags(tagged_object, {"tags": adjusted_tags})
 
         return validated_data
+
+    def _save_tags(self, tag_object, tags):
+        """
+        Override of the tag serialiser, to account for tag
+        info being sent in a different format via the vue client.
+        """
+        for key in tags.keys():
+            tag_values = tags.get(key)
+            # we need to wrap the tag values in a list, otherwise
+            # 'tech' is turned into four tags, 't','e','c','h'
+            getattr(tag_object, key).set([*tag_values])
+
+        return tag_object
 
     # TODO: figure out how to represennt these fields
     # presumably, we would extend the photo serialiser field
@@ -134,9 +158,6 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
     #     Override the default representation to serve the
     #     image urls.
     #     """
-    #     import ipdb
-
-    #     ipdb.set_trace()
 
     #     ret = super().to_representation(instance)
 
@@ -175,6 +196,9 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class TagSerializer(TaggitSerializer, serializers.ModelSerializer):
+
+    tags = TagListSerializerField()
+
     class Meta:
         model = Tag
         fields = [
