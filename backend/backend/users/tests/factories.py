@@ -7,16 +7,18 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from factory import (
-    DjangoModelFactory,
     Faker,
     RelatedFactory,
     SubFactory,
     post_generation,
 )
+from factory.django import DjangoModelFactory
 from factory.django import ImageField as ImageFieldFactory
 from taggit.models import Tag
 
 from ..models import Profile
+
+from faker import Faker as FakerLib
 
 
 def generated_realistic_profile_photo():
@@ -32,19 +34,23 @@ class UserFactory(DjangoModelFactory):
 
     @post_generation
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):
-        password = (
-            extracted
-            if extracted
-            else Faker(
-                "password",
+        """
+        After a user is created, set a password using the django `set_password`
+        password method.
+        """
+
+        if extracted:
+            password = extracted
+        else:
+            fake = FakerLib("en-US")
+            password = fake.password(
                 length=42,
                 special_chars=True,
                 digits=True,
                 upper_case=True,
                 lower_case=True,
-            ).generate(extra_kwargs={})
-        )
-        self.set_password(password)
+            )
+            self.set_password(password)
 
     class Meta:
         model = get_user_model()
@@ -67,8 +73,8 @@ class FakePhotoProfileUserFactory(UserFactory):
 
 
 def url_factory():
-    domain_generator = factory.Faker("domain_name")
-    return f"https://{domain_generator.generate()}"
+    fake = FakerLib("en-US")
+    return f"https://{fake.domain_name()}"
 
 
 class TagFactory(DjangoModelFactory):

@@ -31,7 +31,6 @@ from taggit.models import Tag
 from django.utils.text import slugify
 from django.urls import resolve
 
-from django.http import HttpRequest, QueryDict, request
 from django.views.generic.base import TemplateView
 from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
@@ -120,6 +119,7 @@ class ProfileViewSet(
         return Response(status=status.HTTP_200_OK, data=serialized_profile.data)
 
     def create(self, request):
+        """Create a profile for the given user, adding them to the correct admin group, and sending an optional invite"""
 
         send_invite = request.data.get("sendInvite")
 
@@ -147,8 +147,8 @@ class ProfileViewSet(
 
     def get_object(self):
         """
-        Override the standard request to allow a user to see their own profile,
-        even when it's hidden.
+        Override the standard request to allow a user to see
+        their own profile, even when it's hidden.
         """
 
         # First the boiler plate

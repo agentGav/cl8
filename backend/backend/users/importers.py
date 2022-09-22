@@ -209,9 +209,9 @@ class SlackImporter:
         # kept in the local database
         adjusted_user_ids = [f"slack-{user_id}" for user_id in user_ids]
 
-        new_user_ids = [user_id for user_id in user_ids if user_id not in import_ids]
-
-        return new_user_ids
+        # filter our list of new user ids from the API against the list of
+        # import_ids in our local database
+        return [user_id for user_id in adjusted_user_ids if user_id not in import_ids]
 
     def import_slack_user(self, user_id):
         """
@@ -222,6 +222,7 @@ class SlackImporter:
         # fetch the user object from slack, and extract
         # the values we want to save
         user_from_api = self._fetch_user_for_id(user_id)
+
         email = user_from_api["profile"]["email"]
         username = safe_username(email)
         real_name = user_from_api["profile"]["real_name_normalized"]

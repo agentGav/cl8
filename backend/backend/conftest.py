@@ -30,9 +30,9 @@ def profile(user) -> Profile:
 
 
 @pytest.fixture
-def profile_with_tags(user) -> Profile:
+def profile_with_tags(user, faker) -> Profile:
     profile = ProfileFactory(user=user)
-    words = factory.Faker("words", nb=random.randint(0, 6)).generate()
+    words = faker.words(nb=random.randint(0, 6))
     profile.tags.add(*words)
     return profile
 

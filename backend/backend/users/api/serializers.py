@@ -127,18 +127,25 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
 
         return validated_data
 
-    def to_representation(self, instance):
-        """
-        Override the default representation to server the
-        image urls.
-        """
-        ret = super().to_representation(instance)
+    # TODO: figure out how to represennt these fields
+    # presumably, we would extend the photo serialiser field
+    # def to_representation(self, instance):
+    #     """
+    #     Override the default representation to serve the
+    #     image urls.
+    #     """
+    #     import ipdb
 
-        # sup in the photo urls:
-        ret["thumbnail_photo"] = instance.thumbnail_photo
-        ret["detail_photo"] = instance.detail_photo
+    #     ipdb.set_trace()
 
-        return ret
+    #     ret = super().to_representation(instance)
+
+    #     # sub in the photo urls:
+
+    #     ret["thumbnail_photo"] = instance.thumbnail_photo
+    #     ret["detail_photo"] = instance.detail_photo
+
+    #     return ret
 
     class Meta:
         model = Profile

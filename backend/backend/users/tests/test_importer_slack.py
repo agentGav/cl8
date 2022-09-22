@@ -64,7 +64,7 @@ def slack_dummy_user():
 
 class TestSlackImporter:
     @pytest.mark.smoke_test
-    def test_fetch_users(self, db, profile, slack_dummy_user):
+    def test_fetch_users(self, db, profile, slack_dummy_user, mocker):
         """
         Test that we can fetch the list of users, or user ids in a given public channel
         """
@@ -75,7 +75,20 @@ class TestSlackImporter:
         profile.import_id = "slack-UXXXXXXXX"
         # profile.user.save()
         profile.save()
-        # we expect to get back a list of IDs, but none of the IDs
+        # we expect to get back a list of IDs, but none of the IDs should match our
+        # dummy slack user, so we monkey patch the class to avoid making network calls
+
+        # first patch the initialise call for the the web client for slack
+        mocker.patch(
+            "backend.users.importers.SlackImporter.__init__", return_value=None,
+        )
+        # then patch the method we use to fetch a list of users back using the
+        # underlying slack API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_ids",
+            return_value=["UCM06DU1K"],
+        )
+        # call our mocked methods to hae a result to check against
         importer = importers.SlackImporter()
         res = importer.list_new_users()
 
@@ -114,14 +127,32 @@ class TestSlackImporter:
         assert len(updated_res) < len(res)
         assert imported_id not in updated_res
 
-    @pytest.mark.smoke_test
-    def test_import_user(self, db, slack_dummy_user):
-        """test that we can create a profile from a given slack payload"""
+    def test_import_user(self, db, mocker, slack_dummy_user):
+        """
+        Given: a mocked slack client and a dummy payload
+        Then: create a user and profile, stored in the database
+        """
+
+        # first patch the initialise call for the the web client for slack
+        mocker.patch(
+            "backend.users.importers.SlackImporter.__init__", return_value=None,
+        )
+        # then patch the method we use to fetch a list of users back using the
+        # underlying slack API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_ids",
+            return_value=["UCM06DU1K"],
+        )
+        # return the user as if we had fetched it from the API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_for_id",
+            return_value=slack_dummy_user["user"],
+        )
 
         importer = importers.SlackImporter()
         res = importer._fetch_user_ids()
 
-        user_id = res[1]
+        user_id = res[0]
         user_from_api = importer._fetch_user_for_id(user_id)
         imported_user = importer.import_slack_user(user_id)
 
@@ -146,14 +177,29 @@ class TestSlackImporter:
 
         # use this as a sanity check
         # import webbrowser
-
         # webbrowser.open(imported_user.profile.photo.path)
 
     @pytest.mark.smoke_test
-    def test_import_users(self, db):
+    def test_import_users(self, db, mocker, slack_dummy_user):
         """
         Smoke test for running an import
         """
+
+        # first patch the initialise call for the the web client for slack
+        mocker.patch(
+            "backend.users.importers.SlackImporter.__init__", return_value=None,
+        )
+        # then patch the method we use to fetch a list of users back using the
+        # underlying slack API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_ids",
+            return_value=["UXXXXXXXX"],
+        )
+        # return the user as if we had fetched it from the API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_for_id",
+            return_value=slack_dummy_user["user"],
+        )
 
         # pass
         importer = importers.SlackImporter()
@@ -163,7 +209,7 @@ class TestSlackImporter:
         assert len(first_run_users) > 0
 
     @pytest.mark.smoke_test
-    def test_import_users_idempotent(self, db):
+    def test_import_users_idempotent(self, db, mocker, slack_dummy_user):
         """
         Check that we can run this importer repeatedly,
         without making multiples of profiles or users.
@@ -171,12 +217,25 @@ class TestSlackImporter:
         This lets us run the import on a cronjob, or expose
         an HTTP enpdpoint if sensible.
         """
+        # first patch the initialise call for the the web client for slack
+        mocker.patch(
+            "backend.users.importers.SlackImporter.__init__", return_value=None,
+        )
+        # then patch the method we use to fetch a list of users back using the
+        # underlying slack API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_ids",
+            return_value=["UXXXXXXXX"],
+        )
+        # return the user as if we had fetched it from the API
+        mocker.patch(
+            "backend.users.importers.SlackImporter._fetch_user_for_id",
+            return_value=slack_dummy_user["user"],
+        )
 
-        # pass
         importer = importers.SlackImporter()
-        first_run = importer.import_users()
 
-        #
+        first_run = importer.import_users()
         second_run = importer.import_users()
 
         assert len(first_run) > len(second_run)

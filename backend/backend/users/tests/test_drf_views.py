@@ -73,11 +73,18 @@ class TestProfileViewSet:
                 assert k in tag.keys()
 
     def test_create_profile(self, profile: Profile, rf: RequestFactory, mailoutbox):
+        """
+        Given: a post with correct payload
+        Then: create a profile in the database, but do not send notification email
+
+        """
         view = ProfileViewSet()
         request = rf.get("/fake-url/")
+
+        # we assume we have a workng user
         request.user = profile.user
 
-        profile_data = ProfileFactory()
+        # profile_data = ProfileFactory()
         profile_dict = {
             "phone": "9329275526",
             "website": "http://livingston.biz",
@@ -92,6 +99,7 @@ class TestProfileViewSet:
         }
 
         request.data = profile_dict
+        # request.data = profile_data
 
         response = view.create(request)
         assert response.status_code == 201
