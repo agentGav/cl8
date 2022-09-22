@@ -1,8 +1,36 @@
-import pytest
-from backend.users.models import User, Profile  # noqa
 import webbrowser
 
+import pytest
+from django.contrib.sites.models import Site
+
+from ..models import Constellation, Profile, User  # noqa
+
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def sample_site():
+    # sequence_sql = connection.ops.sequence_reset_sql(no_style(), [Site])
+    # with connection.cursor() as cursor:
+    #     for sql in sequence_sql:
+    #     cursor.execute(sql)
+    # https://stackoverflow.com/questions/14589634/how-to-reset-the-sequence-for-ids-on-postgresql-tables
+
+    # https://code.djangoproject.com/ticket/17415
+
+    from django.core.management.color import no_style
+    from django.db import connection
+
+    sequence_sql = connection.ops.sequence_reset_sql(no_style(), [Site])
+    with connection.cursor() as cursor:
+        for sql in sequence_sql:
+            cursor.execute(sql)
+
+    # Site.objects.first().save()
+
+    # woo = Site.objects.create(domain="woop.com", name="woop")
+
+    return Site.objects.create(name="Sample Site", domain="testserver")
 
 
 def view_rendered_html_in_browser(string_template):
@@ -33,7 +61,6 @@ class TestProfile:
 
         assert profile.admin is True
 
-    @pytest.mark.only
     @pytest.mark.parametrize("photo_size", [("thumbnail_photo"), ("detail_photo")])
     def test_profile_photo_thumbs(
         self, fake_photo_profile: Profile, settings, photo_size
@@ -67,3 +94,25 @@ class TestProfile:
         profile.save()
 
         assert "Open Energy" in [tag_name for tag_name in profile.clusters.names()]
+
+
+class TestSiteProfile:
+    def test_site_profile(self):
+        """
+        Test that a site can have a profile set
+        """
+        pass
+
+    def test_site_profile_logo(self, sample_site, tmp_pic_path):
+        """
+        Test site profile, can have a user defined image, that can be shown in the UI
+        """
+
+        constellation = Constellation(site=sample_site)
+        constellation.save()
+
+        # add our profile logo.
+
+        # test that we can access a url for the logo
+
+        # import ipdb ; ipdb.set_trace()

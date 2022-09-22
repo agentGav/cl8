@@ -1,17 +1,17 @@
-import pytest
-from django.test import RequestFactory
-from django.contrib.auth.models import Group, Permission
-from rest_framework.test import RequestsClient, APIClient
-from rest_framework.authtoken.models import Token
-
-from backend.users.api.views import ProfileViewSet, ProfilePhotoUploadView
-from backend.users.models import User, Profile
-from backend.users.api.serializers import ProfileSerializer
-from backend.users.tests.factories import ProfileFactory
-from backend.users.tests.factories import UserFactory, ProfileFactory
 import shutil
-
 from pathlib import Path
+
+import pytest
+from django.contrib.auth.models import Group, Permission
+from django.core.files.images import ImageFile
+from django.test import RequestFactory
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient, RequestsClient
+
+from backend.users.api.serializers import ProfileSerializer
+from backend.users.api.views import ProfilePhotoUploadView, ProfileViewSet
+from backend.users.models import Profile, User
+from backend.users.tests.factories import ProfileFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -205,7 +205,6 @@ class TestProfileViewSet:
         assert len(mailoutbox) == 1
 
 
-@pytest.mark.skip
 class TestProfileUploadView:
     def test_file_upload_for_profile(self, profile, rf, tmp_path, tmp_pic_path):
         view = ProfilePhotoUploadView()
@@ -215,11 +214,11 @@ class TestProfileUploadView:
 
         assert not profile.photo
 
-        filename = "test_pic.png"
         test_pic = open(tmp_pic_path, "rb")
+        upload_file = ImageFile(test_pic, name="upload_pic.png")
 
         request.data = {
-            "photo": test_pic,
+            "photo": upload_file,
             "id": profile.id,
         }
 

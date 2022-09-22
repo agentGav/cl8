@@ -1,7 +1,8 @@
-import requests
-from rest_framework.test import RequestsClient, APIClient
 import pytest
+import requests
+from django.urls import reverse
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient, RequestsClient
 
 # import logging
 # console = logging.StreamHandler()
@@ -17,35 +18,43 @@ pytestmark = pytest.mark.django_db
     reason="These tests are triggering an exception, but the code is working when tested menually"
 )
 class TestIntegrationTestForCRUD:
-    def test_auth_to_get_token(self, profile, client):
+    def test_auth_to_get_token(self, profile, live_server, transactional_db):
+        """
+        Given: the correct username and password
+        Then: return an auth token to use with future API calls
+        """
 
-        # set password for user
+        # set password for user, and sanity check
         profile.user.set_password("topsecret")
-        payload = {"username": profile.user.username, "password": "topsecret"}
+        profile.save()
+        assert profile.user.check_password("topsecret")
 
-        # i.e. http://somesite.com/
-        base_url = ""
-        response = client.post(f"{base_url}auth-token/", payload)
+        # TODO: these exact lines work against the live server.
+        # What is going wrong here?
+        payload = {"username": profile.user.username, "password": "topsecret"}
+        response = requests.post(f"{live_server.url}/auth/token/", json=payload)
+        assert response.status_code == 200
 
         data = response.json()
         token = data.get("token")
-
         token_from_db = Token.objects.first()
 
         assert token == token_from_db.key
 
 
-@pytest.mark.only
 class TestIntegrationTestToAddProfilePhoto:
     def test_add_photo(self, db, profile, tmp_pic_path):
-
-        requests_client = RequestsClient()
-
+        """
+        Can we upload a file via the new endpoint?
+        """
         token = Token(key="short-and-readable", user=profile.user)
         token.save()
 
+        # login using the token credentials, using the DRF API client
+        # convenience method
+        # https://www.django-rest-framework.org/api-guide/testing/#credentialskwargs
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
+        client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
         res = client.get("http://testserver/api/profiles/")
 
         assert res.status_code == 200
@@ -55,15 +64,3 @@ class TestIntegrationTestToAddProfilePhoto:
         res = client.put(f"http://testserver/api/upload/{profile.id}/", payload)
 
         assert res.status_code == 200
-
-        # requests_client.get("http://testserver/api/profiles",
-        #     headers={"Authorization": f"Token {token}"}
-        # )
-
-        # import ipdb ; ipdb.set_trace()
-
-        # token_from_db = Token.objects.first()
-
-        #  response = requests_client.get("http://testserver/users/api/profiles/", headers={"Authorization": "Token a0c22cbb9d95930d31e5d75af3affe8073e78b52" }, files={ 'file': pic })
-
-        # response = requests.requests_client("http://localhost:8000/api/upload/66/", headers={"Authorization": "Token a0c22cbb9d95930d31e5d75af3affe8073e78b52" }, files={ 'file': pic })

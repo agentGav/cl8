@@ -24,7 +24,6 @@ def test_redirect():
     assert resolve("/users/~redirect/").view_name == "users:redirect"
 
 
-@pytest.mark.only
 def test_cms():
     """Do we have the flat pages CMS active?"""
     # check one way…

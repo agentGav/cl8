@@ -136,9 +136,7 @@ class TestSlackImporter:
         profile.save()
 
         updated_res = importer.list_new_users()
-        # import ipdb
 
-        # ipdb.set_trace()
         # do we have any results?
         assert len(updated_res) < len(res)
         assert imported_id not in updated_res

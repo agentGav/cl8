@@ -1,12 +1,9 @@
 import pytest
+from django.core.files.images import ImageFile
 
 
-from backend.users.api.views import ProfileViewSet
-from backend.users.models import User, Profile
-from backend.users.api.serializers import ProfileSerializer, ProfilePicSerializer
-from backend.users.tests.factories import ProfileFactory
-
-import io
+from backend.users.api.serializers import ProfilePicSerializer, ProfileSerializer
+from backend.users.models import Profile, User
 
 pytestmark = pytest.mark.django_db
 
@@ -19,9 +16,6 @@ class TestProfileSerializer:
         assert photo_size in ps.data.keys()
 
     def test_create_profile_data(self):
-
-        # profile_data = ProfileFactory(
-        # user.save()
 
         profile_dict = {
             # these are the bits we need to create for end users,
@@ -88,7 +82,6 @@ class TestProfileSerializer:
         # and has the profile been updated?
         assert res.bio == profile_dict["bio"]
 
-    @pytest.mark.only
     def test_update_profile_tags(self, profile):
         """
         Given
@@ -116,27 +109,34 @@ class TestProfilePicSerializer:
         assert pro.data["id"] == profile.id
         assert pro.data["photo"] == profile.photo
 
-    # @pytest.mark.skip(
-    #     reason="The functionality is working, but it's not clear why this fails. Skipped with an issue to investigate as issue #79"
-    # )
+    @pytest.mark.only
     def test_validate_profile_pic_submission(self, profile, tmp_pic_path):
         """
-        We expect to see an orderedDict returned with the
-        id, and the file inside.
+        Given an valid profile with an id, and an valid image, we have a valid submission.
         """
 
-        filename = "test_pic.png"
+        # we need a file_object to pass into our ImageFile for django to
+        # recognise it as a file. We opening a real file, rather than
+        # making a binary BytesIO ourselves, means we can easily view the file
         test_pic = open(tmp_pic_path, "rb")
+        upload_file = ImageFile(test_pic, name="test_pic.png")
 
-        ps = ProfilePicSerializer(
-            data={
-                "id": profile.id,
-                # this photo line causes a failing test. When we pass in the serialised form of the profile pic submission, we should end up with an object that is turned into a proper object we can manipulate.
-                # TODO: Check what `test_pic` look like, perhaps by inspecting a live request
-                "photo": test_pic.name,
-            }
-        )
+        # simulate our django file and profile id being submitted via the API
+        ps = ProfilePicSerializer(data={"id": profile.id, "photo": upload_file})
 
         assert ps.is_valid()
         assert "id" in ps.validated_data
         assert "photo" in ps.validated_data
+
+    def test_validate_profile_pic_submission_no_pic(
+        self, profile,
+    ):
+        """
+        Given an valid profile with an id, but no image, our serialiser catches
+        the invalid submission.
+        """
+
+        # simulate our django file and profile id being submitted via the API
+        ps = ProfilePicSerializer(data={"id": profile.id, "photo": None})
+
+        assert not ps.is_valid()
