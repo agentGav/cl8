@@ -46,6 +46,8 @@ staticfiles/
 
 # Virtual Environments
 .venv
+.python-version
+.tool-versions
 
 # Env Vars
 
@@ -80,6 +82,10 @@ Icon
 
 node_modules
 
+# vs code
+
+.vscode
+
 ### Project template
 
 MailHog
@@ -89,6 +95,8 @@ media/
 
 .env
 .envs/*
+envs/
 
+data/*.csv
 
 cruft

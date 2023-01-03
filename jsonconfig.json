@@ -1,6 +1,0 @@
-{
-  "include": [
-    "frontend/src/**/*.vue",
-    "frontend/src/**/*.js"
-  ]
-}
