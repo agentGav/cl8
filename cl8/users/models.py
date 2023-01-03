@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import CharField
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.sites.models import Site
 from sorl.thumbnail import get_thumbnail
 from taggit.managers import TaggableManager
