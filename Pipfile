@@ -25,7 +25,7 @@ drfpasswordless = "*"
 django-storages = { extras = ["boto3"], version = "*" }
 django-anymail = { extras = ["mailgun"], version = "*" }
 Pillow = "*"
-Django = "==3.0.7"
+Django = "~=3.2.0"
 gunicorn = "*"
 sentry-sdk = "*"
 django-stubs = "*"
