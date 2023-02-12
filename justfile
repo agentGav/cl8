@@ -3,14 +3,16 @@
 # https://github.com/casey/just
 
 @test *options:
-    pipenv run pytest {{options}}
+    python -m pipenv run pytest {{options}}
 
 @ci:
-    pipenv run pytest
+    python -m pipenv run pytest
 
 @serve *options:
-    source .venv/bin/activate
     python -m pipenv run python ./manage.py runserver {{options}}
+
+@manage *options:
+    python -m pipenv run python ./manage.py {{options}}
 
 @tailwind-dev:
     python -m pipenv run python ./manage.py tailwind start

@@ -170,6 +170,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 # STATIC
@@ -336,7 +337,7 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 
 MJML_CHECK_CMD_ON_STARTUP = True
-MJML_PATH = str(PROJECT_DIR / "node_modules/.bin/mjml")
+MJML_PATH = str(PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml")
 MJML_EXEC_CMD = [MJML_PATH, "--config.validationLevel", "skip"]
 
 MODERATOR_GROUP_NAME = "Constellation Moderators"

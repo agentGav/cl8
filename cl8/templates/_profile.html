@@ -1,0 +1,15 @@
+<div class="card-body">
+  <h1>{{ profile.name}} </h1>
+
+  <p>
+    <p>
+      {% for tag in profile.tags.all %}
+        <span class="badge">
+          {{ tag.name }}
+        </span>
+      {% endfor %}
+    </p>
+    </p>
+
+  <p>{{profile.bio}}</p>
+</div>

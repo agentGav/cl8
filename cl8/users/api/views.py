@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import paginator
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.mixins import (
@@ -10,6 +11,7 @@ from rest_framework.mixins import (
     UpdateModelMixin,
     CreateModelMixin,
 )
+from django.shortcuts import render
 
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -34,9 +36,11 @@ from django.utils.text import slugify
 from django.urls import resolve
 
 from django.views.generic.base import TemplateView
+from django.views.generic import DetailView
 from rest_framework.utils.serializer_helpers import ReturnDict
 from django.core.files.images import ImageFile
 from dal import autocomplete
+
 User = get_user_model()
 
 import logging
@@ -44,14 +48,64 @@ import logging
 logger = logging.getLogger(__name__)
 
 from ..filters import ProfileFilter
+from django.contrib.sites.shortcuts import get_current_site
+
+import rich.logging as richlog
+
+console = richlog.RichHandler()
+
+logger.addHandler(console)
+
+from django.contrib.auth.decorators import login_required
 
 
-class HomepageView(LoginRequiredMixin, TemplateView):
+@login_required
+def homepage(request):
+    is_authenticated = request.user.is_authenticated
+
+    current_site = get_current_site(request)
+    logger.info(f"{current_site=}")
+
+    ctx = {"is_authenticated": request.user.is_authenticated, "site": current_site}
+
+    if is_authenticated:
+        # We make sure we have a token available to put into local storage
+        user = User.objects.get(email=request.user.email)
+        token, created = Token.objects.get_or_create(user=user)
+
+        ctx["local_storage_token"] = token.key
+
+    filtered_profiles = ProfileFilter(
+        request.GET, queryset=Profile.objects.all().prefetch_related("tags")
+    )
+    ctx["profile_filter"] = filtered_profiles
+
+    pager = paginator.Paginator(filtered_profiles.qs, 10)
+    page = request.GET.get("page", 1)
+
+    try:
+        ctx["paginated_profiles"] = pager.page(page)
+    except paginator.PageNotAnInteger:
+        ctx["paginated_profiles"] = pager.page(1)
+    except paginator.EmptyPage:
+        ctx["paginated_profiles"] = pager.page(paginator.num_pages)
+
+    if request.htmx:
+        template_name = "pages/_home_partial.html"
+    else:
+        template_name = "pages/home.html"
+
+    return render(request, template_name, ctx)
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
     """
     A template view that exposes information about the
     user being logged in
     """
 
+    queryset = Profile.objects.all()
+    slug_field = "user__username"
     template_name = "pages/home.html"
 
     def get_context_data(self, **kwargs):
@@ -73,12 +127,36 @@ class HomepageView(LoginRequiredMixin, TemplateView):
             ctx["local_storage_token"] = token.key
 
         filtered_profiles = ProfileFilter(
-            self.request.GET,
-            queryset=Profile.objects.all().prefetch_related('tags')
+            self.request.GET, queryset=Profile.objects.all().prefetch_related("tags")
         )
-        ctx['profile_filter'] = filtered_profiles
+        ctx["profile_filter"] = filtered_profiles
+
+
+        pager = paginator.Paginator(filtered_profiles.qs, 10)
+        page = self.request.GET.get("page", 1)
+
+        try:
+            ctx["paginated_profiles"] = pager.page(page)
+        except paginator.PageNotAnInteger:
+            ctx["paginated_profiles"] = pager.page(1)
+        except paginator.EmptyPage:
+            ctx["paginated_profiles"] = pager.page(paginator.num_pages)
+
+
+        if self.object is not None:
+            ctx["profile"] = self.object
 
         return ctx
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+
+        if request.htmx:
+            self.template_name = "_profile.html"
+            return self.render_to_response(context)
+
+        return self.render_to_response(context)
 
 
 class ProfileViewSet(
@@ -99,7 +177,6 @@ class ProfileViewSet(
 
     @action(detail=True, methods=["POST"])
     def resend_invite(self, request, id=None):
-
         assert id
         profile = Profile.objects.get(pk=id)
         try:
@@ -125,7 +202,6 @@ class ProfileViewSet(
 
     @action(detail=False, methods=["GET"])
     def me(self, request):
-
         serialized_profile = ProfileSerializer(request.user.profile)
         return Response(status=status.HTTP_200_OK, data=serialized_profile.data)
 
@@ -193,7 +269,6 @@ class ProfileViewSet(
         return obj
 
     def update(self, request, *args, **kwargs):
-
         partial = kwargs.pop("partial", False)
 
         inbound_data = request.data.copy()
@@ -215,14 +290,11 @@ class ProfileViewSet(
 
 
 class ProfilePhotoUploadView(APIView):
-    """
-
-    """
+    """ """
 
     parser_classes = (MultiPartParser, FormParser)
 
     def put(self, request, id, format=None):
-
         serializer = ProfilePicSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -256,10 +328,8 @@ class TagViewSet(
     queryset = Tag.objects.all()
 
 
-# Select2QuerySetView
 class TagAutoCompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated:
             return Tag.objects.none()
 
@@ -269,4 +339,3 @@ class TagAutoCompleteView(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
-

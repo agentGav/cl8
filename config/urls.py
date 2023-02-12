@@ -8,12 +8,13 @@ from rest_framework.authtoken.views import obtain_auth_token
 from django.contrib.flatpages.views import flatpage
 from cl8.users.admin import constellation_admin as cl8_admin
 from cl8.users.views import sample_csv_template
-from cl8.users.api.views import HomepageView, TagAutoCompleteView
+from cl8.users.api.views import TagAutoCompleteView, ProfileDetailView, homepage
 
 
 urlpatterns = [
     # serve the vue template instead of the default home
-    path("", HomepageView.as_view(), name="home"),
+    path("", homepage, name="home"),
+    path("profiles/<slug>", ProfileDetailView.as_view(),name="profile-detail"),
     # Django Admin, use {% url 'admin:index' %}
     path("advanced-admin/", admin.site.urls),
     path(
