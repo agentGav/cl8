@@ -4,7 +4,7 @@
 {% block content %}
 {% include "_nav_menu.html" %}
 
-<section class="grid grid-cols-1 mb-4">
+<section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px] mb-4">
   <div class="card border">
     <div class="card-body">
       <h1 class="card-title">Showing {{ paginated_profiles | length }} matching results</h1>
@@ -40,18 +40,18 @@
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
 </section>
 
-<section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px] z-0">
+<section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px]">
 
   <section class="sidebar">
     {% include "pages/_paginated_profiles.html" %}
   </section>
 
-  <section class="prose">
-    <div id="profile-slot"  class="card bg-base-100">
+  <section>
+    <div id="profile-slot" class="card bg-base-100">
       {% if profile %}
         {% include '_profile.html' %}
       {% else %}
-      <div class="card-body">
+      <div class="card-body prose">
         <h1>Enter profile here</h1>
       </div>
       {% endif %}
