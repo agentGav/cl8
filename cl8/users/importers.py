@@ -15,6 +15,7 @@ from cl8.users.models import CATJoinRequest
 
 from ..utils.pics import fetch_user_pic
 from .models import Profile, User
+import shortuuid
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
@@ -24,12 +25,11 @@ class NoEmailFound(Exception):
     pass
 
 
-def safe_username(username):
+def safe_username() -> str:
     """
-    Adjust a username to avoid naming collisions.
+    Provide a shortuuid based username
     """
-    safer_int = str(datetime.now().microsecond)[:4]
-    return f"{slugify(username)}-{safer_int}"
+    return shortuuid.uuid()[:8]
 
 
 class ProfileImporter:
@@ -101,8 +101,7 @@ class ProfileImporter:
             raise (NoEmailFound)
 
         # create django user
-        safer_int = str(datetime.now().microsecond)[:4]
-        safer_name = f"{slugify(row['name'])}-{safer_int}"
+        safer_name = safe_username()
 
         user, created = User.objects.get_or_create(email=row["email"])
 
@@ -143,10 +142,15 @@ class SlackImporter:
     def __init__(self):
         self.client = slack.WebClient(token=settings.SLACK_TOKEN)
 
-    def _fetch_user_ids(self):
+    def _fetch_user_ids(self, channel_name: str = None):
         """Fetch a list of users from slack"""
 
-        channel_id = self._id_for_channel_name(settings.SLACK_CHANNEL_NAME)
+        channel_id = None
+
+        if channel_name is not None:
+            channel_id = self._id_for_channel_name(channel_name)
+        else:
+            channel_id = self._id_for_channel_name(settings.SLACK_CHANNEL_NAME)
         user_ids = []
 
         response = self.client.conversations_members(channel=channel_id).data
@@ -204,7 +208,7 @@ class SlackImporter:
         # import_ids in our local database
         return [user_id for user_id in adjusted_user_ids if user_id not in import_ids]
 
-    def import_slack_user(self, user_id):
+    def import_slack_user(self, user_id: str = None, visible: bool = False):
         """
         Accept a user id, fetch the matching user
         from slack, and import it into the constellation
@@ -212,16 +216,16 @@ class SlackImporter:
 
         # fetch the user object from slack, and extract
         # the values we want to save
+        #
         user_from_api = self._fetch_user_for_id(user_id)
 
         email = user_from_api["profile"]["email"]
-        username = safe_username(email)
+        username = safe_username()
         real_name = user_from_api["profile"]["real_name_normalized"]
 
         photo_url = user_from_api["profile"].get("image_512")
         # photo_url = user_from_api["profile"].get("image_original")
         import_id = f"slack-{user_from_api['id']}"
-        visible = True
 
         # add the user to constellate
         user, user_created = User.objects.get_or_create(email=email)
@@ -392,10 +396,53 @@ def fetch_profile_info_from_gsheet(email: str):
 
 
 def fetch_full_data_from_gsheet() -> List[List[str]]:
+    """
+    Fetch the full set of join requests submitted to the
+    CAT joining form.
+    """
     gc = gspread.service_account(filename=settings.GSPREAD_SERVICE_ACCOUNT)
     gsheet = gc.open_by_key(settings.GSPREAD_KEY)
     responses_worksheet = gsheet.worksheet(CAT_RESPONSES_WORKSHEET)
     return responses_worksheet.get_values()
+
+
+def create_user_from_join_request(cat_join_req: CATJoinRequest):
+    """
+    Like the create_user function in the standard importer but we use a
+    CATJoinRequest as our starting point instead to create first the user,
+    and then a corresponding profile
+    """
+
+    # breakpoint()
+
+    # user, created = User.objects.get_or_create(email=cat_join_req.email)
+
+    # logger.debug(user)
+    # user.name = cat_join_req["name"]
+    # user.username = safe_username()
+    # user.save()
+    # logger.debug(user.id)
+
+    # visible = True
+
+    # profile, created = Profile.objects.get_or_create(user=user)
+    # profile.phone = row.get("phone")
+    # profile.website = row.get("website")
+    # profile.twitter = row.get("twitter")
+    # profile.facebook = row.get("facebook")
+    # profile.linkedin = row.get("linkedin")
+    # profile.bio = row.get("bio")
+    # profile.visible = visible
+    # profile.photo = fetch_user_pic(row.get("photo"))
+    # self.add_tags_to_profile(profile, row)
+    # profile.save()
+
+    # logger.debug(f"profile: {profile}")
+    # logger.debug(f"user: {user}")
+    # logger.debug(profile.user.id)
+
+    # profile.save()
+    # return user
 
 
 def create_join_request_from_row(row: List[str]) -> CATJoinRequest:
@@ -422,7 +469,6 @@ def create_join_request_from_row(row: List[str]) -> CATJoinRequest:
         )
     except Exception as ex:
         logger.warn(ex)
-        # breakpoint()
 
 
 def add_cat_responses_to_profiles():

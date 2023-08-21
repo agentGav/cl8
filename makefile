@@ -1,10 +1,10 @@
-install:
-	python -m pipenv install --dev
-	npm install
+# install:
+# 	python -m pipenv install --dev
+# 	npm install
 
-serve: front_end_bundle
-	cd backend && \
-	python -m pipenv run python ./manage.py runserver
+# serve: front_end_bundle
+# 	cd backend && \
+# 	python -m pipenv run python ./manage.py runserver
 
 # clean_vue_static:
 # 	rm -rf ./static-vue/

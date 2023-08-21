@@ -5,6 +5,12 @@
 @test *options:
     python -m pipenv run pytest {{options}}
 
+@install:
+    #!/usr/bin/env sh
+    python -m pipenv sync --help
+    cd theme/static_src
+    npm install --loglevel error
+
 @ci:
     python -m pipenv run pytest
 

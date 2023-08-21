@@ -43,6 +43,7 @@ markdown = "*"
 markdown-it-py = "*"
 gspread = "*"
 rich = "*"
+shortuuid = "*"
 
 [dev-packages]
 mypy = "*"
