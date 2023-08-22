@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import Profile
 from django import forms
+from dal import autocomplete
+from taggit import models as taggit_models
+from django.forms import ModelMultipleChoiceField
 
 User = get_user_model()
 
@@ -35,11 +38,10 @@ class ProfileUpdateForm(forms.ModelForm):
     name = forms.CharField()
     email = forms.EmailField()
 
-    # TODO figure out how to offer the select2 URL AND allow for the creation of new tags
-    # tags = ModelMultipleChoiceField(
-    #     queryset=taggit_models.Tag.objects.all(),
-    #     widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete"),
-    # )
+    tags = ModelMultipleChoiceField(
+        queryset=taggit_models.Tag.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete"),
+    )
 
     class Meta:
         model = Profile

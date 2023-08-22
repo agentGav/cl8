@@ -1,3 +1,4 @@
+{% load static widget_tweaks %}
 <style>
 
 div > label {
@@ -32,4 +33,6 @@ div >input[type='file'] {
            href="{% url 'profile-detail' profile.user.username %}">Back</a>
     </form>
 </div>
+<script type="text/javascript"
+        src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 {{ form.media }}

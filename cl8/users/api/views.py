@@ -50,23 +50,15 @@ NO_PROFILES_PER_PAGE = 100
 
 @login_required
 def homepage(request):
-    is_authenticated = request.user.is_authenticated
-
     current_site = get_current_site(request)
     logger.info(f"{current_site=}")
 
     ctx = {"is_authenticated": request.user.is_authenticated, "site": current_site}
 
-    # if is_authenticated:
-    #     # We make sure we have a token available to put into local storage
-    #     user = User.objects.get(email=request.user.email)
-    #     token, created = Token.objects.get_or_create(user=user)
-
-    #     ctx["local_storage_token"] = token.key
-
     filtered_profiles = ProfileFilter(
         request.GET, queryset=Profile.objects.all().prefetch_related("tags")
     )
+
     ctx["profile_filter"] = filtered_profiles
 
     pager = paginator.Paginator(filtered_profiles.qs, NO_PROFILES_PER_PAGE)

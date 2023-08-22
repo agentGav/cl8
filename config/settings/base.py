@@ -89,6 +89,7 @@ THIRD_PARTY_APPS = [
     "tailwind",
     "theme",
     "django_extensions",
+    "widget_tweaks",
 ]
 
 LOCAL_APPS = [
