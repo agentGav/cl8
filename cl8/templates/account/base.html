@@ -1,20 +1,17 @@
-
 {% extends "base.html" %}
-{% block title %}{% block head_title %}{% endblock head_title %}{% endblock title %}
-
+{% load static %}
+{% load account socialaccount %}
+{% block title %}
+  {% block head_title %}
+  {% endblock head_title %}
+{% endblock title %}
 {% block content %}
-<div class="navbar bg-base-900">
-  <div class="flex-1">
-    <a class="btn btn-ghost normal-case text-xl">constellate</a>
+  {% include "account/_nav_logged_out.html" %}
+  <div class="container mx-auto">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        {% block inner %}{% endblock %}
+      </div>
+    </div>
   </div>
-  <div class="flex-none"></div>
-</div>
-
-
-<div class="row">
-  <div class="col-md-6 offset-md-3">
-    {% block inner %}
-    {% endblock %}
-  </div>
-</div>
 {% endblock %}
