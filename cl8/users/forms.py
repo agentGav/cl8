@@ -36,7 +36,7 @@ class UserCreationForm(auth_forms.UserCreationForm):
 
 class ProfileUpdateForm(forms.ModelForm):
     name = forms.CharField()
-    email = forms.EmailField()
+    # email = forms.EmailField()
 
     tags = ModelMultipleChoiceField(
         queryset=taggit_models.Tag.objects.all(),
@@ -46,14 +46,14 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = [
-            "name",
-            "email",
-            "visible",
             "photo",
-            "twitter",
-            "linkedin",
-            "facebook",
+            "name",
             "organisation",
-            "tags",
+            # "email",
+            "visible",
             "bio",
+            "tags",
+            # "twitter",
+            "linkedin",
+            # "facebook",
         ]

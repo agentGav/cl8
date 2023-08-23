@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import paginator
+from django.http import HttpRequest
 from django.core.files.images import ImageFile
 from django.shortcuts import render
 from django.urls import resolve
@@ -48,13 +49,11 @@ logger = logging.getLogger(__name__)
 NO_PROFILES_PER_PAGE = 100
 
 
-@login_required
-def homepage(request):
-    current_site = get_current_site(request)
-    logger.info(f"{current_site=}")
-
-    ctx = {"is_authenticated": request.user.is_authenticated, "site": current_site}
-
+def fetch_profile_list(request: HttpRequest, ctx: dict):
+    """
+    Fetch the list of profiles for the given set of params, and
+    populate the provided context dictionary
+    """
     filtered_profiles = ProfileFilter(
         request.GET, queryset=Profile.objects.all().prefetch_related("tags")
     )
@@ -70,6 +69,18 @@ def homepage(request):
         ctx["paginated_profiles"] = pager.page(1)
     except paginator.EmptyPage:
         ctx["paginated_profiles"] = pager.page(paginator.num_pages)
+
+    return ctx
+
+
+@login_required
+def homepage(request):
+    current_site = get_current_site(request)
+    logger.info(f"{current_site=}")
+
+    ctx = {"is_authenticated": request.user.is_authenticated, "site": current_site}
+
+    ctx = fetch_profile_list(request, ctx)
 
     if request.htmx:
         template_name = "pages/_home_partial.html"
@@ -90,41 +101,18 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     template_name = "pages/home.html"
 
     def get_context_data(self, **kwargs):
-        """
-        Check server-side if our user is authenticated already,
-        and expose sign in tokens to Vue, to support social sign-in.
-        """
+        """ """
         is_authenticated = self.request.user.is_authenticated
-
         current_site = get_current_site(self.request)
+
         logger.info(f"{current_site=}")
 
         ctx = {
-            "is_authenticated": self.request.user.is_authenticated,
+            "is_authenticated": is_authenticated,
             "site": current_site,
         }
 
-        if is_authenticated:
-            # We make sure we have a token available to put into local storage
-            user = User.objects.filter(email=self.request.user.email).first()
-            token, created = Token.objects.get_or_create(user=user)
-
-            ctx["local_storage_token"] = token.key
-
-        filtered_profiles = ProfileFilter(
-            self.request.GET, queryset=Profile.objects.all().prefetch_related("tags")
-        )
-        ctx["profile_filter"] = filtered_profiles
-
-        pager = paginator.Paginator(filtered_profiles.qs, NO_PROFILES_PER_PAGE)
-        page = self.request.GET.get("page", 1)
-
-        try:
-            ctx["paginated_profiles"] = pager.page(page)
-        except paginator.PageNotAnInteger:
-            ctx["paginated_profiles"] = pager.page(1)
-        except paginator.EmptyPage:
-            ctx["paginated_profiles"] = pager.page(paginator.num_pages)
+        ctx = fetch_profile_list(self.request, ctx)
 
         if self.object is not None:
             ctx["profile"] = self.object
@@ -133,6 +121,26 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
             if self.object.bio:
                 markdown_bio = md.render(self.object.bio)
                 ctx["profile_rendered_bio"] = markdown_bio
+
+            ctx["asks"] = [
+                {"name": tag.name.replace("Asks:", "")}
+                for tag in self.object.tags.filter(name__istartswith="Asks:")
+            ]
+            ctx["offers"] = [
+                {"name": tag.name.replace("Offers:", "")}
+                for tag in self.object.tags.filter(name__istartswith="Offers:")
+            ]
+
+            ctx["skills"] = [
+                {"name": tag.name.replace("Specific skills:", "")}
+                for tag in self.object.tags.filter(name__istartswith="Specific Skills:")
+            ]
+
+            ctx["other_tags"] = (
+                self.object.tags.exclude(name__istartswith="Specific Skills:")
+                .exclude(name__istartswith="Offers:")
+                .exclude(name__istartswith="Asks:")
+            )
 
         return ctx
 

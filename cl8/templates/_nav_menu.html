@@ -7,7 +7,11 @@
       {% if request.user.is_authenticated %}
         <li tabindex="0">
           <a>
-            Hi {{ request.user.name }}
+            {% if request.user.name %}
+              Hi {{ request.user.name }}
+            {% else %}
+              Hi {{ request.user.username }}
+            {% endif %}
             <svg class="fill-current"
                  xmlns="http://www.w3.org/2000/svg"
                  width="20"

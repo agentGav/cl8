@@ -16,12 +16,12 @@ User = get_user_model()
 
 
 class ProfileAdminForm(ModelForm):
-    # tags = TagField(required=False, widget=LabelWidget)
-    clusters = TagField(
-        required=False,
-        widget=LabelWidget(model=Cluster),
-        help_text="Clusters the user wants to be included in",
-    )
+    tags = TagField(required=False, widget=LabelWidget)
+    # clusters = TagField(
+    #     required=False,
+    #     widget=LabelWidget(model=Cluster),
+    #     help_text="Clusters the user wants to be included in",
+    # )
 
 
 @admin.register(User)
@@ -83,10 +83,10 @@ class ProfileAdmin(admin.ModelAdmin):
     form = ProfileAdminForm
 
 
-@admin.register(Cluster)
+# @admin.register(Cluster)
 # @admin.register(Cluster, site=constellation_admin)
-class ClusterAdmin(admin.ModelAdmin):
-    pass
+# class ClusterAdmin(admin.ModelAdmin):
+# pass
 
 
 # make the default Tag model available to admins to change

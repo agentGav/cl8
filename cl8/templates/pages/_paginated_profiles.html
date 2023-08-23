@@ -9,11 +9,13 @@
           <a hx-get="{% url 'profile-detail' profile.user.username %}"
              hx-target="#profile-slot"
              hx-push-url="true"
-             href="{% url 'profile-detail' profile.user.username %}">{{ profile.name }}</a>
+             href="{% url 'profile-detail' profile.user.username %}">{{ profile.name }}
+            {% comment %} {{ profile.rank }} {% endcomment %}
+          </a>
         </h4>
-        <p>
+        {% comment %} <p>
           {% for tag in profile.tags.all %}<span class="badge">{{ tag.name }}</span>{% endfor %}
-        </p>
+        </p> {% endcomment %}
       </div>
     </div>
   </div>
