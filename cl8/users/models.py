@@ -11,6 +11,7 @@ from sorl.thumbnail import get_thumbnail
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, TaggedItemBase
 
+from shortuuid.django_fields import ShortUUIDField
 import logging
 
 from django.contrib.postgres import search
@@ -73,6 +74,9 @@ class Profile(models.Model):
 
     tags = TaggableManager(blank=True)
     clusters = TaggableManager("Clusters", blank=True, through=TaggedCluster)
+
+    # short_id is a unique identifier for a profile, used in the URL
+    short_id = ShortUUIDField(length=8, unique=True, blank=True, null=True)
 
     # for tracking where this profile was imported from
     import_id = models.CharField(

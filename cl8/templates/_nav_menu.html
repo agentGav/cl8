@@ -33,7 +33,7 @@
               </a>
               <ul class="p-2 bg-base-100 border" style="z-index:99999;">
                 <li>
-                  <a href="{% url 'profile-detail' request.user.username %}">Profile</a>
+                  <a href="{% url 'profile-detail' request.user.profile.short_id %}">Profile</a>
                 </li>
                 <li>
                   <a>Settings</a>

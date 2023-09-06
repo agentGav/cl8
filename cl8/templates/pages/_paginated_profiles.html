@@ -1,15 +1,20 @@
+{% load gravatar %}
 {% for profile in paginated_profiles %}
   <div class="card w-96 bg-base-100 mb-1">
     <div class="card-body profile">
       <div class=profile-thumb>
-        <img class="profile-thumb" src="{{ profile.thumbnail_photo }}" />
+        {% if profile.photo %}
+          <img class="profile-thumb" src="{{ profile.thumbnail_photo }}" />
+        {% else %}
+          {% gravatar profile.user.email 150 %}
+        {% endif %}
       </div>
       <div>
         <h4 class="card-title">
-          <a hx-get="{% url 'profile-detail' profile.user.username %}"
+          <a hx-get="{% url 'profile-detail' profile.short_id %}"
              hx-target="#profile-slot"
              hx-push-url="true"
-             href="{% url 'profile-detail' profile.user.username %}">{{ profile.name }}
+             href="{% url 'profile-detail' profile.short_id %}">{{ profile.name }}
             {% comment %} {{ profile.rank }} {% endcomment %}
           </a>
         </h4>
@@ -21,7 +26,6 @@
   </div>
 {% endfor %}
 <style>
-
 .profile {
   flex-direction: row;  
 }

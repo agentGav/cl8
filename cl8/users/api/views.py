@@ -97,7 +97,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     """
 
     queryset = Profile.objects.all()
-    slug_field = "user__username"
+    slug_field = "short_id"
     template_name = "pages/home.html"
 
     def get_context_data(self, **kwargs):
@@ -157,7 +157,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     queryset = Profile.objects.all()
-    slug_field = "user__username"
+    slug_field = "short_id"
     template_name = "pages/edit_profile.html"
     form_class = ProfileUpdateForm
 

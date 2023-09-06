@@ -400,49 +400,47 @@ def fetch_full_data_from_gsheet() -> List[List[str]]:
     Fetch the full set of join requests submitted to the
     CAT joining form.
     """
+    logger.info("Fetching list of join requests from Google Sheets")
     gc = gspread.service_account(filename=settings.GSPREAD_SERVICE_ACCOUNT)
     gsheet = gc.open_by_key(settings.GSPREAD_KEY)
     responses_worksheet = gsheet.worksheet(CAT_RESPONSES_WORKSHEET)
-    return responses_worksheet.get_values()
+    data = responses_worksheet.get_values()
+    logger.info(f"Found {len(data) -1} join requests")
+    return data
 
 
 def create_user_from_join_request(cat_join_req: CATJoinRequest):
     """
     Like the create_user function in the standard importer but we use a
     CATJoinRequest as our starting point instead to create first the user,
-    and then a corresponding profile
+    and then a corresponding profile.
     """
 
     # breakpoint()
 
-    # user, created = User.objects.get_or_create(email=cat_join_req.email)
+    user, created = User.objects.get_or_create(email=cat_join_req.email)
 
-    # logger.debug(user)
-    # user.name = cat_join_req["name"]
-    # user.username = safe_username()
-    # user.save()
-    # logger.debug(user.id)
+    logger.debug(user)
+    user.name = cat_join_req.email
+    user.username = safe_username()
+    user.save()
+    logger.debug(user.id)
 
-    # visible = True
+    visible = True
 
-    # profile, created = Profile.objects.get_or_create(user=user)
-    # profile.phone = row.get("phone")
-    # profile.website = row.get("website")
-    # profile.twitter = row.get("twitter")
-    # profile.facebook = row.get("facebook")
-    # profile.linkedin = row.get("linkedin")
-    # profile.bio = row.get("bio")
-    # profile.visible = visible
+    profile, created = Profile.objects.get_or_create(user=user)
+    profile.bio = cat_join_req.bio_text_from_join_request()
+    profile.visible = visible
     # profile.photo = fetch_user_pic(row.get("photo"))
     # self.add_tags_to_profile(profile, row)
-    # profile.save()
+    profile.save()
 
-    # logger.debug(f"profile: {profile}")
-    # logger.debug(f"user: {user}")
-    # logger.debug(profile.user.id)
+    logger.debug(f"profile: {profile}")
+    logger.debug(f"user: {user}")
+    logger.debug(profile.user.id)
 
-    # profile.save()
-    # return user
+    profile.save()
+    return user
 
 
 def create_join_request_from_row(row: List[str]) -> CATJoinRequest:

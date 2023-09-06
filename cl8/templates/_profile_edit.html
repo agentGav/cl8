@@ -25,12 +25,12 @@ div >input[type='file'] {
 <div class="card-body">
     <form enctype="multipart/form-data"
           method="post"
-          action="{% url 'profile-edit' profile.user.username %}">
+          action="{% url 'profile-edit' profile.short_id %}">
         {% csrf_token %}
         {{ form.as_div }}
         <button class="mt-3 btn btn-primary">Save changes</button>
         <a class="mt-3 btn btn-secondary"
-           href="{% url 'profile-detail' profile.user.username %}">Back</a>
+           href="{% url 'profile-detail' profile.short_id %}">Back</a>
     </form>
 </div>
 <script type="text/javascript"

@@ -2,7 +2,7 @@
 <div class="card-body">
     <h1 class="mb-0 text-3xl">{{ profile.name }}</h1>
     {% if profile.user == request.user %}
-        <a href="{% url 'profile-edit' profile.user.username %}"
+        <a href="{% url 'profile-edit' profile.short_id %}"
            class="btn btn-sm mt-2 mb-2 max-w-xs">Edit</a>
     {% endif %}
     {% if profile.photo %}
@@ -15,20 +15,28 @@
     {% endif %}
     <h3>Bio</h3>
     <div class="prose">{{ profile_rendered_bio|safe }}</div>
-    <h3>Asks</h3>
-    <p>
-        {% for tag in asks %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-    </p>
-    <h3>Offers</h3>
-    <p>
-        {% for tag in offers %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-    </p>
-    <h3>Specific skills</h3>
-    <p>
-        {% for tag in skills %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-    </p>
-    <h3>Other Tags</h3>
-    <p>
-        {% for tag in other_tags %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-    </p>
+    {% if asks %}
+        <h3>Asks</h3>
+        <p>
+            {% for tag in asks %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+        </p>
+    {% endif %}
+    {% if asks %}
+        <h3>Offers</h3>
+        <p>
+            {% for tag in offers %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+        </p>
+    {% endif %}
+    {% if skills %}
+        <h3>Specific skills</h3>
+        <p>
+            {% for tag in skills %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+        </p>
+    {% endif %}
+    {% if other_tags %}
+        <h3>Other Tags</h3>
+        <p>
+            {% for tag in other_tags %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+        </p>
+    {% endif %}
 </div>
