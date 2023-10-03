@@ -281,7 +281,9 @@ class SlackImporter:
 
 
 
-    def create_user_from_slack(self, slack_user: dict, add_profile_pic: bool = True) -> User:
+    def create_user_from_slack(
+            self, slack_user: dict, add_profile_pic: bool = True
+        ) -> User:
         """
         Accept a Slack user object, and create a corresponding
         User object, along with a corresponding Profile object
