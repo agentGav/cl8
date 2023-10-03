@@ -191,7 +191,7 @@ class TestSlackImporter:
 
         user_id = res[0]
         user_from_api = importer._fetch_user_for_id(user_id)
-        imported_user = importer.import_slack_user(user_id)
+        imported_user = importer.import_slack_user_from_api(user_id)
 
         # email
         assert imported_user.email == user_from_api["profile"]["email"]
@@ -279,6 +279,7 @@ class TestSlackImporter:
 
     @pytest.mark.smoke_test
     def test_create_users_from_slack(self, db, users_from_slack):
+        """Test against local data, not the API"""
 
         importer = SlackImporter()
 
@@ -288,6 +289,6 @@ class TestSlackImporter:
         ]
         
         for index, member in enumerate(users_from_slack):
-            importer.create_user_from_slack(member, import_picture=False)
+            importer.create_user_from_slack(member, add_profile_pic=False)
 
         assert len(valid_members_for_import) == len(models.User.objects.all())

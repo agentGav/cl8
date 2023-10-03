@@ -209,43 +209,22 @@ class SlackImporter:
         # import_ids in our local database
         return [user_id for user_id in adjusted_user_ids if user_id not in import_ids]
 
-    def import_slack_user(self, user_id: str = None, visible: bool = False):
+    def import_slack_user_from_api(self, user_id: str = None, visible: bool = False):
         """
         Accept a user id, fetch the matching user
-        from slack, and import it into the constellation
+        via the slack API, and create a corresponding User and Profile
         """
 
         # fetch the user object from slack, and extract
         # the values we want to save
-        #
+
         user_from_api = self._fetch_user_for_id(user_id)
 
-        email = user_from_api["profile"]["email"]
-        username = safe_username()
-        real_name = user_from_api["profile"]["real_name_normalized"]
-
-        photo_url = user_from_api["profile"].get("image_512")
-        # photo_url = user_from_api["profile"].get("image_original")
-        import_id = f"slack-{user_from_api['id']}"
-
-        # add the user to constellate
-        user, user_created = User.objects.get_or_create(email=email)
-        user.name = real_name
-        if user_created:
-            user.username = username
-        user.save()
-
-        # add the matching profile to constellate for user
-        profile, profile_created = Profile.objects.get_or_create(user=user)
-
-        # then add the info we have from the API
-        profile.import_id = import_id
-        if photo_url:
-            profile.photo = fetch_user_pic(photo_url)
+        user = self.create_user_from_slack(user_from_api)
 
         # default to being visible for directory
-        profile.visible = visible
-        profile.save()
+        user.profile.visible = visible
+        user.profile.save()
         user.save()
 
         return user
@@ -262,7 +241,7 @@ class SlackImporter:
 
         for new_user_id in new_ids:
             id_for_slack_api = new_user_id.replace("slack-", "")
-            imported_user = self.import_slack_user(id_for_slack_api)
+            imported_user = self.import_slack_user_from_api(id_for_slack_api)
             imported_users.append(imported_user)
 
         return imported_users
@@ -302,7 +281,7 @@ class SlackImporter:
 
 
 
-    def create_user_from_slack(self, slack_user: dict, add_profile_pic: bool = True):
+    def create_user_from_slack(self, slack_user: dict, add_profile_pic: bool = True) -> User:
         """
         Accept a Slack user object, and create a corresponding
         User object, along with a corresponding Profile object
@@ -346,6 +325,7 @@ class SlackImporter:
             prof.save()
             user.save()
 
+        return user
 
 
 class CATAirtableImporter(ProfileImporter):
@@ -496,8 +476,6 @@ def create_user_from_join_request(cat_join_req: CATJoinRequest):
     CATJoinRequest as our starting point instead to create first the user,
     and then a corresponding profile.
     """
-
-    # breakpoint()
 
     user, created = User.objects.get_or_create(email=cat_join_req.email)
 
