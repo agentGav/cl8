@@ -6,19 +6,20 @@ from pathlib import Path
 from typing import List
 
 import gspread
+import shortuuid
 import slack
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.utils import timezone
-from django.utils.text import slugify
 
 from cl8.users.models import CATJoinRequest
 
 from ..utils.pics import fetch_user_pic
 from .models import Profile, User
-import shortuuid
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
+
 
 
 class NoEmailFound(Exception):
@@ -265,6 +266,86 @@ class SlackImporter:
             imported_users.append(imported_user)
 
         return imported_users
+
+    def is_valid_for_import(self, slack_user: dict) -> bool:
+        """
+        Return true or false based on whether we should import 
+        this user. We skip users that are marked as deleted,
+        or look like bots.
+        """
+        # respect deleted status
+        if slack_user.get("deleted"):
+            logger.info(f"{slack_user['name']} was marked as deleted, skipping")
+            return False
+
+        # do not import any bot users
+        if slack_user.get("is_bot"):
+            logger.info(f"{slack_user['name']} looks like a bot, skipping")
+            return False
+
+        # skip importing users with no real name - this is
+        # sometimes a sign of a failed import or not a real active 
+        # user
+        if not slack_user.get('real_name'):
+            logger.warn(f"{slack_user['name']} has no real name, skipping")
+            return False
+
+        # we expect users to have an email, so we can match them up
+        # with info later. If they do not have an email, we skip them
+        slack_profile = slack_user.get("profile")
+        if not slack_profile.get("email"):
+            logger.info(f"no email for {slack_user['name']} , skipping")
+            return False
+
+        # if we made it this far, the user is valid for importing
+        return True
+
+
+
+    def create_user_from_slack(self, slack_user: dict, add_profile_pic: bool = True):
+        """
+        Accept a Slack user object, and create a corresponding
+        User object, along with a corresponding Profile object
+        
+        Slack user object docs:
+        https://api.slack.com/types/user
+        
+        """
+
+        if not self.is_valid_for_import(slack_user):
+            return False
+
+        slack_name = slack_user.get("name")
+        slack_user_id = slack_user.get("id")
+        slack_profile = slack_user.get("profile")
+        slack_email = slack_profile.get("email")
+        slack_photo = slack_profile.get("image_512")
+
+        slack_import_id = f"slack-{slack_user_id}"
+
+        user, user_created = User.objects.get_or_create(email=slack_email)
+        if user_created:
+            user.name = slack_profile.get("real_name_normalized")
+            user.username = f"{slack_name} - {slack_user_id}"
+            user.save()
+
+
+        # create an email address the way that allauth 
+        # expects it to be created 
+        eml, _ = EmailAddress.objects.get_or_create(
+            email=slack_profile["email"], user=user
+        )
+
+        prof, prof_created = Profile.objects.get_or_create(
+            import_id=slack_import_id, user=user
+        )
+        if prof_created:
+            if add_profile_pic:
+                prof.photo = fetch_user_pic(slack_photo)
+            prof.user = user
+            prof.save()
+            user.save()
+
 
 
 class CATAirtableImporter(ProfileImporter):
