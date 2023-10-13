@@ -16,7 +16,7 @@ from cl8.users.models import CATJoinRequest
 
 from ..utils.pics import fetch_user_pic
 from .models import Profile, User
-
+import pyairtable
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
 
@@ -217,12 +217,10 @@ class SlackImporter:
 
         # fetch the user object from slack, and extract
         # the values we want to save
-
         user_from_api = self._fetch_user_for_id(user_id)
 
         user = self.create_user_from_slack(user_from_api)
 
-        # default to being visible for directory
         user.profile.visible = visible
         user.profile.save()
         user.save()
@@ -239,8 +237,11 @@ class SlackImporter:
 
         imported_users = []
 
-        for new_user_id in new_ids:
+        logger.info(f"Found {len(new_ids)} new users to import")
+
+        for index, new_user_id in enumerate(new_ids):
             id_for_slack_api = new_user_id.replace("slack-", "")
+            logger.info(f"Importing user {index} of {len(new_ids)}")
             imported_user = self.import_slack_user_from_api(id_for_slack_api)
             imported_users.append(imported_user)
 
@@ -304,13 +305,29 @@ class SlackImporter:
 
         slack_import_id = f"slack-{slack_user_id}"
 
-        user, user_created = User.objects.get_or_create(email=slack_email)
-        if user_created:
-            user.name = slack_profile.get("real_name_normalized")
-            user.username = f"{slack_name} - {slack_user_id}"
-            user.save()
+        unique_slack_username = f"{slack_name} - {slack_user_id}"
 
 
+        logger.info(f"Creating user: {unique_slack_username}")
+        if User.objects.filter(username=unique_slack_username).exists():
+            logger.info("User already exists, skipping")
+            return False
+
+        existing_user = User.objects.filter(email=slack_email)
+        if existing_user:
+            logger.info(
+                f"User {existing_user} with email address"
+                f" {slack_email} already exists, skipping"
+            )
+            return False
+        
+
+        user = User.objects.create(
+            email=slack_email,
+            name = slack_profile.get("real_name_normalized"),
+            username = f"{slack_name} - {slack_user_id}"
+        )
+        
         # create an email address the way that allauth 
         # expects it to be created 
         eml, _ = EmailAddress.objects.get_or_create(
@@ -330,11 +347,32 @@ class SlackImporter:
         return user
 
 
-class CATAirtableImporter(ProfileImporter):
+class CATAirtableImporter:
     """
-    An importer to take the current data stored in an airtable, and update a user's info
-    with the data in the provided CSV file - uses email address as the key to match on.
+    An importer to take the current data stored in an airtable, and 
+    update a user's profile with info for the corresponding row with
+    that matches the profile's email address.
     """
+
+    def __init__(
+            self, bearer_token: str=None, base: str = None, table: str = None
+        ) -> None:
+        if bearer_token is not None:
+            self.bearer_token = bearer_token
+        else:
+            self.bearer_token = settings.AIRTABLE_BEARER_TOKEN
+
+        if base is not None:
+            self.base = settings.AIRTABLE_BASE
+        else:
+            self.base = settings.AIRTABLE_BASE
+        
+        if table is not None:
+            self.table = table
+        else:
+            self.table = settings.AIRTABLE_TABLE
+
+        self.rows:List[dict] = []
 
     expected_rows = [
         "Slack name",
@@ -350,36 +388,122 @@ class CATAirtableImporter(ProfileImporter):
         "LinkedIn URL",
     ]
 
+    def fetch_data_from_airtable(self) -> List[dict]:
+        """
+        Fetch the data from airtable, and return the 
+        rows as parsed json
+        """
+        
+        client = pyairtable.Api(self.bearer_token)
+        table = client.table(self.base, self.table)
+        rows = table.all()
+        self.rows = rows
+        return rows
+
+
+    def create_users(self, rows=None):
+        if not rows:
+            rows = self.rows
+
+        created_users = []
+        skipped_users = []
+
+        for count, row in enumerate(rows):
+            logger.debug(f"Importing. Rows to run through: {len(rows)}")
+            try:
+                new_user = self.create_user(row)
+                created_users.append(new_user)
+            except NoEmailFound:
+                skipped_users.append(row)
+            except Exception:
+                logger.warn(f"Could not import user from row {count}")
+
+        logger.debug(f"Added {len(created_users)}")
+        logger.debug(f"Skipped {len(created_users)}")
+
+        return created_users
+
+    
+
     def create_user(self, row):
         """
         Accepts a row, and returns the corresponding user generated based
         on the info passed in
         """
+        fields = row.get("fields")
         email_key = "Email address"
-        email = row[email_key]
+        email = fields.get(email_key)
         if not email:
             raise (NoEmailFound)
 
         logger.info(f"email: {email}")
-        user, created = User.objects.get_or_create(email=email)
-        logger.info(f"user: {user}")
-        if created or not user.username:
-            user.username = safe_username(row.get("email"))
-
-        logger.info(f"user: {user}")
-        user.save()
+        if User.objects.filter(email=email).exists():
+            logger.info(f"User with email address {email} already exists, skipping")
+            return False
+        
+        user = User.objects.create(
+            email=email,
+            username = safe_username(fields.get("email"))
+        )
 
         profile, created = Profile.objects.get_or_create(user=user)
 
-        profile.twitter = row.get("Twitter")
-        profile.linkedin = row.get("LinkedIn URL")
-        profile.bio = row.get("bio")
+        profile.twitter = fields.get("Twitter")
+        profile.linkedin = fields.get("LinkedIn URL")
+        profile.bio = fields.get("bio")
         profile.visible = True
 
-        self.add_tags_to_profile(profile, row)
+        self.add_tags_to_profile(profile, fields)
         profile.save()
         profile.update_thumbnail_urls()
         return user
+
+    def update_profiles_from_rows(self, rows=None):
+        """
+        Iterate through rows in provided airtable data, and update
+        the corresponding profiles with matching email addresses
+        """
+        updated_rows = []
+        for row in rows:
+            try:
+                updated_profile = self.update_profile_for_row(row)
+            except NoEmailFound:
+                logger.warn(f"No email found for row {row}")
+                continue    
+            if updated_profile:
+                updated_rows.append(updated_profile)
+
+        logger.info(f"Updated {len(updated_rows)} profiles")
+        return updated_rows
+
+    def update_profile_for_row(self, row: dict):
+        """
+        Update profile for the given row, matching on the 
+        email address. Adds the infromation listed in 
+        self.expected_rows
+        """
+        fields = row.get("fields")
+
+        email = fields.get("Email address")
+        if not email:
+            raise (NoEmailFound)
+
+        try:
+            profile = Profile.objects.get(user__email=email)
+        except Profile.DoesNotExist:
+            logger.info(f"Profile for {email} does not exist")
+            return False
+
+        profile.bio = fields.get("Bio")
+        profile.twitter = fields.get("Twitter")
+        profile.linkedin = fields.get("LinkedIn URL")
+        profile.visible = True
+
+        self.add_tags_to_profile(profile, fields)
+        profile.save()
+        # create different sized variants of the thumbnail
+        profile.update_thumbnail_urls()
+        return profile
 
     def add_tags_to_profile(
         self, profile: Profile, row: OrderedDict, columns: List = None
@@ -404,10 +528,12 @@ class CATAirtableImporter(ProfileImporter):
             if not tags:
                 continue
 
-            for tag in tags.split(","):
+            for tag in tags:
                 profile.tags.add(f"{colname}:{tag.strip()}")
 
         return profile
+
+
 
 
 class NoMatchingCAT(Exception):
@@ -479,29 +605,31 @@ def create_user_from_join_request(cat_join_req: CATJoinRequest):
     and then a corresponding profile.
     """
 
-    user, created = User.objects.get_or_create(email=cat_join_req.email)
+    # exist early if we have already created a user for this email
+    if User.objects.filter(email=cat_join_req.email).exists():
+        return False
 
-    logger.debug(user)
-    user.name = cat_join_req.email
-    user.username = safe_username()
-    user.save()
-    logger.debug(user.id)
-
+    user = User.objects.create(
+        email=cat_join_req.email,
+        name = cat_join_req.email,
+        username = safe_username()
+    )
     visible = True
 
     profile, created = Profile.objects.get_or_create(user=user)
-    profile.bio = cat_join_req.bio_text_from_join_request()
+    add_bio_to_profile_from_join_request(profile, cat_join_req)
     profile.visible = visible
-    # profile.photo = fetch_user_pic(row.get("photo"))
-    # self.add_tags_to_profile(profile, row)
-    profile.save()
-
-    logger.debug(f"profile: {profile}")
-    logger.debug(f"user: {user}")
-    logger.debug(profile.user.id)
-
     profile.save()
     return user
+
+def add_bio_to_profile_from_join_request(profile: Profile, join_req: CATJoinRequest):
+    """
+    Accept a profile object, and a join request, and add the bio
+    from the join request to the profile
+    """
+    profile.bio = join_req.bio_text_from_join_request()
+    profile.save()
+    return profile
 
 
 def create_join_request_from_row(row: List[str]) -> CATJoinRequest:

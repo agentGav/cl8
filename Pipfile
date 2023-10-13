@@ -45,6 +45,9 @@ gspread = "*"
 rich = "*"
 shortuuid = "*"
 django-widget-tweaks = "*"
+ipdb = "*"
+airtable-python = "*"
+pyairtable = "*"
 
 [dev-packages]
 mypy = "*"

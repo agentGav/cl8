@@ -68,6 +68,7 @@ class Profile(models.Model):
     linkedin = models.CharField(_("linkedin"), max_length=254, blank=True, null=True)
     bio = models.TextField(_("bio"), blank=True, null=True)
     visible = models.BooleanField(_("visible"), default=False)
+    location = models.CharField(_("location"), max_length=254, blank=True, null=True)
     photo = models.ImageField(
         _("photo"), blank=True, null=True, max_length=200, upload_to="photos"
     )
@@ -141,7 +142,7 @@ class Profile(models.Model):
             return f"{self.user.first_name} - {self.import_id}"
 
     def get_absolute_url(self):
-        return reverse("profile-detail", args=[self.user.username])
+        return reverse("profile-detail", args=[self.short_id])
 
     def update_thumbnail_urls(self):
         """Generate the thumbnails for a profile"""

@@ -12,15 +12,14 @@ console = logging.StreamHandler()
 
 
 class Command(BaseCommand):
-    help = "Import user profiles into this constellation "
+    help = (
+        "Import update existing profiles with corresponding "
+        "info from directory airtable"
+    )
 
     def handle(self, *args, **kwargs):
         importer = CATAirtableImporter()
-        csv_path = Path() / "cat-directory.csv"
+        rows = importer.fetch_data_from_airtable()
 
-        importer.load_csv_from_path(csv_path)
-        first_row = importer.rows[0]
-
-        logger.debug(f"importing: {first_row}")
-        users = importer.create_users(importer.rows)
+        users = importer.update_profiles_from_rows(rows)
         logger.debug(f"imported: {users}")

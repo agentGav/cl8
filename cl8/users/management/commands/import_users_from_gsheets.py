@@ -1,15 +1,13 @@
 import logging
 
-
 from django.core.management import BaseCommand
+
 from cl8.users.importers import (
-    fetch_full_data_from_gsheet,
+    EmptyJoinRequestCAT,
     create_join_request_from_row,
     create_user_from_join_request,
-    EmptyJoinRequestCAT,
+    fetch_full_data_from_gsheet,
 )
-
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 console = logging.StreamHandler()

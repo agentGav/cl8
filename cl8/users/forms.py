@@ -48,12 +48,13 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = [
             "photo",
             "name",
+            "location",
             "organisation",
             # "email",
-            "visible",
             "bio",
             "tags",
             # "twitter",
             "linkedin",
             # "facebook",
+            "visible",
         ]
