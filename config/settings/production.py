@@ -87,7 +87,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "cl8.utils.storages.MediaRootS3Boto3Storage"
-MEDIA_URL = f"https://{aws_s3_domain}/{AWS_STORAGE_BUCKET_NAME}/media/"
+MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

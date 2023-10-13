@@ -18,25 +18,30 @@
     {% if asks %}
         <h3>Asks</h3>
         <p>
-            {% for tag in asks %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+            {% for tag in asks %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
         </p>
     {% endif %}
-    {% if asks %}
+    {% if offers %}
         <h3>Offers</h3>
         <p>
-            {% for tag in offers %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+            {% for tag in offers %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
         </p>
     {% endif %}
     {% if skills %}
         <h3>Specific skills</h3>
         <p>
-            {% for tag in skills %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+            {% for tag in skills %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
         </p>
     {% endif %}
+    {% comment %}
+        ideally we would have some logic here to group the rest of the tags 
+        based on the : in the tag name
+
+    {% endcomment %}
     {% if other_tags %}
         <h3>Other Tags</h3>
         <p>
-            {% for tag in other_tags %}<span class="badge mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+            {% for tag in other_tags %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
         </p>
     {% endif %}
 </div>
