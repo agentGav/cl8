@@ -55,7 +55,7 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     populate the provided context dictionary
     """
     filtered_profiles = ProfileFilter(
-        request.GET, queryset=Profile.objects.all().prefetch_related("tags")
+        request.GET, queryset=Profile.objects.all().prefetch_related("tags", "user")
     )
 
     ctx["profile_filter"] = filtered_profiles
