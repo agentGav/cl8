@@ -7,7 +7,7 @@
       <div class="card-body">
         <form method="get">
           <p>
-            <label class="inline-block w-100 mr-8"
+            <label class="inline-block w-100 mr-8 text-xl"
                    for="{{ profile_filter.form.bio.id_for_label }}">Showing profile results matching:</label>
             {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.2s" hx-target=".sidebar" class=" text-xl min-w-[50%]" %}
             <input class="btn mt-4 ml-4" type="submit" />
@@ -23,7 +23,9 @@
   </section>
   <section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px]">
     <section class="sidebar" style="height:50vh; overflow:auto;">
-      <p>Showing {{ paginated_profiles|length }} profile{{ paginated_profiles|pluralize }}</p>
+      <div class="ml-4 pa-4 text-center">
+        <p class="text-xl inline-block ">Showing {{ paginated_profiles|length }} profile{{ paginated_profiles|pluralize }}</p>
+      </div>
       {% include "pages/_paginated_profiles.html" %}
     </section>
     <section>
@@ -31,8 +33,17 @@
         {% if profile %}
           {% include '_profile.html' %}
         {% else %}
-          <div class="card-body prose">
-            <h1>Enter profile here</h1>
+          <div class="card-body prose pt-8">
+            <h2 class="text-xl font-normal">
+              Find people in the climateAction.tech community based on what they do, where they live, what they're asking for help with, and what they're offering to other members.
+            </h2>
+            <h2 class="text-xl font-normal">
+              Either search for people using the search bar above, or click on a profile to the left.
+            </h2>
+            <h2 class="text-xl font-normal">
+              Want to see what people see for your profile?
+              <a href="{% url 'profile-detail' request.user.profile.short_id %}">Go to your profile</a> where you can make changes</a>
+            </h2>
           </div>
         {% endif %}
       </div>
