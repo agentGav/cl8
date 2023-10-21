@@ -40,7 +40,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
     tags = ModelMultipleChoiceField(
         queryset=taggit_models.Tag.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete"),
+        widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete-with-create"),
     )
 
     class Meta:

@@ -52,10 +52,19 @@ urlpatterns += [
     path(
         "api/autocomplete/tags/",
         TagAutoCompleteView.as_view(
-            create_field="name",
         ),
         name="tag-autocomplete",
     ),
+    # we have a second autocomplete view that allows users to create new tags
+    # to use on the profile edit page
+    path(
+        "api/autocomplete/tags/",
+        TagAutoCompleteView.as_view(
+            create_field="name",
+        ),
+        name="tag-autocomplete-with-create",
+    )
+    
 ]
 
 if settings.DEBUG:

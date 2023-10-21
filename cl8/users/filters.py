@@ -16,14 +16,6 @@ class ProfileFilter(django_filters.FilterSet):
         widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete"),
         conjoined=True,
     )
-    # to add the second and third sets of filters, we need to hook into a form here
-    # tags2 = django_filters.ModelMultipleChoiceFilter(
-    #     field_name="tags",
-    #     label="Tags 2",
-    #     queryset=taggit_models.Tag.objects.all(),
-    #     widget=autocomplete.ModelSelect2Multiple(url="tag-autocomplete"),
-    #     conjoined=True,
-    # )
 
     def search_fulltext(self, queryset, field_name, value):
         """
