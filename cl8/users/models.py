@@ -14,8 +14,6 @@ from taggit.models import TagBase, TaggedItemBase
 from shortuuid.django_fields import ShortUUIDField
 import logging
 
-from django.contrib.postgres import search
-from django.contrib.postgres import indexes
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +42,7 @@ class Cluster(TagBase):
     class Meta:
         verbose_name = _("Cluster")
         verbose_name_plural = _("Clusters")
+
 
 
 class TaggedCluster(TaggedItemBase):
@@ -134,6 +133,42 @@ class Profile(models.Model):
             return self._photo_detail_url
 
         return get_thumbnail(self.photo, "250x250", crop="center", quality=99).url
+
+    def tags_by_grouping(self):
+        """
+        Return a list of tags, grouped by their type
+        """
+        grouped_tags = {}
+        ungrouped_tags = []
+        # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
+        for tag in self.tags.filter(name__icontains=":"):
+            tag_group, tag_name = tag.name.split(":")
+            tag_name = tag.name.split(":")[1]
+            if tag_group not in grouped_tags:
+                grouped_tags[tag_group] = []
+            grouped_tags[tag_group].append({"name": tag_name, "tag": tag})
+
+        for ungrouped_tag in self.tags.exclude(name__icontains=":"):
+
+            ungrouped_tags.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+
+        return [grouped_tags, ungrouped_tags]
+    
+    def tags_with_no_grouping(self):
+        """
+        Return a list of tags, flattened into a single list
+        """
+        tag_list = []
+        # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
+        for tag in self.tags.filter(name__icontains=":"):
+            tag_group, tag_name = tag.name.split(":")
+            tag_list.append({"name": tag_name, "tag": tag})
+
+        for ungrouped_tag in self.tags.exclude(name__icontains=":"):
+            tag_list.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+
+        return tag_list
+
 
     def __str__(self):
         if self.user.name:

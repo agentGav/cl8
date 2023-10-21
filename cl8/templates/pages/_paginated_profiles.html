@@ -19,7 +19,9 @@
           </a>
         </h4>
         <p>
-          {% for tag in profile.tags.all|slice:":4" %}<span class="badge mx-1">{{ tag.name }}</span>{% endfor %}
+          {% for tag in profile.tags_with_no_grouping|slice:":4" %}
+            <span class="badge mx-1" data-tag-name="{{ tag.tag.name }}">{{ tag.name }}</span>
+          {% endfor %}
         </p>
       </div>
     </div>

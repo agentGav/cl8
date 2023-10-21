@@ -121,20 +121,8 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
             if self.object.bio:
                 markdown_bio = md.render(self.object.bio)
                 ctx["profile_rendered_bio"] = markdown_bio
-
-            grouped_tags = {}
-            ungrouped_tags = []
-            # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
-            for tag in self.object.tags.filter(name__icontains=":"):
-                tag_group, tag_name = tag.name.split(":")
-                tag_name = tag.name.split(":")[1]
-                if tag_group not in grouped_tags:
-                    grouped_tags[tag_group] = []
-                grouped_tags[tag_group].append({"name": tag_name, "tag": tag})
-
-            for ungrouped_tag in self.object.tags.exclude(name__icontains=":"):
-
-                ungrouped_tags.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+            
+            grouped_tags, ungrouped_tags = self.object.tags_by_grouping()
 
             ctx["grouped_tags"] = grouped_tags
             ctx["ungrouped_tags"] = ungrouped_tags
