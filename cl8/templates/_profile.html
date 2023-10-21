@@ -13,35 +13,42 @@
     {% else %}
         {% gravatar profile.user.email 150 %}
     {% endif %}
-    <h3>Bio</h3>
-    <div class="prose">{{ profile_rendered_bio|safe }}</div>
-    {% if asks %}
-        <h3>Asks</h3>
-        <p>
-            {% for tag in asks %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-        </p>
+    {% if profile_rendered_bio %}
+        <h3>Bio</h3>
+        <div class="prose">{{ profile_rendered_bio|safe }}</div>
     {% endif %}
-    {% if offers %}
-        <h3>Offers</h3>
-        <p>
-            {% for tag in offers %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-        </p>
+    {% if grouped_tags %}
+        {% for tag_group, tags in grouped_tags.items %}
+            <h3>{{ tag_group }}</h3>
+            <p>
+                {% for tag_dict in tags %}
+                    <span class="badge my-2 mx-1 p-4"
+                          data-tag-name="{{ tag_dict.name }}"
+                          data-tag-group="{{ tag_group }}">{{ tag_dict.name }}</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
     {% endif %}
-    {% if skills %}
-        <h3>Specific skills</h3>
-        <p>
-            {% for tag in skills %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
-        </p>
-    {% endif %}
-    {% comment %}
-        ideally we would have some logic here to group the rest of the tags 
-        based on the : in the tag name
-
-    {% endcomment %}
-    {% if other_tags %}
+    {% if ungrouped_tags %}
         <h3>Other Tags</h3>
         <p>
-            {% for tag in other_tags %}<span class="badge my-2 mx-1 p-4">{{ tag.name }}</span>{% endfor %}
+            {% for tag_dict in ungrouped_tags %}
+                <span class="badge my-2 mx-1 p-4"
+                      data-tag-name="{{ tag_dict.name }}"
+                      data-tag-group="{{ tag_group }}">{{ tag_dict.name }}</span>
+            {% endfor %}
         </p>
     {% endif %}
+    <script>
+        // when a user clicks on a tag, emit an event listing the nane of the tag being clicked
+        // this is picked up by the parent component and used to filter the list of profiles
+        // shown    
+        document.querySelectorAll('.badge').forEach(item => {
+            item.addEventListener('click', event => {
+                document.body.dispatchEvent(new Event("toggle", ))
+                event.target.classList.toggle('bg-blue-500')
+                console.log(event)
+            })
+        })
+    </script>
 </div>

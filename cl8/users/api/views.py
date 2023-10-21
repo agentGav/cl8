@@ -55,7 +55,7 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     populate the provided context dictionary
     """
     filtered_profiles = ProfileFilter(
-        request.GET, queryset=Profile.objects.all().prefetch_related("tags", "user")
+        request.GET, queryset=Profile.objects.all().prefetch_related("tags", "user").distinct()
     )
 
     ctx["profile_filter"] = filtered_profiles
@@ -122,25 +122,22 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
                 markdown_bio = md.render(self.object.bio)
                 ctx["profile_rendered_bio"] = markdown_bio
 
-            ctx["asks"] = [
-                {"name": tag.name.replace("Asks:", "")}
-                for tag in self.object.tags.filter(name__istartswith="Asks:")
-            ]
-            ctx["offers"] = [
-                {"name": tag.name.replace("Offers:", "")}
-                for tag in self.object.tags.filter(name__istartswith="Offers:")
-            ]
+            grouped_tags = {}
+            ungrouped_tags = []
+            # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
+            for tag in self.object.tags.filter(name__icontains=":"):
+                tag_group, tag_name = tag.name.split(":")
+                tag_name = tag.name.split(":")[1]
+                if tag_group not in grouped_tags:
+                    grouped_tags[tag_group] = []
+                grouped_tags[tag_group].append({"name": tag_name, "tag": tag})
 
-            ctx["skills"] = [
-                {"name": tag.name.replace("Specific skills:", "")}
-                for tag in self.object.tags.filter(name__istartswith="Specific Skills:")
-            ]
+            for ungrouped_tag in self.object.tags.exclude(name__icontains=":"):
 
-            ctx["other_tags"] = (
-                self.object.tags.exclude(name__istartswith="Specific Skills:")
-                .exclude(name__istartswith="Offers:")
-                .exclude(name__istartswith="Asks:")
-            )
+                ungrouped_tags.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+
+            ctx["grouped_tags"] = grouped_tags
+            ctx["ungrouped_tags"] = ungrouped_tags
 
         return ctx
 
@@ -365,6 +362,6 @@ class TagAutoCompleteView(autocomplete.Select2QuerySetView):
         qs = Tag.objects.all()
 
         if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+            qs = qs.filter(name__icontains=self.q)
 
         return qs

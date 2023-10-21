@@ -18,9 +18,9 @@
             {% comment %} {{ profile.rank }} {% endcomment %}
           </a>
         </h4>
-        {% comment %} <p>
-          {% for tag in profile.tags.all %}<span class="badge">{{ tag.name }}</span>{% endfor %}
-        </p> {% endcomment %}
+        <p>
+          {% for tag in profile.tags.all|slice:":4" %}<span class="badge mx-1">{{ tag.name }}</span>{% endfor %}
+        </p>
       </div>
     </div>
   </div>
