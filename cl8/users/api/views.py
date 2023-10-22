@@ -8,15 +8,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import paginator
-from django.http import HttpRequest
 from django.core.files.images import ImageFile
+from django.db.models import Case, When
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.urls import resolve
 from django.utils.text import slugify
 from django.views.generic import DetailView, UpdateView
 from markdown_it import MarkdownIt
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import (
@@ -34,7 +34,6 @@ from taggit.models import Tag
 from ..filters import ProfileFilter
 from ..forms import ProfileUpdateForm
 from ..models import Cluster, Profile
-
 from .serializers import (
     ClusterSerializer,
     ProfilePicSerializer,
@@ -56,12 +55,28 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     populate the provided context dictionary
     """
     filtered_profiles = ProfileFilter(
-        request.GET, queryset=Profile.objects.all().prefetch_related("tags", "user").distinct()
+        request.GET, queryset=Profile.objects.all().prefetch_related("tags", "user")
     )
 
     ctx["profile_filter"] = filtered_profiles
 
-    pager = paginator.Paginator(filtered_profiles.qs, NO_PROFILES_PER_PAGE)
+    # because we're using full text search with postgres, we need to de-dupe the results
+    # while preserving their order. 
+    ordered_profile_ids = []
+    for prof in filtered_profiles.qs:
+        if prof.id not in ordered_profile_ids:
+            ordered_profile_ids.append(prof.id)
+    # once we have a deduped list of ids, we need to convert it back into a queryset, 
+    # so code that expects a queryset can still work
+    # Querysets do no guarantee order so for postgres we need to use a Case statement 
+    # to preserve the order, and then order by that
+    # https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
+    
+    preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_profile_ids)])
+    ordered_deduped_profiles = Profile.objects.filter(id__in=ordered_profile_ids).order_by(preserved_order)
+
+
+    pager = paginator.Paginator(ordered_deduped_profiles, NO_PROFILES_PER_PAGE)
     page = request.GET.get("page", 1)
 
     try:
