@@ -55,15 +55,22 @@ class TaggedCluster(TaggedItemBase):
     )
 
 
-def flat_tag_list(tag_queryset):
+def flat_tag_list(tag_queryset) -> list[dict]:
+    """
+    Return a list of tags, with the name split on a colon to allow for grouping
+    by the kind of tag listed.
+    This is called multiple times, so we split on the name in python rather than
+    going back to the database using further filters / exclude classes
+    """
     tag_list = []
-    # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
-    for tag in tag_queryset.filter(name__icontains=":"):
-        tag_group, tag_name = tag.name.split(":")
-        tag_list.append({"name": tag_name, "tag": tag})
 
-    for ungrouped_tag in tag_queryset.exclude(name__icontains=":"):
-        tag_list.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+    for tag in tag_queryset.all():
+            split_name = tag.name.split(":") 
+            if len(split_name) == 1:
+                # there was no colon to split on use the full tag name
+                tag_list.append({"name": split_name[0], "tag": tag})
+            if len(split_name) > 1:
+                tag_list.append({"group": split_name[0], "name": split_name[1], "tag": tag})
 
     return tag_list
 
