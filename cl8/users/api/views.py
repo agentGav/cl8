@@ -61,18 +61,36 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     ctx["profile_filter"] = filtered_profiles
 
     # because we're using full text search with postgres, we need to de-dupe the results
-    # while preserving their order. 
+    # while preserving their order. We'd normally do this using a distinct() call, but
+    # because we have multiple instances of the same profile in the queryset, with different
+    # 'rank' scores. The ORM with Postgres does not let us order by 'rank' if we don't include 
+    # it as a field we are calling distinct on, and doing that would stop us being able to dedupe
+    # the results.
+    # So instead we need to manually dedupe the results by id, and then order by that.
     ordered_profile_ids = []
     for prof in filtered_profiles.qs:
         if prof.id not in ordered_profile_ids:
             ordered_profile_ids.append(prof.id)
     # once we have a deduped list of ids, we need to convert it back into a queryset, 
-    # so code that expects a queryset can still work
-    # Querysets do no guarantee order so for postgres we need to use a Case statement 
-    # to preserve the order, and then order by that
-    # https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
+    # so code that expects a queryset can still work.
+    # Querysets do not guarantee order so for Postgres we need to Case() to create a 
+    # SQL statement that preserves the order defined above, and then order by that.
     
+    # This is a bit dense, but the code below creates a Case() with a list comprehension that 
+    # creates a list of When's that look like this:
+    # ORDER BY
+    # CASE
+    #   WHEN id=10 THEN 0
+    #   WHEN id=45 THEN 1
+    #   WHEN id=60 THEN 2
+    # END;
+    # More below:
+    # https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
+
     preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_profile_ids)])
+
+    # Finally, we can now create a new deduped Queryset, with the correct ordering, and prefetch
+    # the related tags and user objects, to avoid expensive N+1 queries later on. Phew!
     ordered_deduped_profiles = Profile.objects.filter(
         id__in=ordered_profile_ids
     ).order_by(

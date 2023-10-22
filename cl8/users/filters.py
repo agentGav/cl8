@@ -22,7 +22,7 @@ class ProfileFilter(django_filters.FilterSet):
     def search_fulltext(self, queryset, field_name, value):
         """
         Override the default search behaviour to use Postgres full text search, to search
-        a number of fields simultaneously, returning a ranks listing of results
+        a number of fields simultaneously, returning a ranked listing of results
         """
         # https://github.com/carltongibson/django-filter/issues/1039
         # https://stackoverflow.com/questions/76397037/django-full-text-search-taggit
