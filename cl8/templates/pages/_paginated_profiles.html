@@ -1,11 +1,13 @@
 {% load gravatar %}
 <div class="active-tags w-4/5 mx-auto">
-  <h3>Active tags</h3>
-  {% for active_tag in active_tags %}
-    <span class="badge my-2 mx-1 p-4 hover:bg-red-900 hover:shadow-lg hover:cursor-pointer"
-          data-tag-name="{{ active_tag.name }}"
-          data-tag-id="{{ active_tag.tag.id }}">{{ active_tag.name }}</span>
-  {% endfor %}
+  {% if active_tags %}
+    <h3>Active tags</h3>
+    {% for active_tag in active_tags %}
+      <span class="badge my-2 mx-1 p-4 hover:bg-red-900 hover:shadow-lg hover:cursor-pointer"
+            data-tag-name="{{ active_tag.name }}"
+            data-tag-id="{{ active_tag.tag.id }}">{{ active_tag.name }}</span>
+    {% endfor %}
+  {% endif %}
 </div>
 <div class="ml-4 pa-4 text-center">
   <p class="text-xl inline-block ">Showing {{ paginated_profiles|length }} profile{{ paginated_profiles|pluralize }}</p>

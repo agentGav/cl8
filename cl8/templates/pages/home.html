@@ -24,13 +24,22 @@
         </form>
       </div>
     </div>
-    {% comment %} TODO TIDY THIS UP {% endcomment %}
+    {% comment %}
+    TODO: check if we still need jQuery. We only were using it for the select2 
+    based filtering, and that's now only used on the profile editing pages.
+    {% endcomment %}
     <script type="text/javascript"
             src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
     {{ profile_filter.form.media }}
     <script src="{% static 'js/htmx.js' %}" defer></script>
   </section>
-  <section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px]">
+  {% comment %}
+  Have one column up 400px with, then another that is at least 
+  900x and a maximum of 1fr wide.
+  TODO: revisit this layout. It's not great on mobile, and it doesn't
+  make use of any of css-grid's capabilities
+  {% endcomment %}
+  <section class="grid grid-cols-[400px_minmax(900px,_1fr)]">
     <section class="sidebar">
       {% comment %} list the active tags {% endcomment %}
       {% include "pages/_paginated_profiles.html" %}
