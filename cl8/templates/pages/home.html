@@ -2,16 +2,25 @@
 {% load static widget_tweaks %}
 {% block content %}
   {% include "_nav_menu.html" %}
-  <section class="mb-4">
+  <section class="mb-4 border">
     <div class="card search-block">
       <div class="card-body">
-        <form method="get">
+        <form id="filter-form"
+              method="get"
+              hx-get="/"
+              hx-trigger="submit, htmx:confirm from:#id_tags, htmx:confirm from:#id_bio, toggle-tag from:body"
+              hx-target=".sidebar"
+              hx-push-url="true">
           <p>
             <label class="inline-block w-100 mr-8 text-xl"
                    for="{{ profile_filter.form.bio.id_for_label }}">Showing profile results matching:</label>
-            {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.2s" hx-target=".sidebar" class=" text-xl min-w-[50%]" %}
-            <input class="btn mt-4 ml-4" type="submit" />
           </p>
+          <p>
+            {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.2s," hx-target=".sidebar" class="text-xl min-w-[50%]" hx-sync="closest form:abort" %}
+          </p>
+          <p class="hidden">{% render_field profile_filter.form.tags %}</p>
+          {% comment %} <input class="btn mt-4 ml-4" type="submit" /> {% endcomment %}
+          <button class="btn mt-4 ml-4" type="submit">Search</button>
         </form>
       </div>
     </div>
@@ -22,10 +31,8 @@
     <script src="{% static 'js/htmx.js' %}" defer></script>
   </section>
   <section class="grid grid-cols-[400px_minmax(900px,_1fr)_100px]">
-    <section class="sidebar" style="height:50vh; overflow:auto;">
-      <div class="ml-4 pa-4 text-center">
-        <p class="text-xl inline-block ">Showing {{ paginated_profiles|length }} profile{{ paginated_profiles|pluralize }}</p>
-      </div>
+    <section class="sidebar">
+      {% comment %} list the active tags {% endcomment %}
       {% include "pages/_paginated_profiles.html" %}
     </section>
     <section>
@@ -33,7 +40,7 @@
         {% if profile %}
           {% include '_profile.html' %}
         {% else %}
-          <div class="card-body prose pt-8">
+          <div class="card-body prose pt-8 mt-[5rem]">
             <h2 class="text-xl font-normal">
               Find people in the climateAction.tech community based on what they do, where they live, what they're asking for help with, and what they're offering to other members.
             </h2>
@@ -42,11 +49,44 @@
             </h2>
             <h2 class="text-xl font-normal">
               Want to see what people see for your profile?
-              <a href="{% url 'profile-detail' request.user.profile.short_id %}">Go to your profile</a> where you can make changes</a>
+              <a href="{% url 'profile-detail' request.user.profile.short_id %}">Go to your profile</a> where you can make changes.
             </h2>
           </div>
         {% endif %}
       </div>
     </section>
   </section>
+  <script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    console.log("DOM fully loaded and parsed");
+
+    htmx.logger = function(elt, event, data) {
+      if(console) {
+          console.log(event, elt, data);
+      }
+    }
+
+    /*
+    $('#id_tags').on('select2:select', function (e) {
+      // Do something
+      console.log("WAAAAAAAT", e)
+      
+      document.body.dispatchEvent(new Event("refresh"))
+    });
+    */
+
+    document.body.addEventListener('htmx:confirm', function(evt) {
+      console.log("CONFIRM", evt)
+      
+      
+
+      // evt.preventDefault();
+      
+    })
+
+  });
+  
+
+  
+  </script>
 {% endblock content %}

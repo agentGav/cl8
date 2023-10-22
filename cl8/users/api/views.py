@@ -46,6 +46,7 @@ User = get_user_model()
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 NO_PROFILES_PER_PAGE = 100
 
 
@@ -69,6 +70,13 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
         ctx["paginated_profiles"] = pager.page(1)
     except paginator.EmptyPage:
         ctx["paginated_profiles"] = pager.page(paginator.num_pages)
+
+    active_tag_ids = request.GET.getlist('tags')
+
+    if active_tag_ids:
+        from ..models import flat_tag_list
+
+        ctx["active_tags"] = flat_tag_list(Tag.objects.filter(id__in=active_tag_ids))
 
     return ctx
 

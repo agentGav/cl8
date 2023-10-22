@@ -55,6 +55,20 @@ class TaggedCluster(TaggedItemBase):
     )
 
 
+def flat_tag_list(tag_queryset):
+    tag_list = []
+    # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
+    for tag in tag_queryset.filter(name__icontains=":"):
+        tag_group, tag_name = tag.name.split(":")
+        tag_list.append({"name": tag_name, "tag": tag})
+
+    for ungrouped_tag in tag_queryset.exclude(name__icontains=":"):
+        tag_list.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+
+    return tag_list
+
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone = models.CharField(_("phone"), max_length=254, blank=True, null=True)
@@ -158,16 +172,17 @@ class Profile(models.Model):
         """
         Return a list of tags, flattened into a single list
         """
-        tag_list = []
-        # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
-        for tag in self.tags.filter(name__icontains=":"):
-            tag_group, tag_name = tag.name.split(":")
-            tag_list.append({"name": tag_name, "tag": tag})
+        return flat_tag_list(self.tags)
+        # tag_list = []
+        # # group tags in a dict based on the name of the tag, once it is split at the ":" in the name
+        # for tag in self.tags.filter(name__icontains=":"):
+        #     tag_group, tag_name = tag.name.split(":")
+        #     tag_list.append({"name": tag_name, "tag": tag})
 
-        for ungrouped_tag in self.tags.exclude(name__icontains=":"):
-            tag_list.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
+        # for ungrouped_tag in self.tags.exclude(name__icontains=":"):
+        #     tag_list.append({"name": ungrouped_tag.name, "tag": ungrouped_tag})
 
-        return tag_list
+        # return tag_list
 
 
     def __str__(self):

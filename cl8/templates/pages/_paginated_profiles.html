@@ -1,7 +1,23 @@
 {% load gravatar %}
+<div class="active-tags w-4/5 mx-auto">
+  <h3>Active tags</h3>
+  {% for active_tag in active_tags %}
+    <span class="badge my-2 mx-1 p-4 hover:bg-red-900 hover:shadow-lg hover:cursor-pointer"
+          data-tag-name="{{ active_tag.name }}"
+          data-tag-id="{{ active_tag.tag.id }}">{{ active_tag.name }}</span>
+  {% endfor %}
+</div>
+<div class="ml-4 pa-4 text-center">
+  <p class="text-xl inline-block ">Showing {{ paginated_profiles|length }} profile{{ paginated_profiles|pluralize }}</p>
+</div>
 {% for profile in paginated_profiles %}
   <div class="card w-96 bg-base-100 mb-1">
-    <div class="card-body profile">
+    {% comment %} we want our whole div to be clickable {% endcomment %}
+    <div class="card-body profile hover:bg-yellow-100 hover:shadow-lg hover:cursor-pointer"
+         hx-get="{% url 'profile-detail' profile.short_id %}"
+         hx-params="*"
+         hx-target="#profile-slot"
+         hx-push-url="true">
       <div class=profile-thumb>
         {% if profile.photo %}
           <img class="profile-thumb" src="{{ profile.thumbnail_photo }}" />
@@ -11,10 +27,7 @@
       </div>
       <div>
         <h4 class="card-title">
-          <a hx-get="{% url 'profile-detail' profile.short_id %}"
-             hx-target="#profile-slot"
-             hx-push-url="true"
-             href="{% url 'profile-detail' profile.short_id %}">{{ profile.name }}
+          <a href="{% url 'profile-detail' profile.short_id %}">{{ profile.name }}
             {% comment %} {{ profile.rank }} {% endcomment %}
           </a>
         </h4>
@@ -39,5 +52,14 @@
 .profile-thumb img {
   width:50px;
 }
-
 </style>
+<script>
+  document.querySelectorAll('.active-tags .badge').forEach(item => {
+    item.addEventListener('click', event => {
+        const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
+        const chosenTagOption = document.querySelector(selectorString)
+        chosenTagOption.selected = !chosenTagOption.selected
+        document.body.dispatchEvent(new Event("toggle-tag"))
+    })
+})
+</script>

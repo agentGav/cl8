@@ -50,7 +50,7 @@ urlpatterns += [
     path("auth-token/", obtain_auth_token),
     path("", include("cl8.users.api.passwordless_urls")),
     path(
-        "api/autocomplete/tags/",
+        "api/autocomplete/tags-read-only/",
         TagAutoCompleteView.as_view(
         ),
         name="tag-autocomplete",
