@@ -9,6 +9,8 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 class ProfileFilter(django_filters.FilterSet):
     bio = django_filters.CharFilter(method="search_fulltext")
 
+    # We now hide the select2 widget in the profile filter component shown to users
+    # but keeping this helps for debugging tag filtering issues
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name="tags",
         label="Tags",
@@ -20,7 +22,7 @@ class ProfileFilter(django_filters.FilterSet):
     def search_fulltext(self, queryset, field_name, value):
         """
         Override the default search behaviour to use Postgres full text search, to search
-        a number of fields simultaneously
+        a number of fields simultaneously, returning a ranks listing of results
         """
         # https://github.com/carltongibson/django-filter/issues/1039
         # https://stackoverflow.com/questions/76397037/django-full-text-search-taggit
@@ -36,6 +38,8 @@ class ProfileFilter(django_filters.FilterSet):
         )
 
         return (
+            # this ranks our results by how well they match the search query
+            # annotating each result with a score in the property 'rank' from 0 to 1
             queryset.annotate(rank=SearchRank(search_vector, search_query))
             .filter(rank__gt=0)
             .distinct()

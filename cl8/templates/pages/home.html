@@ -70,14 +70,18 @@
       </div>
     </section>
   </section>
-  {% comment %} <script>
-  document.addEventListener("DOMContentLoaded", (event) => {
-    console.log("DOM fully loaded and parsed");
-    htmx.logger = function(elt, event, data) {
-      if(console) {
-          console.log(event, elt, data);
+  {% comment %}
+  Uncomment this to see all the events being logged by htmx
+
+  <script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+      console.log("DOM fully loaded and parsed");
+      htmx.logger = function(elt, event, data) {
+        if(console) {
+            console.log(event, elt, data);
+        }
       }
-    }
-  });
-  </script> {% endcomment %}
+    });
+  </script>
+  {% endcomment %}
 {% endblock content %}
