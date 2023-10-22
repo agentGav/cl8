@@ -56,37 +56,14 @@
       </div>
     </section>
   </section>
-  <script>
+  {% comment %} <script>
   document.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOM fully loaded and parsed");
-
     htmx.logger = function(elt, event, data) {
       if(console) {
           console.log(event, elt, data);
       }
     }
-
-    /*
-    $('#id_tags').on('select2:select', function (e) {
-      // Do something
-      console.log("WAAAAAAAT", e)
-      
-      document.body.dispatchEvent(new Event("refresh"))
-    });
-    */
-
-    document.body.addEventListener('htmx:confirm', function(evt) {
-      console.log("CONFIRM", evt)
-      
-      
-
-      // evt.preventDefault();
-      
-    })
-
   });
-  
-
-  
-  </script>
+  </script> {% endcomment %}
 {% endblock content %}
