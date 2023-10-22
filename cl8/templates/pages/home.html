@@ -40,7 +40,12 @@
   make use of any of css-grid's capabilities
   {% endcomment %}
   <section class="grid grid-cols-[400px_minmax(900px,_1fr)]">
-    <section class="sidebar">
+    {% comment %}
+      We do not want the sidebar to unmanageably long, so we limit it to 65vh
+      and allow it to scroll. Ideally, this would always match the length of
+      div#profile-slot - how do we do that with css?
+    {% endcomment %}
+    <section class="sidebar max-h-[65vh] overflow-y-auto">
       {% comment %} list the active tags {% endcomment %}
       {% include "pages/_paginated_profiles.html" %}
     </section>

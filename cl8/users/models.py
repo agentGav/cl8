@@ -60,7 +60,8 @@ def flat_tag_list(tag_queryset) -> list[dict]:
     Return a list of tags, with the name split on a colon to allow for grouping
     by the kind of tag listed.
     This is called multiple times, so we split on the name in python rather than
-    going back to the database using further filters / exclude classes
+    going back to the database using further filters / exclude classes, which
+    can cause N+1 queries
     """
     tag_list = []
 
@@ -70,6 +71,9 @@ def flat_tag_list(tag_queryset) -> list[dict]:
                 # there was no colon to split on use the full tag name
                 tag_list.append({"name": split_name[0], "tag": tag})
             if len(split_name) > 1:
+                # we DO have a colon to split on - use the full tag name
+                # and add the group, so we can use it for show the kinds
+                # of tags as well
                 tag_list.append({"group": split_name[0], "name": split_name[1], "tag": tag})
 
     return tag_list

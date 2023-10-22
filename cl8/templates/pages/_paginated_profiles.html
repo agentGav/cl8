@@ -14,23 +14,28 @@
 </div>
 {% for profile in paginated_profiles %}
   <div class="card w-96 bg-base-100 mb-1">
-    {% comment %} we want our whole div to be clickable {% endcomment %}
-    <div class="card-body profile hover:bg-yellow-100 hover:shadow-lg hover:cursor-pointer"
+    {% comment %}
+      We want our whole div to be clickable, hence the htmx-get, and cursor-pointer
+      We use flex box row to have the image and text blocks side by side
+    {% endcomment %}
+    <div class="card-body flex-row hover:bg-yellow-100 hover:shadow-lg hover:cursor-pointer"
          hx-get="{% url 'profile-detail' profile.short_id %}"
-         hx-params="*"
          hx-target="#profile-slot"
          hx-push-url="true">
-      <div class=profile-thumb>
+      <div class="profile-thumb w-1/5">
         {% if profile.photo %}
-          <img class="profile-thumb" src="{{ profile.thumbnail_photo }}" />
+          <img src="{{ profile.thumbnail_photo }}" />
         {% else %}
           {% gravatar profile.user.email 150 %}
         {% endif %}
       </div>
-      <div>
+      <div class="w-4/5">
         <h4 class="card-title">
           <a href="{% url 'profile-detail' profile.short_id %}">{{ profile.name }}
-            {% comment %} {{ profile.rank }} {% endcomment %}
+            {% comment %}
+            Rank refers to the search rank scoring in Django postgres. 
+            {{ profile.rank }} 
+            {% endcomment %}
           </a>
         </h4>
         <p>
@@ -48,26 +53,16 @@
     </div>
   </div>
 {% endfor %}
-<style>
-.profile {
-  flex-direction: row;  
-}
-
-.profile-thumb{
-  flex-direction: row;
-}
-
-.profile-thumb img {
-  width:50px;
-}
-</style>
 <script>
   document.querySelectorAll('.active-tags .badge').forEach(item => {
     item.addEventListener('click', event => {
-        const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
-        const chosenTagOption = document.querySelector(selectorString)
-        chosenTagOption.selected = !chosenTagOption.selected
-        document.body.dispatchEvent(new Event("toggle-tag"))
+      const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
+      const chosenTagOption = document.querySelector(selectorString)
+      // toggle the selected status of the tag
+      chosenTagOption.selected = !chosenTagOption.selected
+      // announce the toggle event the profile list can listen for it 
+      //and update accordingly
+      document.body.dispatchEvent(new Event("toggle-tag"))
     })
-})
+  })
 </script>
