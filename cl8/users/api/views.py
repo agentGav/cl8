@@ -73,7 +73,7 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     # https://stackoverflow.com/questions/4916851/django-get-a-queryset-from-array-of-ids-in-specific-order
     
     preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ordered_profile_ids)])
-    ordered_deduped_profiles = Profile.objects.filter(id__in=ordered_profile_ids).order_by(preserved_order)
+    ordered_deduped_profiles = Profile.objects.filter(id__in=ordered_profile_ids).order_by(preserved_order).prefetch_related("tags", "user")
 
 
     pager = paginator.Paginator(ordered_deduped_profiles, NO_PROFILES_PER_PAGE)
