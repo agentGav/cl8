@@ -4,7 +4,7 @@ from dal import autocomplete
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import paginator
@@ -172,6 +172,14 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
             ctx["grouped_tags"] = grouped_tags
             ctx["ungrouped_tags"] = ungrouped_tags
 
+        if (
+            self.object.user == self.request.user or 
+            self.request.user.is_superuser or 
+            self.request.user.is_staff
+        ):
+            ctx["can_edit"] = True
+        
+
         return ctx
 
     def get(self, request, *args, **kwargs):
@@ -185,11 +193,27 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         return self.render_to_response(context)
 
 
-class ProfileEditView(LoginRequiredMixin, UpdateView):
+class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     queryset = Profile.objects.all()
     slug_field = "short_id"
     template_name = "pages/edit_profile.html"
     form_class = ProfileUpdateForm
+
+
+    def has_permission(self):
+        """
+        Users should only be able to edit their own profiles.
+        Admins can edit any profile.
+        """
+        
+        if self.request.user == self.get_object().user:
+            return True
+        
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return True
+            
+        return False            
+
 
     def form_valid(self, form):
         """

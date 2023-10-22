@@ -1,7 +1,7 @@
 {% load gravatar %}
 <div class="card-body">
     <h1 class="mb-0 text-3xl">{{ profile.name }}</h1>
-    {% if profile.user == request.user %}
+    {% if can_edit %}
         <a href="{% url 'profile-edit' profile.short_id %}"
            class="btn btn-sm mt-2 mb-2 max-w-xs">Edit</a>
     {% endif %}
