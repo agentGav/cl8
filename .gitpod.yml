@@ -19,9 +19,9 @@ tasks:
       cp .env.sample .env
       createdb cl8
       just install
-      sync-done installed
+      gp sync-done installed
 
   - name: tailwind
     command: >
-      sync-await installed
+      gp sync-await installed
       just tailwind-dev
