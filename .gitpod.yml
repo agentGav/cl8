@@ -8,21 +8,20 @@
 image: gitpod/workspace-postgres
 
 tasks:
-  - init: |
+  - name: main
+    init: |
       # install just - its like make but better
       curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to just-dir
       mv just-dir/just /home/gitpod/.local/bin/just
       rm -rf just-dir
 
       # # create database, install our dependencies, and run migrations
-      cp env.sample .env
+      cp .env.sample .env
       createdb cl8
       just install
-
-  - name: main
-    command: >
-      echo "run just serve to start the server"
+      sync-done installed
 
   - name: tailwind
     command: >
+      sync-await installed
       just tailwind-dev

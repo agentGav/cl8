@@ -8,8 +8,9 @@
 
 @install:
     #!/usr/bin/env sh
+    
     pipenv install --dev 
-    pipenv run ./manage.py tailwind install
+    cd theme/static_src/ && npm install && cd ../..
     pipenv run ./manage.py migrate
     pipenv run ./manage.py collectstatic --no-input
 
