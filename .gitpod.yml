@@ -22,6 +22,6 @@ tasks:
       gp sync-done installed
 
   - name: tailwind
-    command: >
+    command: |
       gp sync-await installed
       just tailwind-dev
