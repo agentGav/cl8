@@ -34,8 +34,10 @@
                   action="{% url 'account_login' %}">
               {% csrf_token %}
               {% comment %} {{ form.as_div }} {% endcomment %}
-              {% if form.errors %}
-                <div class="border-red-500 text-red-500 border rounded-lg pa-2">{{ form.non_field_errors }}</div>
+              {% if form.non_field_errors %}
+                <div class="w-full max-w-xs border-red-500 text-red-500 border rounded-lg p-2 text-sm">
+                  {{ form.non_field_errors }}
+                </div>
               {% endif %}
               <div class="form-control w-full max-w-xs">
                 <label class="label" for="{{ form.login.id_for_label }}">
