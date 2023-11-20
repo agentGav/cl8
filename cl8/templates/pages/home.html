@@ -106,7 +106,7 @@
       
       htmx.on("update-profile", function(evt) {
         const profileSlot = htmx.find("#profile-slot")
-        const profileList = htmx.find("#profile-slot")
+        const profileList = htmx.find(".sidebar")
 
         if (evt.detail.hide_profile_list) {
           console.log("showing profile, hiding profile list")
