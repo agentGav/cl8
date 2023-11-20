@@ -164,8 +164,10 @@ def homepage(request):
 
     ctx = fetch_profile_list(request, ctx)
 
-    ctx["hide_profile_list"] = hide_profile_list(request, ctx)
+    should_hide_profile_list = hide_profile_list(request, ctx)
 
+    ctx["hide_profile_list"] = should_hide_profile_list
+    logger.warn(f"should_hide_profile_list: {should_hide_profile_list}")
     if request.htmx:
         template_name = "pages/_home_partial.html"
 
@@ -174,7 +176,8 @@ def homepage(request):
 
         # passing this triggers an update of the rendering for touch devices,
         # to switch between showing a profile or a profile list
-        should_hide_profile_list = hide_profile_list(request, ctx)
+
+        logger.info(f"should_hide_profile_list: {should_hide_profile_list}")
         response = trigger_client_event(
             response,
             "update-profile",

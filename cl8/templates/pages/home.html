@@ -84,11 +84,10 @@
   <script src="{% static 'js/htmx.v1.9.8.min.js' %}" defer></script>
   <script>
     document.addEventListener("DOMContentLoaded", (event) => {
-      // console.log("DOM fully loaded and parsed");
+      console.debug("DOM fully loaded and parsed");
       // htmx.logAll();
 
       htmx.on("htmx:load", function(evt) {
-        // console.log(evt);
         const elt = evt.detail.elt
         elt.classList.contains("sidebar");
         const sidebarUpdated = elt.classList.contains("sidebar");
@@ -104,16 +103,19 @@
         }
       });
       
-      htmx.on("update-profile", function(evt) {
+      // 'htmx.on' is not the same as 'document.body.addEventListener',
+      // so we use the vanilla js version
+      document.body.addEventListener("update-profile", function(evt) {
+        console.debug({detail:evt.detail})
         const profileSlot = htmx.find("#profile-slot")
         const profileList = htmx.find(".sidebar")
 
         if (evt.detail.hide_profile_list) {
-          console.log("showing profile, hiding profile list")
+          console.debug("showing profile, hiding profile list")
           profileSlot.classList.remove("hidden")
           profileList.classList.add("hidden")
         } else {
-          console.log("hiding profile, showing profile list")
+          console.debug("hiding profile, showing profile list")
           profileSlot.classList.add("hidden")
           profileList.classList.remove("hidden")
         }
@@ -145,8 +147,8 @@
 
 
   document.body.addEventListener('active-tags-changed', (event) => {
-    console.log("event.detail")
-    console.log(event.detail)
+    console.debug("active-tags-changed")
+    console.debug({event })
     const activeTagsList = document.querySelector('.search-block .active-tags .tag_list')
     if (event.detail.rendered_html) {
       if (activeTagsList) {
