@@ -25,12 +25,12 @@
         </div>
         <div>
             <p class="mb-0 text-3xl">{{ profile.name }}</p>
-            {% if profile.email %}
+            {% comment %} {% if profile.email %}
                 <p class="mb-0 text-lg">
                     <a href="mailto:{{ profile.email }}" class="text-blue-700">{{ profile.email }}</a>
                 </p>
             {% endif %}
-            {% if profile.phone %}<p class="mb-0 text-lg">{{ profile.phone }}</p>{% endif %}
+            {% if profile.phone %}<p class="mb-0 text-lg">{{ profile.phone }}</p>{% endif %} {% endcomment %}
             {% if profile.website %}
                 <p class="mb-0 text-lg">
                     <a class="text-blue-700" href="https://{{ profile.website }}">{{ profile.website }}</a>
