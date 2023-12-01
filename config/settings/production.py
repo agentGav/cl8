@@ -63,16 +63,16 @@ AWS_S3_ENDPOINT_URL = env("DJANGO_AWS_S3_ENDPOINT_URL", default=None)
 # AWS_LOCATION = f"{AWS_STORAGE_BUCKET_NAME}"
 #
 AWS_QUERYSTRING_AUTH = False
-# DO NOT change these unless you know what you're doing.
+# # DO NOT change these unless you know what you're doing.
 _AWS_EXPIRY = 60 * 60 * 24 * 7
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": f"max-age={_AWS_EXPIRY}, s-maxage={_AWS_EXPIRY}, must-revalidate"
 }
-AWS_DEFAULT_ACL = None
-AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
+# AWS_DEFAULT_ACL = None
+# AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 
-# To be able to access s3 objects in all regions through
-# presigned urls, explicitly set this to s3v4.
+# # To be able to access s3 objects in all regions through
+# # presigned urls, explicitly set this to s3v4.
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 # STATIC
@@ -126,7 +126,7 @@ ADMIN_URL = env("DJANGO_ADMIN_URL")
 # Anymail
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+# INSTALLED_APPS += ["anymail"]  # noqa F405
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 # https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
 # https://anymail.readthedocs.io/en/stable/esps/mailgun/
