@@ -1,4 +1,4 @@
-# Constellate - a shared address book for small groups
+# Constellate - a shared networking and skills tool for small groups
 
 Constellate is social software designed to help communities of practice and other small-ish groups to discover skills and interests inside the peer group.
 
