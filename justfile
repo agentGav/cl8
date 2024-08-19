@@ -17,6 +17,9 @@
 @ci:
     pipenv run pytest
 
+@fetch-files-from-s3:
+    pipenv run bash ./scripts/fetch_media_file_from_s3.sh
+
 @serve *options:
     pipenv run ./manage.py runserver {{options}}
 
