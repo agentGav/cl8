@@ -1,4 +1,4 @@
-# Constellate - a shared address book for small groups
+# Constellate - a shared networking and skills tool for small groups
 
 Constellate is social software designed to help communities of practice and other small-ish groups to discover skills and interests inside the peer group.
 
@@ -23,7 +23,6 @@ Then you should be able install all the dependencies with one command:
 just install
 ```
 
-
 ## Usage
 
 Once you have the necessary environment variables set, you can run the application locally with a single command.
@@ -36,10 +35,7 @@ You should be able to access the local instance of constellate by visiting:
 
 http://127:0.0.1:8000
 
-
 ## Developing Constellate
-
-
 
 ### Running tests
 
