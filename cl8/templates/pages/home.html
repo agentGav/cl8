@@ -3,30 +3,11 @@
 {% block content %}
   <main class="">
     {% comment %} add our search component spanning the full width {% endcomment %}
-    <section class="search-component grid grid-cols-[1fr_minmax(auto,70rem)_1fr]">
+    <section id="home-search-component" class="search-component grid grid-cols-[1fr_minmax(auto,70rem)_1fr]" style="display:none;">
       <div></div>
       <section>
-        <div class="card search-block border rounded-none">
-          <div class="card-body">
-            <form id="filter-form"
-                  method="get"
-                  hx-get="/"
-                  hx-trigger="submit, htmx:confirm from:#id_tags, htmx:confirm from:#id_bio, toggle-tag from:body"
-                  hx-target=".sidebar"
-                  hx-push-url="true">
-              <div class="grid grid-cols-1 lg:grid-cols-[1fr_10rem]">
-                <div>
-                  {% comment %} <p>
-                    <label class="inline-block w-100 mr-8 text-xl" for="{{ profile_filter.form.bio.id_for_label }}">Showing profile results matching:</label>
-                  </p> {% endcomment %}
-                  {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.1s," hx-target=".sidebar" class="text-xl min-w-[100%]" hx-sync="closest form:abort" %}
-                </div>
-                <div>
-                  <button class="btn mt-4 lg:mt-0 lg:ml-4" type="submit">Search</button>
-                </div>
-              </div>
-              <span class="hidden">{% render_field profile_filter.form.tags %}</span>
-            </form>
+        <div class="card search-block border-white border rounded-none">
+          <div class="card-body p-1 justify-center h-auto px-[5rem]">
             <div class="active-tags">{% include '_active_tags_list.html' %}</div>
             <div class="profile-count">
               {% if active_search %}
@@ -38,26 +19,27 @@
           </div>
         </div>
       </section>
+    </section>
       <div></div>
       {% comment %} close search component {% endcomment %}
     </section>
     {% comment %} main content  {% endcomment %}
-    <section class="grid grid-cols-[1fr_minmax(auto,70rem)_1fr]">
+    <section class="grid h-full grid-cols-[1fr_minmax(auto,70rem)_1fr]">
       <div></div>
       {% comment %} add our two columns for the sidebar and profile {% endcomment %}
       {% comment %} <section class="column-wrapper border grid grid-cols-[1fr_2fr]"> {% endcomment %}
-      <section class="column-wrapper  grid grid-cols-1 lg:grid-cols-3">
+      <section class="column-wrapper h-full  grid grid-cols-1 lg:grid-cols-3">
         {% comment %} list the active tags
         {% endcomment %}
         {% comment %}
           We only want to hide the list of profiles when there is NO filtered search
           and when a user is not selected.
         {% endcomment %}
-        <div class="sidebar transition-all border {% if hide_profile_list %}hidden{% endif %} lg:inline"
-             style="max-height: 100vh">{% include "pages/_paginated_profiles.html" %}</div>
+        <div class="sidebar order-2 lg:order-1  p-3 transition-all border border-white {% if hide_profile_list and  active_tags%}hidden{% endif %} lg:inline"
+             style="height: 100%">{% include "pages/_paginated_profiles.html" %}</div>
         <div id="profile-slot"
-             class="card bg-base-100 lg:col-span-2 border rounded-none {% if not hide_profile_list %}hidden{% endif %} lg:inline">
-          {% if profile %}
+             class="card order-1 lg:order-2 bg-transparent lg:col-span-2 border border-white	 rounded-none {% if not hide_profile_list %}{% endif %} lg:inline">
+             {% if profile %}
             {% comment %} show the profile with all the tags, and details {% endcomment %}
             {% include '_profile.html' %}
           {% else %}
@@ -83,9 +65,29 @@
   {{ profile_filter.form.media }}
   <script src="{% static 'js/htmx.v1.9.8.min.js' %}" defer></script>
   <script>
+
+    function checkForTagsInURL(){
+      const urlParams = new URLSearchParams(window.location.search);
+      const tags = urlParams.getAll('tags');
+
+      const searchComponent = document.getElementById('home-search-component');
+      if (searchComponent) {
+        if (tags.length > 0) {
+            // Show the component if there are tags in the URL
+            searchComponent.style.display = 'grid';
+        } else {
+            // Hide the component if no tags are present
+            searchComponent.style.display = 'none';
+        }
+    }
+}
+
     document.addEventListener("DOMContentLoaded", (event) => {
-      console.debug("DOM fully loaded and parsed");
       // htmx.logAll();
+      
+      //check tage urls
+      checkForTagsInURL()
+
 
       htmx.on("htmx:load", function(evt) {
         const elt = evt.detail.elt
@@ -106,18 +108,15 @@
       // 'htmx.on' is not the same as 'document.body.addEventListener',
       // so we use the vanilla js version
       document.body.addEventListener("update-profile", function(evt) {
-        console.debug({detail:evt.detail})
         const profileSlot = htmx.find("#profile-slot")
         const profileList = htmx.find(".sidebar")
 
         if (evt.detail.hide_profile_list) {
-          console.debug("showing profile, hiding profile list")
-          profileSlot.classList.remove("hidden")
-          profileList.classList.add("hidden")
+          //profileSlot.classList.remove("hidden")
+          //profileList.classList.add("hidden")
         } else {
-          console.debug("hiding profile, showing profile list")
-          profileSlot.classList.add("hidden")
-          profileList.classList.remove("hidden")
+         // profileSlot.classList.add("hidden")
+        //  profileList.classList.remove("hidden")
         }
       })
       
@@ -133,6 +132,7 @@
     item.addEventListener('click', event => {
       const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
       const chosenTagOption = document.querySelector(selectorString)
+
       // toggle the selected status of the tag
       chosenTagOption.selected = !chosenTagOption.selected
       // announce the toggle event the profile list can listen for it 
@@ -140,18 +140,22 @@
       document.body.dispatchEvent(new Event("toggle-tag"))
       })
     })
+    setTimeout(checkForTagsInURL, 50);
+
+    //check tage urls
+    checkForTagsInURL()
     }
+
     addlistenersForActiveTags()
 
   
 
 
   document.body.addEventListener('active-tags-changed', (event) => {
-    console.debug("active-tags-changed")
-    console.debug({event })
     const activeTagsList = document.querySelector('.search-block .active-tags .tag_list')
+
     if (event.detail.rendered_html) {
-      if (activeTagsList) {
+      if (activeTagsList) { 
         activeTagsList.innerHTML = event.detail.rendered_html
       }
       
@@ -160,8 +164,13 @@
     // and the event listeners will have been removed along with 
     // the DOM elements
     addlistenersForActiveTags()
+    
+    setTimeout(checkForTagsInURL, 50);
+
+    //check tage urls
+    checkForTagsInURL()
   })
 
-
   </script>
+  
 {% endblock scripts %}

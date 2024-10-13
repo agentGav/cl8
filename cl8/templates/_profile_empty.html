@@ -1,5 +1,6 @@
-<div class="profile prose pl-6 pt-8 mt-[5rem]">
-    <h2 class="text-xl font-normal">
+<div class="profile prose p-6 ">
+    <h1 class="mb-4">Welcome</h1>
+    <!-- <h2 class="text-xl font-normal">
         Find people in the {{ request.constellation }} community based on what they do, where they live, what they're asking for help with, and what they're offering to other members.
     </h2>
     <h2 class="text-xl font-normal">
@@ -8,5 +9,11 @@
     <h2 class="text-xl font-normal">
         Want to see what people see for your profile?
         <a href="{% url 'profile-detail' request.user.profile.short_id %}">Go to your profile</a> where you can make changes.
-    </h2>
+    </h2> -->
+    {% if request.constellation.welcome_message %}
+        <p>{{request.constellation.welcome_message}}</p>
+    {% else %}
+        <p>Find Icebreakers based on common interests</p>
+    {% endif %}
+    <a href="{% url 'profile-detail' request.user.profile.short_id %}" class="btn primary-btn font-bold text-xs	rounded-full ">Edit your own profile</a>
 </div>

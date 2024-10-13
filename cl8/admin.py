@@ -18,9 +18,9 @@ from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
 from cl8.users.importers import CSVImporter, FireBaseImporter
-from cl8.users.models import Constellation, Profile, User
+from cl8.users.models import Constellation, Profile, User, SendInviteEmailContent, PasswordResetEmailContent
 
-from .users.admin import ConstellationAdmin, ProfileAdmin, UserAdmin
+from .users.admin import ConstellationAdmin, ProfileAdmin, UserAdmin, SendInviteEmailContentAdmin, PasswordResetEmailContentAdmin
 
 logger = logging.getLogger(__name__)
 
@@ -301,3 +301,6 @@ site.register(taggit.models.Tag, taggit.admin.TagAdmin)
 site.register(Constellation, ConstellationAdmin)
 site.register(Profile, ProfileAdmin)
 site.register(User, UserAdmin)
+site.register(SendInviteEmailContent, SendInviteEmailContentAdmin)
+site.register(PasswordResetEmailContent, PasswordResetEmailContentAdmin)
+

@@ -10,7 +10,7 @@ from taggit_labels.widgets import LabelWidget
 
 # from .site_admin import constellation_admin
 from cl8.users.forms import UserChangeForm, UserCreationForm
-from cl8.users.models import Cluster, Constellation, Profile
+from cl8.users.models import Cluster, Constellation, Profile, SendInviteEmailContent, PasswordResetEmailContent
 
 User = get_user_model()
 
@@ -134,3 +134,15 @@ class ProfileAdmin(admin.ModelAdmin):
 class ConstellationAdmin(admin.ModelAdmin):
     class Meta:
         model = Constellation
+
+
+@admin.register(SendInviteEmailContent)
+class SendInviteEmailContentAdmin(admin.ModelAdmin):
+    class Meta:
+        model = SendInviteEmailContent
+
+@admin.register(PasswordResetEmailContent)
+class PasswordResetEmailContentAdmin(admin.ModelAdmin):
+    class Meta:
+        model = PasswordResetEmailContent     
+        

@@ -11,8 +11,8 @@
     
     pipenv install --dev 
     cd theme/static_src/ && npm install && cd ../..
-    pipenv run ./manage.py migrate
-    pipenv run ./manage.py collectstatic --no-input
+    pipenv run python3 manage.py migrate
+    pipenv run python3 manage.py collectstatic --no-input
 
 @ci:
     pipenv run pytest
@@ -21,16 +21,16 @@
     pipenv run bash ./scripts/fetch_media_file_from_s3.sh
 
 @serve *options:
-    pipenv run ./manage.py runserver {{options}}
+    pipenv run python3 manage.py runserver {{options}}
 
 @manage *options:
-    pipenv run ./manage.py {{options}}
+    pipenv run python3 manage.py {{options}}
 
 @tailwind-dev:
-    pipenv run ./manage.py tailwind start
+    pipenv run python3 manage.py tailwind start
 
 @tailwind-build:
-    pipenv run ./manage.py tailwind build
+    pipenv run python3 manage.py tailwind build
 
 @run *options:
     # run gunicorn in production

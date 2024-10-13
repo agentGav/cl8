@@ -12,10 +12,17 @@ from django.core.files.images import ImageFile
 from django.db.models import Case, When
 from django.http import HttpRequest
 from django.shortcuts import render
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.utils.text import slugify
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import CreateView
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from allauth.account.adapter import DefaultAccountAdapter
+from django.template import Template, Context
+from django.utils.translation import gettext as _
+from allauth.account.utils import filter_users_by_email
+
 from markdown_it import MarkdownIt
 from rest_framework import status
 from rest_framework.decorators import action
@@ -35,12 +42,13 @@ from taggit.models import Tag
 
 from ..filters import ProfileFilter
 from ..forms import ProfileUpdateForm, ProfileCreateForm
-from ..models import Cluster, Profile
+from ..models import Cluster, Profile, Constellation, PasswordResetEmailContent
 from .serializers import (
     ClusterSerializer,
     ProfilePicSerializer,
     ProfileSerializer,
     TagSerializer,
+    
 )
 
 User = get_user_model()
@@ -152,10 +160,9 @@ def hide_profile_list(request: HttpRequest, context: dict):
     # the list to click through to
     if active_search:
         return False
-
     # if we have no profile and no active search -- we show the profile slot,
     # hiding sidebar on mobile (our profile slot has the instructions)
-    return True
+    return False
 
 
 @login_required
@@ -217,6 +224,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         ctx = fetch_profile_list(self.request, ctx)
 
         if self.object is not None:
+            print("aya aya ya")
             ctx["profile"] = self.object
             active_tag_ids = self.request.GET.getlist("tags")
 
@@ -238,6 +246,9 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         ):
             ctx["can_edit"] = True
 
+        should_hide_profile_list = hide_profile_list(self.request, ctx)
+        ctx["hide_profile_list"] = should_hide_profile_list
+        
         return ctx
 
     def get(self, request, *args, **kwargs):
@@ -306,6 +317,18 @@ class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             "email": self.object.user.email,
         }
         return kwargs
+    
+    def get_context_data(self, **kwargs):
+        """
+        Add extra context to the template.
+        """
+        # Fetch the default context from the superclass
+        context = super().get_context_data(**kwargs)
+
+        # Fetch additional context (e.g., profile list)
+        context = fetch_profile_list(self.request, context)
+
+        return context
 
 
 class ProfileCreateView(CreateView):
@@ -332,6 +355,18 @@ class ProfileCreateView(CreateView):
         If the form is valid, save the associated model.
         """
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        """
+        Add extra context to the template.
+        """
+        # Fetch the default context from the superclass
+        context = super().get_context_data(**kwargs)
+
+        # Fetch additional context (e.g., profile list)
+        context = fetch_profile_list(self.request, context)
+
+        return context
 
 
 class ProfileViewSet(
@@ -517,3 +552,98 @@ class TagAutoCompleteView(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__icontains=self.q)
 
         return qs
+
+
+class CustomAccountAdapter(DefaultAccountAdapter):
+    """
+    CustomAccountAdapter class for handling email sending during account actions.
+    
+    This class overrides the default behavior of sending emails in Django
+    allauth, allowing for custom templates and messages based on the current site.
+    """
+    
+    def send_mail(self, template_prefix, email, context):
+        users = filter_users_by_email(email)
+        user = users[0] if users else None
+        context['user'] = user
+
+        # Check if the user exists
+        if user:
+            context['password_reset_url'] = self.get_password_reset_url(context)
+            # User exists, get their profile
+            context['profile'] = Profile.objects.get(user=user)
+            email_content = self.get_email_content(context)
+
+            # Send the email to the user
+            send_mail(
+                f"Welcome to {context['constellation']}",
+                email_content,
+                None,
+                [email],
+                html_message=email_content,
+            )
+        else:
+            # User does not exist, send default email
+            self.send_default_email(email)
+
+    def send_default_email(self, email):
+        current_site = get_current_site(self.request)
+        subject = "Hello from Constellate!"
+        message = f"""
+        You are receiving this email because you, or someone else, tried to access an account with email {email}. 
+        However, we do not have any record of such an account in our database.
+        
+        This mail can be safely ignored if you did not initiate this action.
+        
+        If it was you, you can sign up for an account using the link below.
+        
+        https://{current_site.domain}/accounts/signup/
+        
+        Thank you for using Constellate!
+        """
+        
+        # Send the default email
+        send_mail(
+            subject,
+            message,
+            None,
+            [email],
+        )
+
+    def get_email_content(self, context):
+        current_site = get_current_site(self.request)
+
+        # Try to get the custom email template from the database
+        email_confirmation = PasswordResetEmailContent.objects.filter(site=current_site).first()
+
+        if email_confirmation:
+            # Create a Django Template object from the email content
+            email_content_template = Template(email_confirmation.email_content)
+            context["constellation"] = current_site.name  # Set site name
+            context["reset_link"] = self.get_password_reset_url(context)  # Set password reset link
+            
+            # Render the template with the context
+            context["password_reset_content"] = email_content_template.render(Context(context))
+        else:
+            # Default password reset message template
+            default_message_template = Template(
+                '''<p>Hello {{ profile.name }},</p>
+                <p>You requested a password reset for your account on {{ constellation }}.</p>
+                <p>Click the link below to reset your password:</p>
+                <p><a href="{{ reset_link|safe }}">Reset Password</a></p>
+                <p>If you did not request this email, please ignore it.</p>
+                <p>Thank you!</p>'''
+            )
+
+            # Set the necessary context variables for the default message
+            context["constellation"] = current_site.name  # Set site name
+            context["reset_link"] = self.get_password_reset_url(context)  # Set password reset link
+            
+            # Render the default template with the context
+            context["password_reset_content"] = default_message_template.render(Context(context))
+
+        print(context["password_reset_content"], "Rendered email content")  # Debug output
+        return context["password_reset_content"]  # Return the rendered HTML safely
+
+    def get_password_reset_url(self, context):
+        return context['password_reset_url']

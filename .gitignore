@@ -100,3 +100,14 @@ envs/
 data/
 
 cruft
+
+venv/
+db.sqlite3
+justfile2
+# package-lock.json
+# package.json
+.env.sample/*
+
+
+**/migrations/*
+!**/migrations/__init__.py

@@ -32,10 +32,30 @@ EMAIL_HOST = "localhost"
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-port
 EMAIL_PORT = 1025
 
+
+# EMAIL_HOST='smtp.gmail.com'
+# EMAIL_PORT=465
+# EMAIL_HOST_USER=''
+# EMAIL_HOST_PASSWORD=''
+# EMAIL_USE_SSL=True
 # WhiteNoise
 # ------------------------------------------------------------------------------
 # http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
 INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa F405
+
+# Make email confirmation mandatory for login
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+# # Redirect URL after successful email confirmation
+# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
+
+# # Use email as the username
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# # Automatically send confirmation email after signup
+# ACCOUNT_EMAIL_CONFIRMATION_HMAC = True
 
 
 # django-debug-toolbar
@@ -80,6 +100,8 @@ INSTALLED_APPS += [
 ]
 
 MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
+
+NPM_BIN_PATH = "/usr/bin/npm"
 
 # django-extensions
 # ------------------------------------------------------------------------------

@@ -1,0 +1,18 @@
+{
+  "name": "cl8",
+  "version": "1.0.0",
+  "description": "Constellate is social software designed to help communities of practice and other small-ish groups to discover skills and interests inside the peer group.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mjml": "^4.15.3"
+  }
+}

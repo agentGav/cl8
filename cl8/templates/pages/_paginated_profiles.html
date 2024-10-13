@@ -1,21 +1,21 @@
 {% load gravatar %}
-<div class="overflow-y-auto overflow-x-hidden max-h-[70vh]">
+<div class="overflow-y-auto overflow-x-hidden max-h-[90vh]">
   {% for profile in paginated_profiles %}
-    <div class="profile card w-96 bg-base-100 mb-1">
+    <div class="profile card w-96  mb-1">
       {% comment %}
       We want our whole div to be clickable, hence the htmx-get, and cursor-pointer
       We use flex box row to have the image and text blocks side by side
       {% endcomment %}
-      <div class="card-body flex-row hover:bg-yellow-100 hover:shadow-lg hover:cursor-pointer"
-           hx-get="{% url 'profile-detail' profile.short_id %}"
-           hx-target="#profile-slot"
-           hx-include="#filter-form"
-           hx-push-url="true">
-        <div class="profile-thumb w-1/5">
+      <div class="card-body p-3 flex-row hover:bg-[#CDDC39] hover:shadow-lg hover:cursor-pointer">
+        <div class="profile-thumb w-1/4 rounded-full"
+        hx-get="{% url 'profile-detail' profile.short_id %}"
+        hx-target="#profile-slot"
+        hx-include="#filter-form"
+        hx-push-url="true">
           {% if profile.photo %}
-            <img src="{{ profile.thumbnail_photo }}"  class="rounded" />
+            <img src="{{ profile.thumbnail_photo }}"  class="rounded-full" />
           {% else %}
-            {% gravatar profile.user.email 150 "Profile via gravatar.com" "rounded" %}
+            {% gravatar profile.user.email 100 "Profile via gravatar.com" "rounded-full" %}
           {% endif %}
         </div>
         <div class="w-4/5">
@@ -35,12 +35,86 @@
             </a>
           </h4>
           <p>
+            {% comment %} {% for tag in profile.tags_with_no_grouping|slice:":4" %}
+              <span class="badge p-1 mx-1 tags-view text-black hover:border-black hover:text-white" data-tag-name="{{ tag.tag.name }}">{{ tag.name }}</span>
+            {% endfor %} {% endcomment %}
+
             {% for tag in profile.tags_with_no_grouping|slice:":4" %}
-              <span class="badge mx-1" data-tag-name="{{ tag.tag.name }}">{{ tag.name }}</span>
+              <button type="button"
+                  class=" listButton badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                  data-tag-name="{{ tag.name }}"
+                  data-tag-group="{{ tag_group }}"
+                  data-tag-id="{{ tag.tag.id }}">{{ tag.name }}
+              </button>
             {% endfor %}
+
+
           </p>
         </div>
       </div>
     </div>
   {% endfor %}
 </div>
+
+<script>
+// TODO: loading a script tag in an htmx request causes an error to be logged, but this does not seem to affect
+// the functioning of the script. I don't know why.
+
+// when a user clicks on a tag, emit an event listing the nane of the tag being clicked
+// this is picked up by the parent component and used to filter the list of profiles
+// shown    
+
+document.querySelectorAll('.listButton').forEach(item => {
+
+    item.addEventListener('click', event => {
+
+        // we can't just bubble up a 'click' event to the parent elements
+        // and use that to update the list of profiles shown, because
+        // it won't reflect the updated toggle list of tags yet in the 
+        // filter form.
+        // So, we have to manually update the list of active tags, and THEN
+        // dispatch an event for our filter component to listen for
+        let activeTags = document.querySelector('#id_tags')
+
+        // you set a value on a multiple select by setting the 
+        //'selected' property of a given option to true
+        const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
+        const chosenTagOption = document.querySelector(selectorString)
+        chosenTagOption.selected = !chosenTagOption.selected
+
+        // once we have updated the option list, we trigger
+        // an DOM event our filter component to listen for,
+        // and update the list of profiles shown
+        
+        document.body.dispatchEvent(new CustomEvent("toggle-tag", { detail: event.target.dataset }))
+
+        // toggle the button active state 
+        // TODO: figure out how to persist GET params in the 
+        // URL so that we can use active tags to set the 
+        // colour of the buttons instead
+        event.target.classList.toggle('bg-blue-500')
+    })
+})
+
+/**
+* Clear the profile slot and set the path in the url back to "/", 
+* adding the GET params, then the url to the history
+*/
+function clearProfile() {
+    console.log('clearing profile')
+
+    // set the path in the url back to "/", adding the GET params
+    // from the current URL
+    const currentUrl = new URL(window.location.href)
+    const newUrl = new URL('/', window.location.origin)
+    newUrl.search = currentUrl.search
+    window.history.pushState({}, '', newUrl)
+
+    // then set the profile slot to the empty profile
+    const emptyProfile = document.querySelector('#empty-profile').innerHTML
+    document.querySelector('#profile-slot .profile').innerHTML = emptyProfile
+    htmx.trigger("body", "update-profile")
+
+}
+document.querySelector('#clear-profile').addEventListener('click', clearProfile)
+</script>

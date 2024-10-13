@@ -43,10 +43,10 @@ class ProfileFilter(django_filters.FilterSet):
             # and the text of all the tags associated with the profile
             "tags__name",
             # and any social media handles
-            "twitter",
-            "linkedin",
-            "facebook",
             "website",
+            "social_1",
+            "social_2",
+            "social_3",
             "organisation",
         )
 

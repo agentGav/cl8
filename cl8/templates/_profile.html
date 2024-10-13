@@ -1,6 +1,6 @@
 {% load gravatar %}
-<div class="p-4 profile">
-    <button class="btn btn-square btn-outline absolute right-0 top-0 mr-4 mt-4"
+<div class="p-8 profile">
+    <!-- <button class="btn btn-square btn-outline absolute right-0 top-0 mr-4 mt-4"
             type="button"
             id="clear-profile">
         <svg xmlns="http://www.w3.org/2000/svg"
@@ -10,17 +10,17 @@
              stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
-    </button>
-    <div class="grid lg:grid-cols-[175px_1fr]">
+    </button> -->
+    <div class="grid lg:grid-cols-[175px_1fr] mb-5">
         <div class="">
             {% if profile.photo %}
                 <img src="{{ profile.detail_photo }}"
                      width="150"
                      height="150"
-                     class="rounded"
+                     class="rounded-full"
                      alt="profile photo" />
             {% else %}
-                {% gravatar profile.user.email 150  "Profile via gravatar.com" "rounded" %}
+                {% gravatar profile.user.email 150  "Profile via gravatar.com" "rounded-full" %}
             {% endif %}
         </div>
         <div>
@@ -37,30 +37,31 @@
                 </p>
             {% endif %}
             {% if profile.location %}<p class="mb-0 text-lg">{{ profile.location }}</p>{% endif %}
+            {% if profile.organisation %}<p class="mb-0 text-lg">{{ profile.organisation }}</p>{% endif %}
             <p class="mb-0 text-lg">
-                {% if profile.twitter %}
+                {% if profile.social_1 %}
                     <a class="text-blue-700"
-                       href="https://twitter.com/@{{ profile.twitter }}">Twitter</a> |
+                       href="{{ profile.social_1 }}">{{ profile.social_1_name }}</a> 
                 {% endif %}
-                {% if profile.facebook %}
-                    <a class="text-blue-700"
-                       href="https://facebook.com/@{{ profile.facebook }}">Facebook</a> |
+                {% if profile.social_2 %}
+                    | <a class="text-blue-700"
+                       href="{{ profile.social_2 }}">{{ profile.social_2_name }}</a> 
                 {% endif %}
-                {% if profile.linkedin %}
-                    <a class="text-blue-700"
-                       href="https://linkedin.com/in/{{ profile.linkedin }}">LinkedIn</a>
+                {% if profile.social_3 %}
+                    | <a class="text-blue-700"
+                       href="{{ profile.social_3 }}">{{ profile.social_3_name }}</a>
                 {% endif %}
             </p>
             {% if can_edit %}
                 <a href="{% url 'profile-edit' profile.short_id %}"
-                   class="btn btn-sm mt-2 mb-2 max-w-xs">Edit</a>
+                   class="btn btn-sm primary-btn rounded-full px-7 mt-2 mb-2 max-w-xs">Edit</a>
             {% endif %}
         </div>
     </div>
     <div class="px-0">
         {% if profile_rendered_bio %}
             {% comment %} <h3>Bio</h3> {% endcomment %}
-            <div class="prose">{{ profile_rendered_bio|safe }}</div>
+            <div class="prose text-lg text-black font-normal">{{ profile_rendered_bio|safe }}</div>
         {% endif %}
         <div class="tag-listings mt-4">
             {% if grouped_tags %}
@@ -69,7 +70,7 @@
                     <p>
                         {% for tag_dict in tags %}
                             <button type="button"
-                                    class="badge text-sm my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                    class="badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
                                     data-tag-name="{{ tag_dict.name }}"
                                     data-tag-group="{{ tag_group }}"
                                     data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
@@ -82,7 +83,7 @@
                 <p>
                     {% for tag_dict in ungrouped_tags %}
                         <button type="button"
-                                class="badge text-xs my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                class="badge tags-view text-black hover:text-white text-xs my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
                                 data-tag-name="{{ tag_dict.name }}"
                                 data-tag-group="{{ tag_group }}"
                                 data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
@@ -130,25 +131,4 @@ document.querySelectorAll('#profile-slot .badge').forEach(item => {
     })
 })
 
-/**
-* Clear the profile slot and set the path in the url back to "/", 
-* adding the GET params, then the url to the history
-*/
-function clearProfile() {
-    console.log('clearing profile')
-
-    // set the path in the url back to "/", adding the GET params
-    // from the current URL
-    const currentUrl = new URL(window.location.href)
-    const newUrl = new URL('/', window.location.origin)
-    newUrl.search = currentUrl.search
-    window.history.pushState({}, '', newUrl)
-
-    // then set the profile slot to the empty profile
-    const emptyProfile = document.querySelector('#empty-profile').innerHTML
-    document.querySelector('#profile-slot .profile').innerHTML = emptyProfile
-    htmx.trigger("body", "update-profile")
-
-}
-document.querySelector('#clear-profile').addEventListener('click', clearProfile)
 </script>

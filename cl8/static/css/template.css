@@ -1,0 +1,70 @@
+body {
+    background: #ECF0F1;
+}
+
+/* login page */
+.login-card {
+    border: 1px solid #c8d4de;
+    border-radius: 15px;
+    background: #fff;
+    .input{
+        background-color: #ECF0F1;
+    }
+}
+
+.primary-btn {
+    background: #ffec00ff;
+    border-color: #c8d4de;
+    color: #000;
+
+    &:hover {
+        border-color: #c8d4de;
+        background: #ffc107ff;
+    }
+}
+
+.secondary-btn {
+    background: #c8d4deff;
+    color: #000;
+}
+
+.profile-invisible-btn {
+    background: #ecf0f1ff;
+    border: 1px dashed #c8d4de;
+    color: #000;
+}
+
+.profile-visible-btn {
+    background: #8bc34aff;
+    border: 2px solid #c8d4de;
+    color: #fff;
+}
+
+.border-gray {
+    border: 1px solid #c8d4de;
+}
+
+.tags-view {
+    border: 1px solid #c8d4de;
+    background: #ecf0f1ff;
+
+    &:hover {
+        background: #cdddea;
+        border-color: #1a3844;
+        color: #1a3844;
+    }
+}
+
+
+.empty-field {
+    border: 2px dashed #c8d4deff !important;
+}
+
+.fill-field {
+    border: 1px solid #c8d4deff !important;
+    background: #c8d4deff !important;
+}
+
+.input:focus {
+    outline: none;
+}
