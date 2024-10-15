@@ -52,5 +52,5 @@ jobs:
           just test --no-migrations
         env:
           CI: true
-          DATABASE_URL: "postgres://postgres:postgres@postgres:5432/backend"
+          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/backend"
           VUE_APP_SUPPORT_EMAIL: "support@domain.com"
