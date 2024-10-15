@@ -64,7 +64,12 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
         username = slugify(full_name)
 
         # create our related User from the details passed in
-        new_user = User(username=username, email=email, name=full_name, is_staff=admin,)
+        new_user = User(
+            username=username,
+            email=email,
+            name=full_name,
+            is_staff=admin,
+        )
 
         # if you don't set password like this this, you get an
         # unhashed string, as django makes no assumptions about
@@ -179,9 +184,9 @@ class ProfileSerializer(TaggitSerializer, serializers.ModelSerializer):
             # profile
             "phone",
             "website",
-            "twitter",
-            "facebook",
-            "linkedin",
+            "social_1",
+            "social_2",
+            "social_3",
             "bio",
             "visible",
             "admin",
