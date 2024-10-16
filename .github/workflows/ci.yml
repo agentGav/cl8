@@ -46,7 +46,7 @@ jobs:
 
       - name: Run tests
         run: |
-          just test 
+          just test --no-migrations
         env:
           CI: true
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/backend"
