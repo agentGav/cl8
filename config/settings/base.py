@@ -1,13 +1,14 @@
 """
 Base settings to build other settings files upon.
 """
+
 from pathlib import Path
 
 import environ
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 PROJECT_DIR = ROOT_DIR
-APPS_DIR = ROOT_DIR / "cl8"  
+APPS_DIR = ROOT_DIR / "cl8"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
@@ -45,7 +46,9 @@ DATABASES = {
     # to avoid surprises for development, but you CAN use sqlite
     # replace the "postgres:///backend" with "sqlite:///backend_db",
     # or pass it in as an environment variable
-    "default": env.db("DATABASE_URL", default="postgres:///cl8")
+    "default": env.db(
+        "DATABASE_URL", default="postgres://postgres:postgres@localhost:5432/cl8"
+    )
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
@@ -266,7 +269,7 @@ X_FRAME_OPTIONS = "DENY"
 # EMAIL_BACKEND = env(
 #     "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
 # )
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
@@ -352,7 +355,11 @@ import os
 # MJML_PATH = str(PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml")
 # MJML_EXEC_CMD = [MJML_PATH, "--config.validationLevel", "skip"]
 MJML_CHECK_CMD_ON_STARTUP = True
-MJML_PATH = str(PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml.cmd" if os.name == 'nt' else PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml")
+MJML_PATH = str(
+    PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml.cmd"
+    if os.name == "nt"
+    else PROJECT_DIR / "theme" / "static_src" / "node_modules/.bin/mjml"
+)
 MJML_EXEC_CMD = [MJML_PATH, "--config.validationLevel", "skip"]
 
 MODERATOR_GROUP_NAME = "Constellation Moderators"
@@ -387,4 +394,4 @@ AIRTABLE_TABLE = env.str("DJANGO_AIRTABLE_TABLE", default=None)
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
-ACCOUNT_ADAPTER = 'cl8.users.api.views.CustomAccountAdapter'
+ACCOUNT_ADAPTER = "cl8.users.api.views.CustomAccountAdapter"
