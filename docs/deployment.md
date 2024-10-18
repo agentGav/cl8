@@ -24,6 +24,12 @@ Next you'll need to serve the application behind an apache or nginx acting as a 
 
 See the sample `systemd.cl8.service.example` for an example of a systemd service file to run on a virtual private server.
 
+Service logs can be viewed with:
+
+```shell
+journalctl --unit=cl8
+```
+
 ### Serve the uploaded media files
 
 In production, Constellate assumes that uploaded media is stored on an object store like an AWS S3 bucket or similar.
@@ -31,11 +37,3 @@ In production, Constellate assumes that uploaded media is stored on an object st
 If you are storing the files on a local file system, and storing files on the same server as the running application running comment out the entire `STORAGES` stanza of `production.py`, to use the local filesystem.
 
 For more, see [django's own extensive documentation on deployment](https://docs.djangoproject.com/en/3.0/howto/deployment/).
-
-```
-
-
-
-
-
-```
