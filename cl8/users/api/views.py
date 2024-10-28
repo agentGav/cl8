@@ -591,15 +591,14 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         subject = "Hello from Constellate!"
         message = f"""
         You are receiving this email because you, or someone else, tried to access an account with email {email}. 
-        However, we do not have any record of such an account in our database.
+        However, we do not have any record of such an account in our systems.
         
         This mail can be safely ignored if you did not initiate this action.
         
-        If it was you, you can sign up for an account using the link below.
+        If it was you, please contatc us and we can add you.
         
-        https://{current_site.domain}/accounts/signup/
-        
-        Thank you for using Constellate!
+        Thank you!
+  
         """
         
         # Send the default email
