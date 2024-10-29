@@ -595,7 +595,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         
         This mail can be safely ignored if you did not initiate this action.
         
-        If it was you, please contatc us and we can add you.
+        If it was you, please contact us and we can add you.
         
         Thank you!
   
