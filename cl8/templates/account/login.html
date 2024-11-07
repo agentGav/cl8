@@ -1,0 +1,80 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% block head_title %}
+{% trans "Sign In" %}
+{% endblock %}
+{% block inner %}
+<div class="flex items-center justify-center login-container" style="height: 80vh;">
+  <div class="bg-white-100 mt-4 p-6 w-[20rem] md:w-[25rem]	login-card">
+    <h1 class="text-2xl">{% trans "Sign in" %}</h1>
+    {% get_providers as socialaccount_providers %}
+    {% if request.constellation.signin_via_slack %}
+    {% if socialaccount_providers %}
+    <div class="prose">
+      <div class="socialaccount_ballot">
+        <ul class="socialaccount_providers list-none">
+          {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </ul>
+        {% comment %} <div class="login-or">{% trans 'or' %}</div> {% endcomment %}
+      </div>
+      {% comment %} {% include "socialaccount/snippets/login_extra.html" %} {% endcomment %}
+      {% else %}
+      <p>
+        {% blocktrans %}If you have not created an account yet, then please
+        <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}
+      </p>
+      {% endif %}
+      {% endif %}
+      {% if request.constellation.signin_via_email %}
+      {% comment %} normal sign in flow {% endcomment %}
+      <div class="card">
+        <h2>
+          <form class="login mt-4 pt-4" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {% comment %} {{ form.as_div }} {% endcomment %}
+            {% if form.non_field_errors %}
+            <div class="w-full max-w-xs border-red-500 text-red-500 border rounded-lg p-2 text-sm">
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            <div class="form-control w-full mb-2">
+              <!-- <label class="label" for="{{ form.login.id_for_label }}">
+                <span class="label-text">{{ form.login.label }}</span>
+              </label> -->
+              <span class="label-text text-red-500 px-1">{{ form.login.errors }}</span>
+              <input type="text" placeholder="E-mail" name="{{ form.login.html_name }}"
+                class="input input-bordered w-full" />
+            </div>
+            <div class="form-control w-full">
+              <!-- <label class="label" for="{{ form.password.id_for_label }}">
+                <span class="label-text">{{ form.password.label }}</span>
+              </label> -->
+              <span class="label-text text-red-500 px-1">{{ form.password.errors }}</span>
+              <input type="password" placeholder="Password" name="{{ form.password.html_name }}"
+                class="input input-bordered w-full" />
+            </div>
+            <div class="flex items-center justify-between mt-4">
+              <div>
+                <div class=" text-sm mr-3">
+                  <label class="label inline mr-4" for="{{ form.password.id_for_label }}">{{ form.remember.label}}</label>
+                  {{ form.remember }}
+                </div>
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+              </div>
+              <a class="inline-block text-red-500 underline text-sm ml-4" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?"%}</a>
+            </div>
+
+            <div class="card-actions items-center mt-4  content-center">
+              <button class="btn w-full primary-btn" type="submit">{% trans "Sign In" %}</button>
+             
+            </div>
+          </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

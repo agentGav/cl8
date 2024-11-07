@@ -1,0 +1,147 @@
+{% load gravatar %}
+<div class="p-8 profile">
+    <!-- <button class="btn btn-square btn-outline absolute right-0 top-0 mr-4 mt-4"
+            type="button"
+            id="clear-profile">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-6 w-6"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button> -->
+    <div class="grid lg:grid-cols-[175px_1fr] mb-5">
+        <div class="">
+            {% if profile.photo %}
+                <img src="{{ profile.detail_photo }}"
+                     width="150"
+                     height="150"
+                     class="rounded-full"
+                     alt="profile photo" />
+            {% else %}
+                {% gravatar profile.user.email 150  "Profile via gravatar.com" "rounded-full" %}
+            {% endif %}
+        </div>
+        <div>
+            <p class="mb-0 text-3xl">{{ profile.name }}</p>
+            {% comment %} {% if profile.email %}
+                <p class="mb-0 text-lg">
+                    <a href="mailto:{{ profile.email }}" class="text-blue-700">{{ profile.email }}</a>
+                </p>
+            {% endif %}
+            {% if profile.phone %}<p class="mb-0 text-lg">{{ profile.phone }}</p>{% endif %} {% endcomment %}
+            {% if profile.website %}
+                <p class="mb-0 text-lg">
+                    <a class="text-blue-700" href="https://{{ profile.website }}">{{ profile.website }}</a>
+                </p>
+            {% endif %}
+            {% if profile.location %}<p class="mb-0 text-lg">{{ profile.location }}</p>{% endif %}
+            {% if profile.organisation %}<p class="mb-0 text-lg">{{ profile.organisation }}</p>{% endif %}
+            <p class="mb-0 text-lg">
+                {% if profile.social_1 %}
+                    <a class="text-blue-700"
+                       href="{{ profile.social_1 }}">{{ profile.social_1_name }}</a> 
+                {% endif %}
+                {% if profile.social_2 %}
+                    | <a class="text-blue-700"
+                       href="{{ profile.social_2 }}">{{ profile.social_2_name }}</a> 
+                {% endif %}
+                {% if profile.social_3 %}
+                    | <a class="text-blue-700"
+                       href="{{ profile.social_3 }}">{{ profile.social_3_name }}</a>
+                {% endif %}
+            </p>
+            {% if can_edit %}
+                <a href="{% url 'profile-edit' profile.short_id %}"
+                   class="btn btn-sm primary-btn rounded-full px-7 mt-2 mb-2 max-w-xs">Edit</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="px-0">
+        {% if profile_rendered_bio %}
+            {% comment %} <h3>Bio</h3> {% endcomment %}
+            <div class="prose text-lg text-black font-normal">{{ profile_rendered_bio|safe }}</div>
+        {% endif %}
+        <div class="tag-listings mt-4">
+            {% if grouped_tags %}
+                {% for tag_group, tags in grouped_tags.items %}
+                    <h3>{{ tag_group }}</h3>
+                    <p>
+                        {% for tag_dict in tags %}
+                            <button type="button"
+                                    class=" tagsClass badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                    data-tag-name="{{ tag_dict.name }}"
+                                    data-tag-group="{{ tag_group }}"
+                                    data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
+                        {% endfor %}
+                    </p>
+                {% endfor %}
+            {% endif %}
+            {% if ungrouped_tags %}
+                {% comment %} <h3>Tags</h3> {% endcomment %}
+                <p>
+                    {% for tag_dict in ungrouped_tags %}
+                        <button type="button"
+                                class=" tagsClass badge tags-view text-black hover:text-white text-xs my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                data-tag-name="{{ tag_dict.name }}"
+                                data-tag-group="{{ tag_group }}"
+                                data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+// TODO: loading a script tag in an htmx request causes an error to be logged, but this does not seem to affect
+// the functioning of the script. I don't know why.
+
+// when a user clicks on a tag, emit an event listing the nane of the tag being clicked
+// this is picked up by the parent component and used to filter the list of profiles
+// shown    
+
+document.querySelectorAll('#profile-slot .badge').forEach(item => {
+    item.addEventListener('click', event => {
+        // we can't just bubble up a 'click' event to the parent elements
+        // and use that to update the list of profiles shown, because
+        // it won't reflect the updated toggle list of tags yet in the 
+        // filter form.
+        // So, we have to manually update the list of active tags, and THEN
+        // dispatch an event for our filter component to listen for
+        let activeTags = document.querySelector('#id_tags')
+
+        // you set a value on a multiple select by setting the 
+        //'selected' property of a given option to true
+        const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
+        const chosenTagOption = document.querySelector(selectorString)
+        chosenTagOption.selected = !chosenTagOption.selected
+
+        // once we have updated the option list, we trigger
+        // an DOM event our filter component to listen for,
+        // and update the list of profiles shown
+        
+        document.body.dispatchEvent(new CustomEvent("toggle-tag", { detail: event.target.dataset }))
+
+        // toggle the button active state 
+        // TODO: figure out how to persist GET params in the 
+        // URL so that we can use active tags to set the 
+        // colour of the buttons instead
+        event.target.classList.toggle('bg-blue-500')
+    })
+})
+
+document.querySelectorAll('.tagsClass').forEach(item => {
+
+    // Get the tag name from the data attribute
+    const tagName = item.getAttribute('data-tag-name');
+    // Check if the tag name contains 'ibm' (case-sensitive)
+    if (tagName.indexOf('IB1') !== -1) {
+        // Apply the outline style
+        item.style.border = '1px solid #ff4d11';
+        item.style.outline = 'none'; // Optional: remove default outline if necessary
+    }
+ 
+ })
+
+</script>

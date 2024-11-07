@@ -1,0 +1,11 @@
+{% load i18n %}
+{% load account %}
+{% load allauth %}
+{% load custom_tags %}
+{% user_display user as user_display %}
+
+{% element alert %}
+    {% slot message %}
+        <strong>{% blocktranslate %}Note{% endblocktranslate %}:</strong> {% blocktranslate %}You are already logged in as {% endblocktranslate %}{{ user|custom_user_display }}.
+    {% endslot %}
+{% endelement %}

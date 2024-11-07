@@ -1,0 +1,125 @@
+{% load static %}
+{% load static widget_tweaks %}
+{% load account socialaccount %}
+<style>
+  .header-color-override {
+    {% if request.constellation.background_color %}
+    background-color: {{ request.constellation.background_color}};
+    {% else %}
+    background-color: #1A3844;
+    {% endif %}
+  }
+  {% if request.constellation.text_color %}
+    .header-color-override .site-name {
+      color: {{ request.constellation.text_color}};
+    }
+    .header-color-override .menu .nav-toggle  {
+      color: {{ request.constellation.text_color}};
+    }
+  {% endif %}
+  
+</style>
+<header class="header-color-override md:px-3 grid grid-cols-[1fr_minmax(auto,70rem)_1fr]">
+  {% comment %}
+  empty div here and at the end gives us our mx-auto style spacing 
+  using css grid
+  {% endcomment %}
+  <div></div>
+  <div class="">
+    <div class="">
+      <div class="flex md:justify-between items-center gap-3 md:gap-5 p-2 lg:px-0 lg:py-2">
+        <div class="flex ">
+        <div class=" flex justify-center lg:justify-self-start items-center">
+          <a class="btn btn-ghost normal-case text-xl max-w-xs mx-4 lg:ml-0 lg:mr-4 p-0" href="/">
+            {% if request.constellation.logo %}
+              <img src="{{ request.constellation.logo.url }}" class="w-[47px] lg:w-[47px]"  />
+            {% else %}
+              <span class="site-name text-white ml-4">{{ request.site.name }}</span>
+            {% endif %}
+          </a>
+        </div>
+        <section class="search-component grid grid-cols-[1fr_minmax(auto,20rem)_1fr] md:grid-cols-[1fr_minmax(auto,30rem)_1fr] lg:grid-cols-[1fr_minmax(auto,45rem)_1fr]">
+          <div></div>
+          <section>
+            <div class="card search-block ">
+              <div class="card-body px-0 py-0">
+                <form id="filter-form"
+                      method="get"
+                      hx-get="/"
+                      hx-trigger="submit, htmx:confirm from:#id_tags, htmx:confirm from:#id_bio, toggle-tag from:body"
+                      hx-target=".sidebar"
+                      hx-push-url="true">
+                      
+                      <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-center lg:gap-4">
+                        <div class="flex items-center w-full">
+                          {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.1s," hx-target=".sidebar" class="text-xl rounded-xl w-full " hx-sync="closest form:abort" %}
+                          {% if profile_filter %}
+                          <button class="btn ml-2 lg:ml-4 rounded-full p-2 primary-btn w-[3rem] h-[3rem] border-none" id="search-button" type="submit">
+                            <img src="{% static 'images/magnifying-glass.png' %}" class="w-5 h-5" />
+                          </button>
+                          {% endif %}
+                        </div>
+                        
+                        <span class="hidden">{% render_field profile_filter.form.tags %}</span>
+                      </div>
+                </form>
+              </div>
+            </div>
+          </section>
+          <div></div>
+          {% comment %} close search component {% endcomment %}
+        </section>
+      </div>
+        <div class="justify-self-end ">
+          <ul class="menu menu-horizontal px-1">
+            {% if request.user.is_authenticated %}
+              <li tabindex="0">
+                <a class="nav-toggle text-white">
+                  <span class="hidden lg:inline">
+                    {% if request.user.name %}
+                      Hi {{ request.user.name }}
+                    {% else %}
+                      Hi {{ request.user.username }}
+                    {% endif %}
+                  </span>
+                  <svg class="fill-current"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="20"
+                       height="20"
+                       viewBox="0 0 24 24">
+                    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                  </svg>
+                </a>
+                <ul class="p-2 bg-base-100 border right-0 lg:left-0 w-40"
+                    style="z-index:99999">
+                  <li>
+                    <a href="{% url 'profile-detail' request.user.profile.short_id %}">Profile</a>
+                  </li>
+                  {% comment %} <li>
+                    <a>Settings</a>
+                  </li> {% endcomment %}
+                  {% if request.user.is_staff or request.user.is_admin %}
+                    <li>
+                      <a href="{% url 'admin:index' %}">Admin</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'profile-create' %}">Add new user</a>
+                    </li>
+                  {% endif %}
+                  <li>
+                    <a href="{% url 'account_logout' %}">Log out</a>
+                  </li>
+                </ul>
+              </li>
+            {% else %}
+              {% comment %} <li>
+                <a>Login</a>
+              </li> {% endcomment %}
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div></div>
+</header>

@@ -1,0 +1,35 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load account %}
+{% block head_title %} {% trans "Delete Account" %} {% endblock %} {% block inner %}
+<div class="mt-4 p-5 flex justify-center items-center">
+  <div class="card  w-[22rem] md:w-[25rem" style="border: 1px solid gray">
+    <div class="card-body">
+      <h1 class="text-lg">{% trans "Permanently delete account" %}</h1>
+      <!-- {% if user.is_authenticated %} {% include "account/snippets/already_logged_in.html" %} {% endif %} -->
+      <div class="prose mt-4">
+        <p class="text-black">
+          {% trans "This will permanently delete your account. If you want to rejoin, we will have to re-invite you." %}
+        </p>
+        <form method="POST" action="{% url 'account_delete' profile.user.id %}" class="password_reset">
+          {% csrf_token %}
+          <a href="">
+            <input class="btn border-[#ff4d11] bg-[#ff4d11] w-full mt-4" type="submit"
+              value="{% trans 'Permanently delete my account' %}" />
+          </a>
+          <a href="{% url 'account_invisible' profile.user.id %}">
+            <input class="btn border-[#8bc34a] bg-[#8bc34a] w-full mt-4" type="button"
+              name="is_visible" value="{% trans 'Just make me invisible for now' %}" />
+          </a>
+          <a href="{% url 'profile-edit' profile.short_id %}">
+            <input class="btn border-[#c8d4de] bg-[#c8d4de] w-full mt-4" type="button" value="{% trans 'Go back' %}" />
+          </a>
+        </form>
+        <p class="text-xs">
+          {% blocktrans %}Please contact us if you would like to discuss anything{% endblocktrans %}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

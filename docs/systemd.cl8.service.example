@@ -1,0 +1,16 @@
+[Unit]
+Description=Gunicorn instance for serving constellate in production
+After=network.target
+
+[Service]
+
+User=ubuntu
+Group=www-data
+WorkingDirectory=/path/to/constellate
+ExecStart=/path/to/constellate/run-gunicorn.sh
+
+Restart=always
+RuntimeMaxSec=86400
+
+[Install]
+WantedBy=default.target

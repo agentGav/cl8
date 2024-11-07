@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% block content %}
+  <main class="">
+    {% comment %} add our search component spanning the full width {% endcomment %}
+    <section id="home-search-component" class="search-component grid grid-cols-[1fr_minmax(auto,70rem)_1fr]" style="display:none;">
+      <div></div>
+      <section>
+        <div class="card search-block border-white border rounded-none">
+          <div class="card-body p-1 justify-center h-auto px-[5rem]">
+            <div class="active-tags">{% include '_active_tags_list.html' %}</div>
+            <div class="profile-count">
+              {% if active_search %}
+                <p class="text-xl inline-block ">
+                  <span data-profile-count="{{ paginated_profiles|length }}">{{ paginated_profiles|length }}</span> matching profile{{ paginated_profiles|pluralize }} found
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+      <div></div>
+      {% comment %} close search component {% endcomment %}
+    </section>
+    {% comment %} main content  {% endcomment %}
+    <section class="grid h-full grid-cols-[1fr_minmax(auto,70rem)_1fr]">
+      <div></div>
+      {% comment %} add our two columns for the sidebar and profile {% endcomment %}
+      {% comment %} <section class="column-wrapper border grid grid-cols-[1fr_2fr]"> {% endcomment %}
+      <section class="column-wrapper h-full  grid grid-cols-1 lg:grid-cols-3">
+        {% comment %} list the active tags
+        {% endcomment %}
+        {% comment %}
+          We only want to hide the list of profiles when there is NO filtered search
+          and when a user is not selected.
+        {% endcomment %}
+        <div class="sidebar order-2 lg:order-1  p-3 transition-all border border-white {% if hide_profile_list and  active_tags%}hidden{% endif %} lg:inline"
+             style="height: 100%">{% include "pages/_paginated_profiles.html" %}</div>
+        <div id="profile-slot"
+             class="card order-1 lg:order-2 bg-transparent lg:col-span-2 border border-white	 rounded-none {% if not hide_profile_list %}{% endif %} lg:inline">
+             {% if profile %}
+            {% comment %} show the profile with all the tags, and details {% endcomment %}
+            {% include '_profile.html' %}
+          {% else %}
+            {% comment %} otherwise show a blank "start" view with instructions {% endcomment %}
+            {% include "_profile_empty.html" %}
+          {% endif %}
+        </div>
+      </section>
+      <div></div>
+    </section>
+    {% comment %}
+      Add hidden version of empty  profile content, used when clearing a select 
+      profile
+    {% endcomment %}
+    <div id="empty-profile" class="hidden">{% include "_profile_empty.html" %}</div>
+  </main>
+{% endblock content %}
+{% block scripts %}
+  {{ block.super }}
+  {% comment %} TODO - can we drop jquery here? we only use it on the edit forms now {% endcomment %}
+  <script type="text/javascript"
+          src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  {{ profile_filter.form.media }}
+  <script src="{% static 'js/htmx.v1.9.8.min.js' %}" defer></script>
+  <script>
+
+    function checkForTagsInURL(){
+      const urlParams = new URLSearchParams(window.location.search);
+      const tags = urlParams.getAll('tags');
+
+      const searchComponent = document.getElementById('home-search-component');
+      if (searchComponent) {
+        if (tags.length > 0) {
+            // Show the component if there are tags in the URL
+            searchComponent.style.display = 'grid';
+        } else {
+            // Hide the component if no tags are present
+            searchComponent.style.display = 'none';
+        }
+    }
+}
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+      // htmx.logAll();
+      
+      //check tage urls
+      checkForTagsInURL()
+
+
+      htmx.on("htmx:load", function(evt) {
+        const elt = evt.detail.elt
+        elt.classList.contains("sidebar");
+        const sidebarUpdated = elt.classList.contains("sidebar");
+        
+        // update the count 
+        if (sidebarUpdated) {
+          const profileCount = document.querySelectorAll(".sidebar .profile").length;
+          const profileCountElement = document.querySelector("[data-profile-count]")
+          if (profileCountElement) {
+            profileCountElement.innerText = profileCount;
+          }
+          
+        }
+      });
+      
+      // 'htmx.on' is not the same as 'document.body.addEventListener',
+      // so we use the vanilla js version
+      document.body.addEventListener("update-profile", function(evt) {
+        const profileSlot = htmx.find("#profile-slot")
+        const profileList = htmx.find(".sidebar")
+
+        if (evt.detail.hide_profile_list) {
+          //profileSlot.classList.remove("hidden")
+          //profileList.classList.add("hidden")
+        } else {
+         // profileSlot.classList.add("hidden")
+        //  profileList.classList.remove("hidden")
+        }
+      })
+      
+    });
+  
+    /**
+    * Add a set of event listeners to the active tag list, so that clicking on
+    * updates the selected options, and triggers a toggle-tag event, for our
+    * form to listen for and request an uploaded list of tags
+    */
+    function addlistenersForActiveTags() {
+      document.querySelectorAll('.search-block .active-tags .badge').forEach(item => {
+    item.addEventListener('click', event => {
+      const selectorString = `#id_tags option[value="${event.target.dataset.tagId}"]`
+      const chosenTagOption = document.querySelector(selectorString)
+
+      // toggle the selected status of the tag
+      chosenTagOption.selected = !chosenTagOption.selected
+      // announce the toggle event the profile list can listen for it 
+      //and update accordingly
+      document.body.dispatchEvent(new Event("toggle-tag"))
+      })
+    })
+    setTimeout(checkForTagsInURL, 50);
+
+    //check tage urls
+    checkForTagsInURL()
+    }
+
+    addlistenersForActiveTags()
+
+  
+
+
+  document.body.addEventListener('active-tags-changed', (event) => {
+    const activeTagsList = document.querySelector('.search-block .active-tags .tag_list')
+
+    if (event.detail.rendered_html) {
+      if (activeTagsList) { 
+        activeTagsList.innerHTML = event.detail.rendered_html
+      }
+      
+    }
+    // we need to add listeners again because the DOM has changed, 
+    // and the event listeners will have been removed along with 
+    // the DOM elements
+    addlistenersForActiveTags()
+    
+    setTimeout(checkForTagsInURL, 50);
+
+    //check tage urls
+    checkForTagsInURL()
+  })
+
+  </script>
+  
+{% endblock scripts %}

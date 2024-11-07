@@ -1,0 +1,30 @@
+{% load static %}
+{% load account socialaccount %}
+<style>
+  .cat-navy-blue {
+    {% if request.constellation.background_color %}
+      background-color: {{ request.constellation.background_color}};
+    {% else %}
+    background-color: #1A3844;
+    {% endif %}
+  }
+  
+</style>
+<header class="cat-navy-blue grid grid-cols-[1fr_minmax(auto,70rem)_1fr]">
+    <div></div>
+    <div>
+        <div class="flex justify-between items-center">
+            <div class="justify-self-start py-3">
+                <a class="btn btn-ghost normal-case text-xl max-w-xs " href="/">
+                    {% if request.constellation.logo %}
+                    <img src="{{ request.constellation.logo.url }}" class=" w-[48px]"  />
+                    {% else %}
+                        <span class="text-white">{{ site.name }}</span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="justify-self-end"></div>
+        </div>
+    </div>
+    <div></div>
+</header>
