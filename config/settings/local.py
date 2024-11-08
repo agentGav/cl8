@@ -13,7 +13,7 @@ SECRET_KEY = env(
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [".localhost", "0.0.0.0", "127.0.0.1", "*"]
 
-CSRF_TRUSTED_ORIGINS = ["https://*.localhost", "https://cl8.vinnisoft.org"]
+CSRF_TRUSTED_ORIGINS = ["https://*.localhost"]
 
 # CACHES
 # ------------------------------------------------------------------------------
@@ -33,9 +33,9 @@ EMAIL_HOST = "localhost"
 EMAIL_PORT = 1025
 
 
-# EMAIL_HOST=''
+# EMAIL_HOST='smtp.gmail.com'
 # EMAIL_PORT=465
-# EMAIL_HOST_USER='a'
+# EMAIL_HOST_USER=''
 # EMAIL_HOST_PASSWORD=''
 # EMAIL_USE_SSL=True
 # WhiteNoise
