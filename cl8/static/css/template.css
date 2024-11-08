@@ -40,6 +40,13 @@ body {
     color: #fff;
 }
 
+.delete-btn{
+    height: 1.5rem;
+    min-height: 1.5rem;
+    margin-top: 48px;
+    font-weight: 700;
+}
+
 .border-gray {
     border: 1px solid #c8d4de;
 }

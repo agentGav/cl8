@@ -14,6 +14,9 @@ from cl8.users.api.views import (
     ProfileEditView,
     TagAutoCompleteView,
     homepage,
+    account_delete,
+    account_delete_message,
+    account_invisible
 )
 
 
@@ -24,6 +27,12 @@ urlpatterns = [
     path("profiles/create/", ProfileCreateView.as_view(), name="profile-create"),
     path("profiles/<slug>", ProfileDetailView.as_view(), name="profile-detail"),
     path("profiles/<slug>/edit", ProfileEditView.as_view(), name="profile-edit"),
+    
+    path('account_delete/<int:pk>/', account_delete, name='account_delete'),  
+    path('account_delete_message/', account_delete_message, name='account_delete_message'), 
+    path('account_invisible/<int:pk>/', account_invisible, name='account_invisible'),  
+
+
     #
     # Django Admin, use {% url 'admin:index' %}
     # use this to sanity check differences between the default

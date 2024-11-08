@@ -11,7 +11,7 @@ from django.core import paginator
 from django.core.files.images import ImageFile
 from django.db.models import Case, When
 from django.http import HttpRequest
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import resolve, reverse
 from django.utils.text import slugify
 from django.views.generic import DetailView, UpdateView
@@ -66,7 +66,7 @@ def fetch_profile_list(request: HttpRequest, ctx: dict):
     """
     filtered_profiles = ProfileFilter(
         request.GET,
-        queryset=Profile.objects.filter(visible=True).prefetch_related("tags", "user"),
+        queryset=Profile.objects.filter(visible=True).prefetch_related("tags", "user").order_by('?'),
     )
 
     ctx["profile_filter"] = filtered_profiles
@@ -646,3 +646,38 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
     def get_password_reset_url(self, context):
         return context['password_reset_url']
+
+from django.http import JsonResponse
+
+def account_delete(request, *args, **kwargs):
+    # Get user ID from URL parameters
+    user_id = kwargs.get('pk')
+    user = User.objects.filter(id=user_id).first()
+
+    if not user:
+        return JsonResponse({"error": "User not found"}, status=404)
+    
+    # Check if it's a POST request to delete the user
+    if request.method == "POST":
+        user.delete()
+        return redirect('account_delete_message')
+
+    profile = Profile.objects.get(user=user)
+    # If GET request, render the deletion confirmation page
+    return render(request, 'account/account_delete.html', {'profile': profile})
+
+def account_invisible(request, *args, **kwargs):
+    # Get user ID from URL parameters
+    user_id = kwargs.get('pk')
+    user = User.objects.filter(id=user_id).first()
+
+    if not user:
+        return JsonResponse({"error": "User not found"}, status=404)
+    
+    profile = Profile.objects.get(user=user)
+    profile.visible = False
+    profile.save()
+    return redirect('profile-edit', profile.short_id)
+
+def account_delete_message(request):
+    return render(request, 'account/account_delete_message.html')
