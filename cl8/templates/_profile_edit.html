@@ -67,6 +67,13 @@
                 </button>
 
                 <p class="text-sm px-3 m-auto">When 'visible' is checked, your profile will show up in searches</p>
+
+                <!-- Profile delete button -->
+                <a href="{% url 'account_delete' form.instance.user.id %}">
+                    <button class="btn delete-btn border-[#ff4d11] bg-[#ff4d11] mt-5 mb-4" type="button">
+                        Delete
+                    </button>
+                </a>
             </div>
 
             <!-- Form Section -->

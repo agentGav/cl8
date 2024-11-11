@@ -1,67 +1,66 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>{{ constellation.site.name }}</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {% tailwind_css %}
-</head>
-<link rel="stylesheet" href="{% static 'css/template.css' %}">
-{% if request.constellation.favicon %}
-<link rel="shortcut icon"
-      type="image/png"
-      href="{{ request.constellation.favicon.url }}">
-{% else %}
-<link rel="shortcut icon"
-      type="image/png"
-      href="{% static 'images/favicons/favicon.ico' %}">
-{% endif %}
-<body class="grid grid-rows-[auto_1fr] min-h-screen">
-{% comment %}
-<p class="p-2 text-xs">
-    Breakpoint:
-    <span class="sm:hidden">mobile</span>
-    <span class="hidden sm:inline md:hidden">sm</span>
-    <span class="hidden md:inline lg:hidden">md</span>
-    <span class="hidden lg:inline xl:hidden">lg</span>
-    <span class="hidden xl:inline 2xl:hidden">xl</span>
-    <span class="hidden 2xl:inline 3xl:hidden">2xl</span>
-    <span class="hidden 3xl:inline 4xl:hidden">3xl</span>
-    <span class="hidden 4xl:inline">4xl+</span>
-</p>
-{% endcomment %}
-<div>
-    {% block nav %}
-    {% include "_nav_menu.html" %}
-    {% endblock nav %}
-</div>
-<div class="grid grid-rows-[1fr_auto] border">
-    {% block content %}
-    <section class="grid grid-cols-[1fr_minmax(auto,70rem)_1fr] border">
-        <div></div>
+    <head>
+        <title>{{ constellation.site.name }}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% tailwind_css %}
+    </head>
+    <link rel="stylesheet" href="{% static 'css/template.css' %}">
+    {% if request.constellation.favicon %}
+        <link rel="shortcut icon"
+              type="image/png"
+              href="{{ request.constellation.favicon.url }}">
+    {% else %}
+        <link rel="shortcut icon"
+              type="image/png"
+              href="{% static 'images/favicons/favicon.ico' %}">
+    {% endif %}
+    {% comment %}
+    <p class="p-2 text-xs">
+        Breakpoint:
+        <span class="sm:hidden">mobile</span>
+        <span class="hidden sm:inline md:hidden">sm</span>
+        <span class="hidden md:inline lg:hidden">md</span>
+        <span class="hidden lg:inline xl:hidden">lg</span>
+        <span class="hidden xl:inline 2xl:hidden">xl</span>
+        <span class="hidden 2xl:inline 3xl:hidden">2xl</span>
+        <span class="hidden 3xl:inline 4xl:hidden">3xl</span>
+        <span class="hidden 4xl:inline">4xl+</span>
+    <p>
+    {% endcomment %}
+    <body class="grid grid-rows-[auto_1fr] min-h-screen">
         <div>
-            {% block inner %}
-            <h1 class="text-5xl">Django + Tailwind = ❤️</h1>
-            {% endblock inner %}
+            {% block nav %}
+                {% include "_nav_menu.html" %}
+            {% endblock nav %}
         </div>
-        <div></div>
-    </section>
-    {% endblock content %}
-    <footer class="grid z-10 grid-cols-[1fr_minmax(auto,70rem)_1fr] border bg-[#c8d4de]">
-        <div></div>
-        <div class="md:flex text-center gap-3 flex-wrap p-3 justify-center text-neutral-content">
-            <a href="https://ib1.org" class="link link-hover">IB1</a> |
-            <a href="https://ib1.org/terms/" class="link link-hover">Terms</a> |
-            <a href="https://ib1.org/privacy/" class="link link-hover">Privacy notice</a> |
-            This Website is powered by 100% renewable energy
-        </div>
-        <div></div>
-    </footer>
-    {% block scripts %}
-    {% endblock scripts %}
-    <script src="{% static 'js/template.js' %}"></script>
-</div>
-</body>
-</html>
+        <div class="grid grid-rows-[1fr_auto] border">
+            {% block content %}
+                <section class="grid grid-cols-[1fr_minmax(auto,70rem)_1fr] border">
+                    <div></div>
+                    <div>
+                        {% block inner %}
+                            <h1 class="text-5xl">Django + Tailwind = ❤️</h1>
+                        {% endblock inner %}
+                    </div>
+                    <div></div>
+                </section>
+            {% endblock content %}
+            <footer class="grid z-10 grid-cols-[1fr_minmax(auto,70rem)_1fr] border bg-[#c8d4de]">
+                <div></div>
+                <div class="md:flex text-center gap-3 flex-wrap p-3 justify-center text-neutral-content">
+                    <a href="https://ib1.org"  class="link link-hover">IB1</a> |
+                    <a href="https://ib1.org/terms/" class="link link-hover">Terms</a> |
+                    <a href="https://ib1.org/privacy/"  class="link link-hover">Privacy notice</a> | <p>This Website is powered by 100% renewable energy
+                    </p>
+                </div>
+                <div></div>
+            </footer>
+            {% block scripts %}
+            {% endblock scripts %}
+            <script src="{% static 'js/template.js' %}"></script>
+        </body>
+    </html>

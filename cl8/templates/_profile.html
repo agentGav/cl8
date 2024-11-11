@@ -70,7 +70,7 @@
                     <p>
                         {% for tag_dict in tags %}
                             <button type="button"
-                                    class="badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                    class=" tagsClass badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
                                     data-tag-name="{{ tag_dict.name }}"
                                     data-tag-group="{{ tag_group }}"
                                     data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
@@ -83,7 +83,7 @@
                 <p>
                     {% for tag_dict in ungrouped_tags %}
                         <button type="button"
-                                class="badge tags-view text-black hover:text-white text-xs my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                                class=" tagsClass badge tags-view text-black hover:text-white text-xs my-2 mx-1 p-3 {% if tag_dict.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
                                 data-tag-name="{{ tag_dict.name }}"
                                 data-tag-group="{{ tag_group }}"
                                 data-tag-id="{{ tag_dict.tag.id }}">{{ tag_dict.name }}</button>
@@ -130,5 +130,18 @@ document.querySelectorAll('#profile-slot .badge').forEach(item => {
         event.target.classList.toggle('bg-blue-500')
     })
 })
+
+document.querySelectorAll('.tagsClass').forEach(item => {
+
+    // Get the tag name from the data attribute
+    const tagName = item.getAttribute('data-tag-name');
+    // Check if the tag name contains 'ibm' (case-sensitive)
+    if (tagName.indexOf('IB1') !== -1) {
+        // Apply the outline style
+        item.style.border = '1px solid #ff4d11';
+        item.style.outline = 'none'; // Optional: remove default outline if necessary
+    }
+ 
+ })
 
 </script>

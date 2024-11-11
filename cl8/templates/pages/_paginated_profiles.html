@@ -66,6 +66,16 @@
 
 document.querySelectorAll('.listButton').forEach(item => {
 
+   // Get the tag name from the data attribute
+   const tagName = item.getAttribute('data-tag-name');
+   // Check if the tag name contains 'ibm' (case-sensitive)
+   if (tagName.indexOf('IB1') !== -1) {
+       // Apply the outline style
+       item.style.border = '1px solid #ff4d11';
+       item.style.outline = 'none'; // Optional: remove default outline if necessary
+   }
+
+
     item.addEventListener('click', event => {
 
         // we can't just bubble up a 'click' event to the parent elements
