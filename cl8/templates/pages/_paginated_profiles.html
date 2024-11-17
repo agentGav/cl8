@@ -13,7 +13,7 @@
         hx-include="#filter-form"
         hx-push-url="true">
           {% if profile.photo %}
-            <img src="{{ profile.thumbnail_photo }}"  class="rounded-full" />
+            <img src="{{ profile.thumbnail_photo }}"  class="rounded-full" alt="Profile thumbnail"/>
           {% else %}
             {% gravatar profile.user.email 100 "Profile via gravatar.com" "rounded-full" %}
           {% endif %}

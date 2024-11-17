@@ -43,10 +43,10 @@
             <div class="sidebar text-center p-3 transition-all w-full lg:w-auto border border-white lg:inline">
                 {% if form.instance.photo %}
                 <img id="photoPreview" class="w-36 h-36 md:w-48 md:h-48 m-auto block rounded-full object-cover"
-                    src="{{ form.instance.photo.url }}" />
+                    src="{{ form.instance.photo.url }}" alt="Photo preview"/>
                 {% else %}
                 <img id="photoPreview" class="w-36 h-36 md:w-48 md:h-48 m-auto block rounded-full object-cover"
-                    src="{% static 'img/placeholder-person-square.png' %}" />
+                    src="{% static 'img/placeholder-person-square.png' %}" alt="Photo preview placeholder"/>
                 {% endif %}
 
                 <!-- Hidden file input for image upload -->

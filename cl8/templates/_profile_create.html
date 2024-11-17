@@ -38,10 +38,10 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_minmax(auto,70rem)_1fr] gap-4 lg:gap-0">
             <div class="sidebar text-center p-3 transition-all w-full lg:w-auto border border-white lg:inline">
                 {% if form.instance.photo %}
-                <img id="photoPreview" class="w-36 h-36 md:w-48 md:h-48 m-auto block rounded-full object-cover" src="{{ form.instance.photo.url }}" />
+                <img id="photoPreview" class="w-36 h-36 md:w-48 md:h-48 m-auto block rounded-full object-cover" src="{{ form.instance.photo.url }}" alt="Photo preview"/>
                 {% else %}
                 <img id="photoPreview" class="w-36 h-36 md:w-48 md:h-48 m-auto block rounded-full object-cover"
-                    src="{% static 'img/placeholder-person-square.png' %}" />
+                    src="{% static 'img/placeholder-person-square.png' %}" alt="Photo preview placeholder"/>
                 {% endif %}
                 {% comment %} {{ form.photo }} {% endcomment %}
 

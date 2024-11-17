@@ -17,7 +17,7 @@
             <div class="justify-self-start py-3">
                 <a class="btn btn-ghost normal-case text-xl max-w-xs " href="/">
                     {% if request.constellation.logo %}
-                    <img src="{{ request.constellation.logo.url }}" class=" w-[48px]"  />
+                    <img src="{{ request.constellation.logo.url }}" class=" w-[48px]" alt="" />
                     {% else %}
                         <span class="text-white">{{ site.name }}</span>
                     {% endif %}

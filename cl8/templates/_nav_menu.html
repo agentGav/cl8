@@ -32,7 +32,7 @@
         <div class=" flex justify-center lg:justify-self-start items-center">
           <a class="btn btn-ghost normal-case text-xl max-w-xs mx-4 lg:ml-0 lg:mr-4 p-0" href="/">
             {% if request.constellation.logo %}
-              <img src="{{ request.constellation.logo.url }}" class="w-[47px] lg:w-[47px]"  />
+              <img src="{{ request.constellation.logo.url }}" class="w-[47px] lg:w-[47px]" alt="" />
             {% else %}
               <span class="site-name text-white ml-4">{{ request.site.name }}</span>
             {% endif %}
@@ -55,7 +55,7 @@
                           {% render_field profile_filter.form.bio hx-get="/" hx-trigger="keyup changed delay:0.1s," hx-target=".sidebar" class="text-xl rounded-xl w-full " hx-sync="closest form:abort" %}
                           {% if profile_filter %}
                           <button class="btn ml-2 lg:ml-4 rounded-full p-2 primary-btn w-[3rem] h-[3rem] border-none" id="search-button" type="submit">
-                            <img src="{% static 'images/magnifying-glass.png' %}" class="w-5 h-5" />
+                            <img src="{% static 'images/magnifying-glass.png' %}" class="w-5 h-5" alt="" />
                           </button>
                           {% endif %}
                         </div>
