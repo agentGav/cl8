@@ -79,3 +79,8 @@
   </div>
 </div>
 {% endblock %}
+{% block scripts %}
+{{ block.super }}
+{% comment %} TODO - can we drop jquery here? we only use it on the edit forms now {% endcomment %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{% endblock %}
