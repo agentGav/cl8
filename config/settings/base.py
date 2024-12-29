@@ -88,7 +88,6 @@ THIRD_PARTY_APPS = [
     "dal",
     "dal_select2",
     "corsheaders",
-    "mjml",
     "sorl.thumbnail",
     "tailwind",
     "theme",
