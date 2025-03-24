@@ -11,7 +11,7 @@
         <a href="{% url 'profile-detail' request.user.profile.short_id %}">Go to your profile</a> where you can make changes.
     </h2> -->
     {% if request.constellation.welcome_message %}
-        <p>{{request.constellation.welcome_message}}</p>
+        <p>{{request.constellation.welcome_message|safe}}</p>
     {% else %}
         <p>Find Icebreakers based on common interests</p>
     {% endif %}
