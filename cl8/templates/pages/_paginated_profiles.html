@@ -41,7 +41,7 @@
 
             {% for tag in profile.tags_with_no_grouping|slice:":4" %}
               <button type="button"
-                  class=" listButton badge tags-view text-black hover:text-white text-sm my-2 mx-1 p-3 {% if tag.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
+                  class=" listButton badge tags-view text-black hover:text-white text-sm my-2 mx-0 p-3 {% if tag.tag.id in active_tag_ids %}bg-blue-500{% endif %}"
                   data-tag-name="{{ tag.name }}"
                   data-tag-group="{{ tag_group }}"
                   data-tag-id="{{ tag.tag.id }}">{{ tag.name }}
