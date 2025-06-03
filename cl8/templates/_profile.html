@@ -33,7 +33,7 @@
             {% if profile.phone %}<p class="mb-0 text-lg">{{ profile.phone }}</p>{% endif %} {% endcomment %}
             {% if profile.website %}
                 <p class="mb-0 text-lg">
-                    <a class="text-blue-700" href="https://{{ profile.website }}">{{ profile.website }}</a>
+                    <a class="text-blue-700" href="{{ profile.website }}">{{ profile.website }}</a>
                 </p>
             {% endif %}
             {% if profile.location %}<p class="mb-0 text-lg">{{ profile.location }}</p>{% endif %}
